@@ -15,20 +15,39 @@
             <Box Color="0,0,0,200" Anchor="L,T" Size="parent-1,1" AnchorSide="I,O"/>
           </Box>
           <Image Texture="Controls_GradientSmall" Size="parent,20" Color="0,0,0,255" Anchor="L,T"/>
-          <Label ID="WorldTracker" Anchor="C,C" Offset="10,0" String="{LOC_WORLD_TRACKER_HEADER:upper}" WrapWidth="Parent-40" Align="Center" Style="FontFlair16" Color2="143,122,82,255" Color0="106,93,69,230" SmallCaps="20" SmallCapsLeading="0" SmallCapsType="EveryWord" KerningAdjustment="0" />
+          <Label ID="WorldTracker" Anchor="C,C" String="{LOC_WORLD_TRACKER_HEADER:upper}" WrapWidth="Parent-40" Align="Center" Style="FontFlair16" Color2="143,122,82,255" Color0="106,93,69,230" SmallCaps="20" SmallCapsLeading="0" SmallCapsType="EveryWord" KerningAdjustment="0" />
 		  
 		  <!-- Infixo: remove dropdown, all visibility controls are accessible right away -->
-		  <Stack Anchor="L,C" StackGrowth="Right">
-            <CheckBox ID="ResearchCheck" Style="WorldTrackerCheckBox" BoxOnLeft="1" String="[ICON_Science]" ToolTip="LOC_HIDE_RESEARCH_PANEL" />
-            <CheckBox ID="CivicsCheck"   Style="WorldTrackerCheckBox" BoxOnLeft="1" String="[ICON_Culture]" ToolTip="LOC_HIDE_CIVICS_PANEL" />
-            <CheckBox ID="ChatCheck"     Style="WorldTrackerCheckBox" BoxOnLeft="1" String="[ICON_Whisper]" ToolTip="LOC_HIDE_CHAT_PANEL" />
-		  </Stack>
-		  <CheckBox	ID="UnitCheck" Anchor="R,C"	Style="WorldTrackerCheckBox" BoxOnLeft="1" String="[ICON_Position]" ToolTip="LOC_WORLDTRACKER_UNIT_LIST" />
+		  <GridButton ID="ResearchButton" Offset="0,2" Size="25,25" Texture="Controls_ButtonControl_Brown" SliceTextureSize="24,24" StateOffsetIncrement="0,24" ToolTip="LOC_HIDE_RESEARCH_PANEL">
+            <Image Size="22,22" Anchor="C,C" Texture="FontIcons" TextureOffset="88,66" />
+          </GridButton>
+		  <GridButton ID="CivicsButton"   Offset="25,2" Size="25,25" Texture="Controls_ButtonControl_Brown" SliceTextureSize="24,24" StateOffsetIncrement="0,24" ToolTip="LOC_HIDE_CIVICS_PANEL">
+            <Image Size="22,22" Anchor="C,C" Texture="FontIcons" TextureOffset="176,66" />
+          </GridButton>
+		  <GridButton ID="ChatButton"     Offset="50,2" Size="25,25" Texture="Controls_ButtonControl_Brown" SliceTextureSize="24,24" StateOffsetIncrement="0,24" ToolTip="LOC_HIDE_CHAT_PANEL">
+            <Image Size="22,22" Anchor="C,C" Texture="FontIcons" TextureOffset="132,330" />
+          </GridButton>
+            <!--<CheckBox ID="ResearchCheck" Style="WorldTrackerCheckBox" BoxOnLeft="1" String="[ICON_Science]" ToolTip="LOC_HIDE_RESEARCH_PANEL" />-->
+            <!--<CheckBox ID="CivicsCheck"   Style="WorldTrackerCheckBox" BoxOnLeft="1" String="[ICON_Culture]" ToolTip="LOC_HIDE_CIVICS_PANEL" />-->
+            <!--<CheckBox ID="ChatCheck"     Style="WorldTrackerCheckBox" BoxOnLeft="1" String="[ICON_Whisper]" ToolTip="LOC_HIDE_CHAT_PANEL" />-->
+		  <!-- for future use
+		  <GridButton ID="CityListButton" Anchor="R,T" Offset="50,2" Size="25,25" Texture="Controls_ButtonControl_Brown" SliceTextureSize="24,24" StateOffsetIncrement="0,24" ToolTip="LOC_REPORTS_CITIES">
+              <Image Size="22,22" Anchor="C,C" Texture="FontIcons" TextureOffset="0,506" />
+          </GridButton>
+		  -->
+		  <GridButton ID="CivilianListButton" Anchor="R,T" Offset="25,2" Size="25,25" Texture="Controls_ButtonControl_Brown" SliceTextureSize="24,24" StateOffsetIncrement="0,24" ToolTip="{LOC_TECH_FILTER_UNITS} {LOC_FORMATION_CLASS_CIVILIAN_NAME}">
+              <Image Size="22,22" Anchor="C,C" Texture="FontIcons" TextureOffset="132,506" />
+          </GridButton>
+		  <GridButton ID="MilitaryListButton" Anchor="R,T" Offset="0,2" Size="25,25" Texture="Controls_ButtonControl_Brown" SliceTextureSize="24,24" StateOffsetIncrement="0,24" ToolTip="{LOC_TECH_FILTER_UNITS} {LOC_MILITARY}">
+              <Image Size="22,22" Anchor="C,C" Texture="FontIcons" TextureOffset="198,506" />
+          </GridButton>
+		  <!--<CheckBox	ID="UnitCheck" Anchor="R,C"	Style="WorldTrackerCheckBox" BoxOnLeft="1" String="[ICON_Position]" ToolTip="LOC_WORLDTRACKER_UNIT_LIST" />-->
 		  
-          <!-- Infixo: dropdown removed -->
-		  <!--<GridButton					ID="ToggleDropdownButton"			Anchor="L,C" Offset="1,-2" Size="25,25" Texture="Controls_ButtonControl_Brown" SliceCorner="10,10" SliceSize="1,1" SliceTextureSize="24,24" StateOffsetIncrement="0,24"																									ToolTip="LOC_WORLDTRACKER_ENABLE_TEXT">-->
-            <!--<Image                                                            Size="20,17" Texture="Controls_MenuIcon" Anchor="C,C" Color="157,132,87"/>-->
-          <!--</GridButton>-->
+          <!-- Infixo: dropdown removed
+		  <GridButton					ID="ToggleDropdownButton"			Anchor="L,C" Offset="1,-2" Size="25,25" Texture="Controls_ButtonControl_Brown" SliceCorner="10,10" SliceSize="1,1" SliceTextureSize="24,24" StateOffsetIncrement="0,24"																									ToolTip="LOC_WORLDTRACKER_ENABLE_TEXT">
+            <Image                                                            Size="20,17" Texture="Controls_MenuIcon" Anchor="C,C" Color="157,132,87"/>
+          </GridButton>
+		  -->
           <Grid Texture="Controls_SeparatorAngled" TextureSize="14,6" Anchor="L,T" Size="parent,6" SliceCorner="6,4" AnchorSide="I,O" Offset="0,-2"/>
         </Box>
 

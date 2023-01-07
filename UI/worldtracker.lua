@@ -1,3 +1,4 @@
+print("Loading WorldTracker.lua from Better World Tracker Units version 1.0");
 -- Copyright 2014-2019, Firaxis Games.
 
 --	Hotloading note: The World Tracker button check now positions based on how many hooks are showing.  
@@ -77,7 +78,9 @@ local m_remainingRoom			:number = 0;
 local m_isUnitListSizeDirty		:boolean = false;
 local m_isMinimapInitialized	:boolean = false;
 
-local m_uiCheckBoxes			:table = {Controls.ChatCheck, Controls.CivicsCheck, Controls.ResearchCheck, Controls.UnitCheck};
+--local m_uiCheckBoxes			:table = {Controls.ChatCheck, Controls.CivicsCheck, Controls.ResearchCheck, Controls.UnitCheck}; -- Infixo: not used
+local m_isUnitListMilitary		:boolean = true;
+
 
 -- ===========================================================================
 --	FUNCTIONS
@@ -270,14 +273,14 @@ function UpdateResearchPanel( isHideResearch:boolean )
 
 	if not HasCapability("CAPABILITY_TECH_CHOOSER") or not pPlayerConfig:IsAlive() then
 		isHideResearch = true;
-		Controls.ResearchCheck:SetHide(true);
+		Controls.ResearchButton:SetHide(true);
 	end
 	if isHideResearch ~= nil then
 		m_hideResearch = isHideResearch;		
 	end
 	
 	m_researchInstance.MainPanel:SetHide( m_hideResearch );
-	Controls.ResearchCheck:SetCheck( not m_hideResearch );
+	--Controls.ResearchCheck:SetCheck( not m_hideResearch );
 	LuaEvents.WorldTracker_ToggleResearchPanel(m_hideResearch or m_hideAll);
 	RealizeEmptyMessage();
 	RealizeStack();
@@ -320,14 +323,14 @@ function UpdateCivicsPanel(hideCivics:boolean)
 
 	if not HasCapability("CAPABILITY_CIVICS_CHOOSER") or (localPlayerID ~= PlayerTypes.NONE and not pPlayerConfig:IsAlive()) then
 		hideCivics = true;
-		Controls.CivicsCheck:SetHide(true);
+		Controls.CivicsButton:SetHide(true);
 	end
 	if hideCivics ~= nil then
 		m_hideCivics = hideCivics;		
 	end
 
 	m_civicsInstance.MainPanel:SetHide(m_hideCivics); 
-	Controls.CivicsCheck:SetCheck(not m_hideCivics);
+	--Controls.CivicsCheck:SetCheck(not m_hideCivics);
 	LuaEvents.WorldTracker_ToggleCivicPanel(m_hideCivics or m_hideAll);
 	RealizeEmptyMessage();
 	RealizeStack();
@@ -375,7 +378,7 @@ function UpdateUnitListPanel(hideUnitList:boolean)
 
 	if not HasCapability("CAPABILITY_UNIT_LIST") or (ePlayer ~= PlayerTypes.NONE and not pPlayerConfig:IsAlive()) then
 		hideUnitList = true;
-		Controls.CivicsCheck:SetHide(true);
+		--Controls.CivicsCheck:SetHide(true); -- TODO: unit list buttons
 		m_unitListInstance.UnitListMainPanel:SetHide(true);
 		return;
 	end
@@ -385,7 +388,7 @@ function UpdateUnitListPanel(hideUnitList:boolean)
 	m_unitEntryIM:ResetInstances();
 
 	m_unitListInstance.UnitListMainPanel:SetHide(m_hideUnitList); 
-	Controls.UnitCheck:SetCheck(not m_hideUnitList);
+	--Controls.UnitCheck:SetCheck(not m_hideUnitList);
 
 	local pPlayer : table = Players[ePlayer];
 	local pPlayerUnits : table = pPlayer:GetUnits();
@@ -408,6 +411,19 @@ function UpdateUnitListPanel(hideUnitList:boolean)
 
 				if pUnitInfo.MakeTradeRoute == true then
 					table.insert(tradeUnits, pUnit);
+				elseif pUnitInfo.FormationClass == "FORMATION_CLASS_LAND_COMBAT" then
+					table.insert(militaryUnits, pUnit);
+				elseif pUnitInfo.FormationClass == "FORMATION_CLASS_NAVAL" then
+					table.insert(navalUnits, pUnit);
+				elseif pUnitInfo.FormationClass == "FORMATION_CLASS_CIVILIAN" then
+					table.insert(civilianUnits, pUnit);
+				elseif pUnitInfo.FormationClass == "FORMATION_CLASS_SUPPORT" then
+					table.insert(supportUnits, pUnit);
+				elseif pUnitInfo.FormationClass == "FORMATION_CLASS_AIR" then
+					table.insert(airUnits, pUnit);
+				end
+				-- Infixo: a better way to group the units is to use FormationClass
+				--[[
 				elseif pUnit:GetCombat() == 0 and pUnit:GetRangedCombat() == 0 then
 					-- if we have no attack strength we must be civilian
 					table.insert(civilianUnits, pUnit);
@@ -418,6 +434,7 @@ function UpdateUnitListPanel(hideUnitList:boolean)
 				elseif pUnitInfo.Domain == "DOMAIN_AIR" then
 					table.insert(airUnits, pUnit);
 				end
+				--]]
 			end
 		end
 
@@ -430,16 +447,17 @@ function UpdateUnitListPanel(hideUnitList:boolean)
 		table.sort(militaryUnits, sortFunc);
 		table.sort(navalUnits, sortFunc);
 		table.sort(airUnits, sortFunc);
+		table.sort(supportUnits, sortFunc);
 		table.sort(civilianUnits, sortFunc);
 		table.sort(tradeUnits, sortFunc);
 
 		-- Add units by sorted groups
-		for _, pUnit in ipairs(militaryUnits) do	AddUnitToUnitList( pUnit );	end
-		for _, pUnit in ipairs(navalUnits) do 		AddUnitToUnitList( pUnit );	end
-		for _, pUnit in ipairs(airUnits) do			AddUnitToUnitList( pUnit );	end	
-		for _, pUnit in ipairs(supportUnits) do		AddUnitToUnitList( pUnit );	end
-		for _, pUnit in ipairs(civilianUnits) do	AddUnitToUnitList( pUnit );	end
-		for _, pUnit in ipairs(tradeUnits) do		AddUnitToUnitList( pUnit );	end
+		if m_isUnitListMilitary     then for _, pUnit in ipairs(militaryUnits) do AddUnitToUnitList( pUnit ); end end
+		if m_isUnitListMilitary     then for _, pUnit in ipairs(navalUnits)    do AddUnitToUnitList( pUnit ); end end
+		if m_isUnitListMilitary     then for _, pUnit in ipairs(airUnits)      do AddUnitToUnitList( pUnit ); end end
+		if m_isUnitListMilitary     then for _, pUnit in ipairs(supportUnits)  do AddUnitToUnitList( pUnit ); end end
+		if not m_isUnitListMilitary then for _, pUnit in ipairs(civilianUnits) do AddUnitToUnitList( pUnit ); end end
+		if not m_isUnitListMilitary then for _, pUnit in ipairs(tradeUnits)    do AddUnitToUnitList( pUnit ); end end
 	else
 		m_unitListInstance.NoUnitsLabel:SetHide(false);
 		m_unitListInstance.UnitsSearchBox:SetDisabled(true);
@@ -541,7 +559,8 @@ function AddUnitToUnitList(pUnit:table)
 	uiUnitEntry.Button:SetToolTipString(tooltip);
 
 	uiUnitEntry.Button:SetText( Locale.ToUpper(uniqueName) );
-	uiUnitEntry.Button:RegisterCallback(Mouse.eLClick, function() OnUnitEntryClicked(pUnit:GetID()) end);
+	uiUnitEntry.Button:RegisterCallback(Mouse.eLClick, function() OnUnitEntryClicked(pUnit:GetID(),true)  end); -- left click closes
+	uiUnitEntry.Button:RegisterCallback(Mouse.eRClick, function() OnUnitEntryClicked(pUnit:GetID(),false) end); -- right click does not close
 
 	UpdateUnitIcon(pUnit, uiUnitEntry);
 
@@ -584,7 +603,7 @@ function UpdateUnitIcon(pUnit:table, uiUnitEntry:table)
 end
 
 -- ===========================================================================
-function OnUnitEntryClicked(unitID:number)
+function OnUnitEntryClicked(unitID:number, closeList:boolean)
 	local playerUnits:table = Players[Game.GetLocalPlayer()]:GetUnits();
 	if playerUnits then
 		local selectedUnit:table = playerUnits:FindID(unitID);
@@ -592,6 +611,12 @@ function OnUnitEntryClicked(unitID:number)
 			UI.LookAtPlot(selectedUnit:GetX(), selectedUnit:GetY());
 			UI.SelectUnit( selectedUnit );
 		end
+	end
+	-- Infixo: close list?
+	if closeList then
+		UpdateUnitListPanel(true); 
+		StartUnitListSizeUpdate();
+		CheckEnoughRoom();
 	end
 end
 
@@ -610,7 +635,7 @@ end
 function UpdateChatPanel(hideChat:boolean)
 	m_hideChat = hideChat; 
 	Controls.ChatPanelContainer:SetHide(m_hideChat);
-	Controls.ChatCheck:SetCheck(not m_hideChat);
+	--Controls.ChatCheck:SetCheck(not m_hideChat);
 	RealizeEmptyMessage();
 	RealizeStack();
 	CheckUnreadChatMessageCount();
@@ -629,11 +654,11 @@ end
 -- ===========================================================================
 function UpdateUnreadChatMsgs()
 	if(GameConfiguration.IsPlayByCloud()) then
-		Controls.ChatCheck:GetTextButton():SetText(Locale.Lookup("LOC_PLAY_BY_CLOUD_PANEL"));
+		Controls.ChatButton:SetText(Locale.Lookup("LOC_PLAY_BY_CLOUD_PANEL"));
 	elseif(m_unreadChatMsgs > 0) then
-		Controls.ChatCheck:GetTextButton():SetText(Locale.Lookup("LOC_HIDE_CHAT_PANEL_UNREAD_MESSAGES", m_unreadChatMsgs));
+		Controls.ChatButton:SetText(Locale.Lookup("LOC_HIDE_CHAT_PANEL_UNREAD_MESSAGES", m_unreadChatMsgs));
 	else
-		Controls.ChatCheck:GetTextButton():SetText(Locale.Lookup("LOC_HIDE_CHAT_PANEL"));
+		Controls.ChatButton:SetText(Locale.Lookup("LOC_HIDE_CHAT_PANEL"));
 	end
 end
 
@@ -1121,7 +1146,7 @@ function LateInitialize()
 		UpdateChatPanel(false);
 	else
 		UpdateChatPanel(true);
-		Controls.ChatCheck:SetHide(true);
+		Controls.ChatButton:SetHide(true);
 	end
 
 	UpdateUnreadChatMsgs();
@@ -1164,27 +1189,39 @@ function Initialize()
 	ContextPtr:SetShutdown(OnShutdown);
 	LuaEvents.GameDebug_Return.Add(OnGameDebugReturn);
 	
-	Controls.ChatCheck:SetCheck(true);
-	Controls.CivicsCheck:SetCheck(true);
-	Controls.ResearchCheck:SetCheck(true);
+	--Controls.ChatCheck:SetCheck(true);
+	--Controls.CivicsCheck:SetCheck(true);
+	--Controls.ResearchCheck:SetCheck(true);
 	Controls.ToggleAllButton:SetCheck(true);
 
-	Controls.ChatCheck:RegisterCheckHandler(						function() UpdateChatPanel(not m_hideChat);
+	Controls.ChatButton:RegisterCallback( Mouse.eLClick, function() UpdateChatPanel(not m_hideChat);
 																			   StartUnitListSizeUpdate();
 																			   CheckEnoughRoom();
 																			   end);
-	Controls.CivicsCheck:RegisterCheckHandler(						function() UpdateCivicsPanel(not m_hideCivics);
+	Controls.CivicsButton:RegisterCallback(	Mouse.eLClick, function() UpdateCivicsPanel(not m_hideCivics);
 																			   StartUnitListSizeUpdate();
 																			   CheckEnoughRoom();
 																			   end);
-	Controls.ResearchCheck:RegisterCheckHandler(					function() UpdateResearchPanel(not m_hideResearch);
+	Controls.ResearchButton:RegisterCallback( Mouse.eLClick, function() UpdateResearchPanel(not m_hideResearch);
 																			   StartUnitListSizeUpdate();
 																			   CheckEnoughRoom();
 																			   end);
-	Controls.UnitCheck:RegisterCheckHandler(						function() UpdateUnitListPanel(not m_hideUnitList); 
-																			   StartUnitListSizeUpdate();
-																			   CheckEnoughRoom();
-																			   end);
+	Controls.CivilianListButton:RegisterCallback( Mouse.eLClick,
+		function()
+			if not m_hideUnitList and m_isUnitListMilitary then m_hideUnitList = true; end -- showing military units -> change to civilian -> simulate "hidden"
+			m_isUnitListMilitary = false;
+			UpdateUnitListPanel(not m_hideUnitList); 
+			StartUnitListSizeUpdate();
+			CheckEnoughRoom();
+		end);
+	Controls.MilitaryListButton:RegisterCallback( Mouse.eLClick,
+		function()
+			if not m_hideUnitList and not m_isUnitListMilitary then m_hideUnitList = true; end -- showing civilian units -> change to military -> simulate "hidden"
+			m_isUnitListMilitary = true;
+			UpdateUnitListPanel(not m_hideUnitList); 
+			StartUnitListSizeUpdate();
+			CheckEnoughRoom();
+		end);
 	Controls.ToggleAllButton:RegisterCheckHandler(					function() ToggleAll(not Controls.ToggleAllButton:IsChecked()) end);
 	--Controls.ToggleDropdownButton:RegisterCallback(	Mouse.eLClick, ToggleDropdown); -- Infixo: dropdown removed
 	Controls.WorldTrackerAlpha:RegisterEndCallback( OnWorldTrackerAnimationFinished );
@@ -1192,3 +1229,5 @@ function Initialize()
 	Controls.ChatPanelContainer:RegisterSizeChanged(OnChatPanelContainerSizeChanged);
 end
 Initialize();
+
+print("Loaded WorldTracker.lua from Better World Tracker Units");

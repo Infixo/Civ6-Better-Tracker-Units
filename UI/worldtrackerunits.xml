@@ -9,7 +9,7 @@
 					<Label Style="PanelHeaderText" String="LOC_WORLDTRACKER_UNIT_LIST" Anchor="C,T" Offset="0,6" FontSize="16"/>
 				</Grid>
 				<Container ID="UnitStackContainer" Anchor="C,T" Size="auto,auto">
-					<Stack	ID="UnitStack" Anchor="C,T" StackGrowth="Bottom" StackPadding="3"/>
+					<Stack	ID="UnitStack" Anchor="C,T" StackGrowth="Bottom" />
 					<Label ID="NoUnitsLabel" Style="PanelHeaderText" String="LOC_WORLDTRACKER_NO_UNITS" Anchor="C,C" FontSize="20" Offset="0,-7"/>
 				</Container>
 				<ScrollPanel  ID="UnitListScroll"  Anchor="C,T" Vertical="1" Size="Parent-15,0" AutoScrollBar="1" Hidden="1">
@@ -25,7 +25,7 @@
 	</Instance>
 
 	<Instance Name="UnitListEntry">
-		<GridButton Anchor="L,T" ID="Button" Style="UnitPanelHeader" Size="parent-20,24" Texture="Controls_ButtonControl.dds" SliceCorner="10,10" SliceSize="1,1" SliceTextureSize="24,24" StateOffsetIncrement="0,24" TruncateWidth="150">
+		<GridButton Anchor="L,T" ID="Button" Style="UnitPanelHeader" Size="parent-10,24" Texture="Controls_ButtonControl.dds" SliceCorner="10,10" SliceSize="1,1" SliceTextureSize="24,24" StateOffsetIncrement="0,24" TruncateWidth="150">
 			<Image ID="UnitTypeIcon" Anchor="L,C" Size="22,22" Offset="2,0" />
 			<Image ID="UnitStatusIcon" Anchor="R,C" Size="22,22" Offset="2,0" Texture="Stats22"/>
 		</GridButton>

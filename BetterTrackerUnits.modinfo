@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Mod id="21F6DCFB-29ED-2A62-8346-85D715E6808B" version="1">
 	<Properties>
-		<Name>Better World Tracker Units (UI)</Name>
-		<Teaser>Improved World Tracker Units List</Teaser>
-		<Description>Improved World Tracker Units List. Adds more info about units.[NEWLINE]Version 1.0.</Description>
+		<Name>Better World Tracker Unit List (UI)</Name>
+		<Teaser>Improved World Tracker Unit List</Teaser>
+		<Description>Improved World Tracker Unit List. Adds more info about units and new features.[NEWLINE]Version 1.0.</Description>
 		<Authors>Infixo</Authors>
 		<SpecialThanks>bolbas</SpecialThanks>
 		<AffectsSavedGames>0</AffectsSavedGames>
@@ -20,6 +20,7 @@
 			</Items>
 		</ImportFiles>
 		<!-- CQUI replaces the original script, so we need to get it back and call CQUI's one in .lua -->
+		<!--
         <ReplaceUIScript id="BTU_Replace_WorldTracker">
             <Properties>
                 <LoadOrder>300</LoadOrder>
@@ -27,6 +28,7 @@
                 <LuaReplace>UI/worldtracker.lua</LuaReplace>
             </Properties>
         </ReplaceUIScript>
+		-->
 	</InGameActions>
 	<Files>
 		<File>UI/worldtracker.lua</File>
