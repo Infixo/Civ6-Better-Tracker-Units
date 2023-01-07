@@ -10,15 +10,25 @@
   <AlphaAnim					ID="WorldTrackerAlpha" AlphaBegin="0" AlphaEnd="1" Speed="3" Cycle="Once" Function="OutQuint" Stopped="0" >
     <SlideAnim				ID="WorldTrackerSlide" Start="0,-100" EndOffset="0,100" Function="OutQuint" Speed="3" Cycle="Once" Stopped="0" >
       <Stack					ID="PanelStack"  StackGrowth="Down" Offset="0,75">
-        <Box					ID="WorldTrackerHeader" Color="40,35,25,230" Size="296,auto" AutoSizePadding="0,2" >
+        <Box ID="WorldTrackerHeader" Color="40,35,25,230" Size="296,auto" AutoSizePadding="0,2" >
           <Box Color="143,122,82,200" Anchor="L,B" Size="parent-1,2">
             <Box Color="0,0,0,200" Anchor="L,T" Size="parent-1,1" AnchorSide="I,O"/>
           </Box>
           <Image Texture="Controls_GradientSmall" Size="parent,20" Color="0,0,0,255" Anchor="L,T"/>
-          <Label							ID="WorldTracker"				Anchor="C,C" Offset="0,0"		String="{LOC_WORLD_TRACKER_HEADER:upper}" WrapWidth="Parent-40" Align="Center" Style="FontFlair16" Color2="143,122,82,255" Color0="106,93,69,230" SmallCaps="20" SmallCapsLeading="0" SmallCapsType="EveryWord" KerningAdjustment="0" />
-          <GridButton					ID="ToggleDropdownButton"			Anchor="L,C" Offset="1,-2" Size="25,25" Texture="Controls_ButtonControl_Brown" SliceCorner="10,10" SliceSize="1,1" SliceTextureSize="24,24" StateOffsetIncrement="0,24"																									ToolTip="LOC_WORLDTRACKER_ENABLE_TEXT">
-            <Image                                                            Size="20,17" Texture="Controls_MenuIcon" Anchor="C,C" Color="157,132,87"/>
-          </GridButton>
+          <Label ID="WorldTracker" Anchor="C,C" Offset="10,0" String="{LOC_WORLD_TRACKER_HEADER:upper}" WrapWidth="Parent-40" Align="Center" Style="FontFlair16" Color2="143,122,82,255" Color0="106,93,69,230" SmallCaps="20" SmallCapsLeading="0" SmallCapsType="EveryWord" KerningAdjustment="0" />
+		  
+		  <!-- Infixo: remove dropdown, all visibility controls are accessible right away -->
+		  <Stack Anchor="L,C" StackGrowth="Right">
+            <CheckBox ID="ResearchCheck" Style="WorldTrackerCheckBox" BoxOnLeft="1" String="[ICON_Science]" ToolTip="LOC_HIDE_RESEARCH_PANEL" />
+            <CheckBox ID="CivicsCheck"   Style="WorldTrackerCheckBox" BoxOnLeft="1" String="[ICON_Culture]" ToolTip="LOC_HIDE_CIVICS_PANEL" />
+            <CheckBox ID="ChatCheck"     Style="WorldTrackerCheckBox" BoxOnLeft="1" String="[ICON_Whisper]" ToolTip="LOC_HIDE_CHAT_PANEL" />
+		  </Stack>
+		  <CheckBox	ID="UnitCheck" Anchor="R,C"	Style="WorldTrackerCheckBox" BoxOnLeft="1" String="[ICON_Position]" ToolTip="LOC_WORLDTRACKER_UNIT_LIST" />
+		  
+          <!-- Infixo: dropdown removed -->
+		  <!--<GridButton					ID="ToggleDropdownButton"			Anchor="L,C" Offset="1,-2" Size="25,25" Texture="Controls_ButtonControl_Brown" SliceCorner="10,10" SliceSize="1,1" SliceTextureSize="24,24" StateOffsetIncrement="0,24"																									ToolTip="LOC_WORLDTRACKER_ENABLE_TEXT">-->
+            <!--<Image                                                            Size="20,17" Texture="Controls_MenuIcon" Anchor="C,C" Color="157,132,87"/>-->
+          <!--</GridButton>-->
           <Grid Texture="Controls_SeparatorAngled" TextureSize="14,6" Anchor="L,T" Size="parent,6" SliceCorner="6,4" AnchorSide="I,O" Offset="0,-2"/>
         </Box>
 
@@ -50,6 +60,7 @@
     </SlideAnim>
   </AlphaAnim>
   
+  <!-- Infixo: remove dropdown
   <ScrollPanel					ID="DropdownScroll"									Offset="15,98"	Size="194,500"  Vertical="1">
     <SlideAnim					ID="DropdownAnim"						Start="0,-490" EndOffset="0,480" Function="OutQuint" Speed="6" Cycle="Once" Stopped="1">
       <Grid							ID="DropdownGrid"					Offset="0,-25" Size="270,auto" 	Texture="Tracker_OptionsBacking" SliceCorner="55,61" SliceSize="1,1" SliceTextureSize="121,119" ConsumeAllMouse="1" MinSize="121,85" AutoSizePadding="0,15">
@@ -70,6 +81,7 @@
       </Grid>
     </SlideAnim>
   </ScrollPanel>
+  -->
 
 
 	<!-- ================================================================== -->

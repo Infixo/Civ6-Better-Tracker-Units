@@ -51,7 +51,7 @@ local m_hideCivics				:boolean = false;
 local m_hideResearch			:boolean = false;
 local m_hideUnitList			:boolean = true;
 
-local m_dropdownExpanded		:boolean = false;
+--local m_dropdownExpanded		:boolean = false; -- Infixo: remove dropdown
 local m_unreadChatMsgs			:number  = 0;		-- number of chat messages unseen due to the chat panel being hidden.
 
 local m_researchInstance		:table	 = {};		-- Single instance wired up for the currently being researched tech
@@ -119,6 +119,7 @@ function RealizeEmptyMessage()
 end
 
 -- ===========================================================================
+--[[ Infixo: remove dropdown
 function ToggleDropdown()
 	if m_dropdownExpanded then
 		m_dropdownExpanded = false;
@@ -133,8 +134,10 @@ function ToggleDropdown()
 		CheckEnoughRoom();
 	end
 end
+--]]
 
 -- ===========================================================================
+-- Infixo: this function probably is not needed if there is no dropdown menu
 function CheckEnoughRoom()
 	local availableSpace : number = Controls.WorldTrackerVerticalContainer:GetSizeY();
 	if(m_researchInstance.MainPanel:IsVisible())then
@@ -152,7 +155,7 @@ function CheckEnoughRoom()
 	if(Controls.OtherContainer:IsVisible())then
 		availableSpace = availableSpace - Controls.OtherContainer:GetSizeY();
 	end
-
+	--[[ Infixo: remove dropdown
 	if(not Controls.ResearchCheck:IsChecked() and availableSpace < CIVIC_RESEARCH_MIN_SIZE)then
 		Controls.ResearchCheck:SetDisabled(true);
 		Controls.ResearchCheck:LocalizeAndSetToolTip("LOC_WORLDTRACKER_NO_ROOM");
@@ -181,6 +184,7 @@ function CheckEnoughRoom()
 		Controls.ChatCheck:SetDisabled(false);
 		Controls.ChatCheck:SetToolTipString("");
 	end
+	--]]
 end
 
 -- ===========================================================================
@@ -208,10 +212,11 @@ function ToggleAll(hideAll:boolean)
 
 	if( hideAll ) then
 		UI.PlaySound("Tech_Tray_Slide_Closed");
-		if( m_dropdownExpanded ) then
-			Controls.DropdownAnim:SetToBeginning();
-			m_dropdownExpanded = false;
-		end
+		-- Infixo: remove dropdown
+		--if( m_dropdownExpanded ) then
+			--Controls.DropdownAnim:SetToBeginning();
+			--m_dropdownExpanded = false;
+		--end
 	end
 
 	Controls.WorldTrackerAlpha:Reverse();
@@ -890,7 +895,7 @@ end
 -- ===========================================================================
 function Tutorial_ShowFullTracker()
 	Controls.ToggleAllButton:SetHide(true);
-	Controls.ToggleDropdownButton:SetHide(true);
+	-- Controls.ToggleDropdownButton:SetHide(true); -- Infixio: dropdown removed
 	UpdateCivicsPanel(false);
 	UpdateResearchPanel(false);
 	ToggleAll(false);
@@ -899,7 +904,7 @@ end
 -- ===========================================================================
 function Tutorial_ShowTrackerOptions()
 	Controls.ToggleAllButton:SetHide(false);
-	Controls.ToggleDropdownButton:SetHide(false);
+	--Controls.ToggleDropdownButton:SetHide(false); -- Infixo: dropdown removed
 end
 
 -- ===========================================================================
@@ -1152,7 +1157,7 @@ function Initialize()
 
 	-- Handle any text overflows with truncation and tooltip
 	local fullString :string = Controls.WorldTracker:GetText();
-	Controls.DropdownScroll:SetOffsetY(Controls.WorldTrackerHeader:GetSizeY() + STARTING_TRACKER_OPTIONS_OFFSET);	
+	--Controls.DropdownScroll:SetOffsetY(Controls.WorldTrackerHeader:GetSizeY() + STARTING_TRACKER_OPTIONS_OFFSET);	-- Infixo: remove dropdown
 	
 	-- Hot-reload events
 	ContextPtr:SetInitHandler(OnInit);
@@ -1181,7 +1186,7 @@ function Initialize()
 																			   CheckEnoughRoom();
 																			   end);
 	Controls.ToggleAllButton:RegisterCheckHandler(					function() ToggleAll(not Controls.ToggleAllButton:IsChecked()) end);
-	Controls.ToggleDropdownButton:RegisterCallback(	Mouse.eLClick, ToggleDropdown);
+	--Controls.ToggleDropdownButton:RegisterCallback(	Mouse.eLClick, ToggleDropdown); -- Infixo: dropdown removed
 	Controls.WorldTrackerAlpha:RegisterEndCallback( OnWorldTrackerAnimationFinished );
 	m_unitListInstance.UnitsSearchBox:RegisterStringChangedCallback( OnUnitListSearch );
 	Controls.ChatPanelContainer:RegisterSizeChanged(OnChatPanelContainerSizeChanged);
