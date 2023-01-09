@@ -7,7 +7,7 @@
 			<Stack ID="MainStack" StackGrowth="Bottom" StackPadding="5">
 				<Grid Size="parent,25" Texture="Controls_DrawerUp" SliceCorner="5,4" SliceSize="3,2" SliceTextureSize="14,8">
 					<!-- Infixo: checkbox for showing/hiding traders -->
-					<CheckBox ID="TradersCheck" Anchor="L,C" Offset="6,4" Style="WorldTrackerCheckBox" BoxOnLeft="1" String="LOC_UNIT_TRADER_NAME" TextOffset="-2,0" />
+					<CheckBox ID="TraderCheck" Anchor="L,C" Offset="6,4" Style="WorldTrackerCheckBox" BoxOnLeft="1" String="LOC_UNIT_TRADER_NAME" TextOffset="-2,0" />
 					<Label Style="PanelHeaderText" String="LOC_WORLDTRACKER_UNIT_LIST" Anchor="C,T" Offset="0,6" FontSize="16"/>
 				</Grid>
 				<Container ID="UnitStackContainer" Anchor="C,T" Size="parent,auto">
