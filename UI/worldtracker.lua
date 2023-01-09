@@ -525,9 +525,158 @@ end
 
 
 
+-- ===========================================================================
 -- INFIXO: BOLBAS' CODE, USED WITH PERMISSION
 
--- ===========================================================================
+local BQUI_PreviousSelectedUnitEntry:table = nil;    -- bolbas (Right Click on Unit List popup and Unit List entries added, entry with selected unit highlighted)
+local BQUI_UnitDifferentReligions:number = 0;    -- bolbas (Religion icons added)
+
+local BQUI_ApostlePromotionIcons:table = {
+	PROMOTION_CHAPLAIN 			 = {Icon = "ICON_UNIT_MEDIC",			 Size = 16,	OffsetY = -1},
+	PROMOTION_DEBATER 			 = {Icon = "ICON_STRENGTH",			     Size = 14,	OffsetY = -1},
+	PROMOTION_HEATHEN_CONVERSION = {Icon = "ICON_NOTIFICATION_NEW_BARBARIAN_CAMP",	Size = 18,	OffsetY = -1},
+	PROMOTION_INDULGENCE_VENDOR  = {Icon = "ICON_MAP_PIN_CIRCLE",		 Size = 12,	OffsetY = -1},
+	PROMOTION_ORATOR 			 = {Icon = "ICON_STATS_SPREADCHARGES",	 Size = 16,	OffsetY = 0},
+	PROMOTION_PILGRIM 			 = {Icon = "ICON_STATS_TERRAIN",		 Size = 16,	OffsetY = 0},
+	PROMOTION_PROSELYTIZER 		 = {Icon = "ICON_UNIT_INQUISITOR",		 Size = 17,	OffsetY = 0},
+	PROMOTION_TRANSLATOR 		 = {Icon = "ICON_QUEUE",				 Size = 18,	OffsetY = -1},
+	PROMOTION_MARTYR 			 = {Icon = "ICON_GREATWORKOBJECT_RELIC", Size = 12,	OffsetY = 0},
+};
+
+local BQUI_SpyPromotionIcons:table = {
+	PROMOTION_SPY_ACE_DRIVER =		{Icon = "ICON_NOTIFICATION_SPY_CHOOSE_ESCAPE_ROUTE",	Size = 18,	OffsetY = 0},
+	PROMOTION_SPY_CAT_BURGLAR =		{Icon = "ICON_NOTIFICATION_SPY_HEIST_GREAT_WORK",		Size = 16,	OffsetY = -1},
+	PROMOTION_SPY_CON_ARTIST =		{Icon = "ICON_NOTIFICATION_SPY_SIPHONED_FUNDS",			Size = 18,	OffsetY = -1},
+	PROMOTION_SPY_DEMOLITIONS =		{Icon = "ICON_NOTIFICATION_SPY_SABOTAGED_PRODUCTION",	Size = 16,	OffsetY = -1},
+	PROMOTION_SPY_DISGUISE =		{Icon = "ICON_UNITCOMMAND_AIRLIFT",						Size = 17,	OffsetY = -1},
+	PROMOTION_SPY_GUERILLA_LEADER =	{Icon = "ICON_NOTIFICATION_SPY_RECRUIT_PARTISANS",		Size = 16,	OffsetY = -1},
+	PROMOTION_SPY_LINGUIST =		{Icon = "Turn",											Size = 18,	OffsetY = -1},
+	PROMOTION_SPY_QUARTERMASTER =	{Icon = "ICON_UNITOPERATION_FOUND_CITY",				Size = 16,	OffsetY = -1},
+	PROMOTION_SPY_ROCKET_SCIENTIST ={Icon = "ICON_NOTIFICATION_SPY_DISRUPTED_ROCKETRY",		Size = 18,	OffsetY = 0},
+	PROMOTION_SPY_SEDUCTION =		{Icon = "ICON_UNITOPERATION_SPY_COUNTERSPY_ACTION",		Size = 16,	OffsetY = -1},
+	PROMOTION_SPY_TECHNOLOGIST =	{Icon = "ICON_NOTIFICATION_SPY_STOLE_TECH_BOOST",		Size = 16,	OffsetY = -1},
+	PROMOTION_SPY_COVERT_ACTION =	{Icon = "ICON_STAT_CULTURAL_FLAG",						Size = 15,	OffsetY = 0},
+	PROMOTION_SPY_LICENSE_TO_KILL =	{Icon = "ICON_NOTIFICATION_GOVERNOR_PROMOTION_AVAILABLE", Size = 16, OffsetY = -1},
+	PROMOTION_SPY_SMEAR_CAMPAIGN =	{Icon = "ICON_NOTIFICATION_GIVE_INFLUENCE_TOKEN",		Size = 16,	OffsetY = -1},
+	PROMOTION_SPY_POLYGRAPH =		{Icon = "ICON_UNITOPERATION_SPY_TRAVEL_NEW_CITY",		Size = 16,	OffsetY = -2},
+	PROMOTION_SPY_SATCHEL_CHARGES =	{Icon = "ICON_NOTIFICATION_SPY_BREACH_DAM",				Size = 16,	OffsetY = -1},
+	PROMOTION_SPY_SURVEILLANCE =	{Icon = "ICON_STAT_DISTRICTS",							Size = 16,	OffsetY = -1},
+};
+
+local BQUI_GreatPersonEras:table = {
+	ERA_CLASSICAL =   {Icon_1 = "ICON_GREATWORKOBJECT_ARTIFACT_ERA_CLASSICAL",   Size_1 = 13, OffsetY_1 = -1, Icon_2 = "ICON_GREATWORKOBJECT_ARTIFACT_ERA_MEDIEVAL",    Size_2 = 14, OffsetY_2 = -1},
+	ERA_MEDIEVAL =    {Icon_1 = "ICON_GREATWORKOBJECT_ARTIFACT_ERA_MEDIEVAL",    Size_1 = 14, OffsetY_1 = -1, Icon_2 = "ICON_GREATWORKOBJECT_ARTIFACT_ERA_RENAISSANCE", Size_2 = 14, OffsetY_2 = -1},
+	ERA_RENAISSANCE = {Icon_1 = "ICON_GREATWORKOBJECT_ARTIFACT_ERA_RENAISSANCE", Size_1 = 14, OffsetY_1 = -1, Icon_2 = "ICON_GREATWORKOBJECT_ARTIFACT_ERA_INDUSTRIAL",  Size_2 = 14, OffsetY_2 = -1},
+	ERA_INDUSTRIAL =  {Icon_1 = "ICON_GREATWORKOBJECT_ARTIFACT_ERA_INDUSTRIAL",  Size_1 = 14, OffsetY_1 = -1, Icon_2 = "ICON_IMPROVEMENT_OIL_WELL",                     Size_2 = 18, OffsetY_2 = 0},
+	ERA_MODERN =      {Icon_1 = "ICON_IMPROVEMENT_OIL_WELL",                     Size_1 = 18, OffsetY_1 = 0,  Icon_2 = "ICON_PROJECT_BUILD_NUCLEAR_DEVICE",             Size_2 = 18, OffsetY_2 = 0},
+	ERA_ATOMIC =      {Icon_1 = "ICON_PROJECT_BUILD_NUCLEAR_DEVICE",             Size_1 = 18, OffsetY_1 = 0,  Icon_2 = "ICON_PROJECT_BUILD_THERMONUCLEAR_DEVICE",       Size_2 = 18, OffsetY_2 = 0},
+	ERA_INFORMATION = {Icon_1 = "ICON_PROJECT_BUILD_THERMONUCLEAR_DEVICE",       Size_1 = 18, OffsetY_1 = 0},
+};
+
+local BQUI_PromotionTreeCheck:table = {
+	["11"] = true,
+	["21"] = true,
+	["31"] = true,
+	["13"] = true,
+	["23"] = true,
+	["33"] = true,
+	["42"] = true,
+};
+
+local BQUI_UnitAbilitiesIcons:table = {
+	-- XP Abilities
+	-- +25% XP
+	ABILITY_BARRACKS_TRAINED_UNIT_XP =		1,
+	ABILITY_STABLE_TRAINED_UNIT_XP =		2,
+	ABILITY_BASILIKOI_TRAINED_UNIT_XP =		3,
+	ABILITY_ORDU_TRAINED_UNIT_XP =			4,
+	ABILITY_LIGHTHOUSE_TRAINED_UNIT_XP =	5,
+	ABILITY_HANGAR_TRAINED_AIRCRAFT_XP =	6,
+	ABILITY_ARMORY_TRAINED_UNIT_XP =		7,
+	ABILITY_SHIPYARD_TRAINED_UNIT_XP =		8,
+	ABILITY_MILITARY_ACADEMY_TRAINED_UNIT_XP =		9,
+	ABILITY_SEAPORT_TRAINED_UNIT_XP =		10,
+	ABILITY_TOQUI_XP_FROM_GOVERNOR =		11,
+	ABILITY_TIMUR_BONUS_EXPERIENCE =		12,
+	-- +50% XP
+	ABILITY_AIRPORT_TRAINED_AIRCRAFT_XP =	13,
+	ABILITY_LASKARINA_BOUBOULINA_BONUS_EXPERIENCE =	14,
+	-- +75% XP
+	ABILITY_JOHN_MONASH_BONUS_EXPERIENCE =	15,
+	-- +100% XP
+	ABILITY_SERGEY_GORSHKOV_BONUS_EXPERIENCE =    16,
+	ABILITY_VIJAYA_WIMALARATNE_BONUS_EXPERIENCE = 17,
+	-- > +100% XP
+	ABILITY_CLANCY_FERNANDO_BONUS_EXPERIENCE = 18,
+	-- Strength Abilities
+	ABILITY_ALPINE_TRAINING =				 19,
+	ABILITY_SPEAR_OF_FIONN =				 20,
+	ABILITY_COMMANDANTE_CAVALRY_BUFF =		 21,
+	ABILITY_COMMANDANTE_MELEE_ANTICAV_BUFF = 22,
+	ABILITY_COMMANDANTE_UNIT_STRENGTH_BUFF = 23,
+	ABILITY_COMMANDANTE_UNIT_STR_VS_DISTRICTS =	24,
+	-- GP Abilities
+	ABILITY_GREAT_ADMIRAL_STRENGTH =	25,
+	ABILITY_GREAT_GENERAL_STRENGTH =	26,
+	-- Comandante Abilities
+	ABILITY_COMANDANTE_AOE_STRENGTH =	27,
+};
+
+
+-- bolbas (Religion icons added)
+function BQUI_SetReligionIconUnitList(pUnit, unitEntry_ReligionIcon)
+	local BQUI_religionID = pUnit:GetReligionType();
+	if BQUI_religionID > 0 then
+		local religion:table = GameInfo.Religions[BQUI_religionID];
+		local ReligionType = religion.ReligionType;
+		--if BQUI_ReligionsStandard[ReligionType] == true then    -- bolbas (Fixed Standard Religions Icons when set their Size to 18)
+			--unitEntry_ReligionIcon:SetIcon("BQUI_BUL_ICON_" .. ReligionType);
+		--else
+			unitEntry_ReligionIcon:SetSizeVal(22,22);
+			unitEntry_ReligionIcon:SetIcon("ICON_" .. ReligionType);
+			unitEntry_ReligionIcon:SetSizeVal(18,18);
+		--end
+		if BQUI_UnitDifferentReligions ~= -1 then
+			if BQUI_UnitDifferentReligions == 0 then
+				BQUI_UnitDifferentReligions = BQUI_religionID;
+			elseif BQUI_UnitDifferentReligions ~= BQUI_religionID then
+				BQUI_UnitDifferentReligions = -1;
+			end
+			--table.insert(BQUI_ReligionIconEntry, unitEntry_ReligionIcon);    -- bolbas: A table to hide Religion Icons if all player unints believe in the same Religion
+		end
+	else
+		BQUI_UnitDifferentReligions = -1;
+	end
+end
+
+-- bolbas (Middle Click on Unit List entries added - shows total number of units of that type)
+function BQUI_CalculateUnits(BQUI_UnitType, unitEntrySum)
+	if unitEntrySum:IsHidden() then
+		local UnitNumber = 0;
+		local pPlayer:table = Players[Game.GetLocalPlayer()];
+		local pPlayerUnits:table = pPlayer:GetUnits();
+		for i, pUnit in pPlayerUnits:Members() do
+			local pUnitType = GameInfo.Units[pUnit:GetUnitType()].UnitType;
+			if pUnitType == BQUI_UnitType then
+				UnitNumber = UnitNumber + 1;
+			end
+		end
+
+		unitEntrySum:SetText(UnitNumber);
+		unitEntrySum:SetShow(true);
+
+		if BQUI_PreviousUnitEntrySum == nil then
+			BQUI_PreviousUnitEntrySum = unitEntrySum;
+		else
+			BQUI_PreviousUnitEntrySum:SetShow(false);
+			BQUI_PreviousUnitEntrySum = unitEntrySum;
+		end
+	else
+		unitEntrySum:SetShow(false);
+		BQUI_PreviousUnitEntrySum = nil;
+	end
+end
+
 --function AddUnitToUnitList(pUnit:table, BQUI_localPlayerID:number, BQUI_IfUnitListFitsTheScreen:boolean)    -- bolbas (Scrollbar area is removed from the Unit List and appears only when scrollbar available)
 function AddUnitToUnitList(pUnit:table)
 	local BQUI_localPlayerID:number = Game.GetLocalPlayer();
@@ -677,7 +826,7 @@ function AddUnitToUnitList(pUnit:table)
 				if #BQUI_PromotionList > 2 or ( #BQUI_PromotionList == 2 and BQUI_ExperiencePoints == BQUI_MaxExperience ) then
 					TruncateWidth = 135;
 				end
-				table.insert (BQUI_SpyEntriesToSetOffset, {unitEntry = unitEntry, TruncateWidth = TruncateWidth});
+				--table.insert (BQUI_SpyEntriesToSetOffset, {unitEntry = unitEntry, TruncateWidth = TruncateWidth});
 
 				for i = 1, #BQUI_PromotionList do
 					if i > 3 then
@@ -707,7 +856,7 @@ function AddUnitToUnitList(pUnit:table)
 				if #BQUI_PromotionList > 2 or ( #BQUI_PromotionList == 2 and BQUI_ExperiencePoints == BQUI_MaxExperience ) then
 					TruncateWidth = 135;
 				end
-				table.insert (BQUI_RockBandEntriesToSetOffset, {unitEntry = unitEntry, TruncateWidth = TruncateWidth});
+				--table.insert (BQUI_RockBandEntriesToSetOffset, {unitEntry = unitEntry, TruncateWidth = TruncateWidth});
 
 				for i = 1, #BQUI_PromotionList do
 					if i > 3 then
@@ -769,9 +918,9 @@ function AddUnitToUnitList(pUnit:table)
 				unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
 				unitEntry.BQUI_PromotionsCount_UnitList:SetText(BQUI_SpreadCharges);
 			elseif BQUI_UnitType == "UNIT_SPY" then    -- bolbas (Apostle, Spy, Rock Band, Soothsayer promotion and Great Person passive ability icons added)
-				table.insert (BQUI_SpyEntriesToSetOffset, {unitEntry = unitEntry, TruncateWidth = 185});
+				--table.insert (BQUI_SpyEntriesToSetOffset, {unitEntry = unitEntry, TruncateWidth = 185});
 			elseif BQUI_UnitType == "UNIT_ROCK_BAND" then    -- bolbas (Apostle, Spy, Rock Band, Soothsayer promotion and Great Person passive ability icons added)
-				table.insert (BQUI_RockBandEntriesToSetOffset, {unitEntry = unitEntry, TruncateWidth = 185});
+				--table.insert (BQUI_RockBandEntriesToSetOffset, {unitEntry = unitEntry, TruncateWidth = 185});
 			end
 		elseif pUnit:GetBuildCharges() > 0 and BQUI_CombatStrength == 0 and BQUI_RangedCombatStrength == 0 then
 			unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
@@ -799,9 +948,9 @@ function AddUnitToUnitList(pUnit:table)
 			unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
 			unitEntry.BQUI_PromotionsCount_UnitList:SetText(ArchaeologistCharges);
 		elseif BQUI_UnitType == "UNIT_SPY" then    -- bolbas (Apostle, Spy, Rock Band, Soothsayer promotion and Great Person passive ability icons added)
-			table.insert (BQUI_SpyEntriesToSetOffset, {unitEntry = unitEntry, TruncateWidth = 185});
+			--table.insert (BQUI_SpyEntriesToSetOffset, {unitEntry = unitEntry, TruncateWidth = 185});
 		elseif BQUI_UnitType == "UNIT_ROCK_BAND" then    -- bolbas (Apostle, Spy, Rock Band, Soothsayer promotion and Great Person passive ability icons added)
-			table.insert (BQUI_RockBandEntriesToSetOffset, {unitEntry = unitEntry, TruncateWidth = 185});
+			--table.insert (BQUI_RockBandEntriesToSetOffset, {unitEntry = unitEntry, TruncateWidth = 185});
 		elseif BQUI_UnitType == "UNIT_GREAT_ADMIRAL" or BQUI_UnitType == "UNIT_GREAT_GENERAL" then    -- bolbas (Apostle, Spy, Rock Band, Soothsayer promotion and Great Person passive ability icons added)
 			local individual:number = pUnit:GetGreatPerson():GetIndividual();
 			if individual >= 0 then
@@ -815,7 +964,7 @@ function AddUnitToUnitList(pUnit:table)
 							unitEntry["BQUI_IconRealPromotion_" .. i .. "_UnitList"]:SetOffsetY(BQUI_GreatPersonEras[individualEraType]["OffsetY_" .. i]);
 						end
 					end
-					table.insert (BQUI_GreatPersonEntriesToSetOffset, {unitEntry = unitEntry});
+					--table.insert (BQUI_GreatPersonEntriesToSetOffset, {unitEntry = unitEntry});
 				end
 			end
 		elseif pUnit:GetDisasterCharges() > 0 then
@@ -851,11 +1000,11 @@ function AddUnitToUnitList(pUnit:table)
 	--end
 
 	-- bolbas (Religion icons added)
-	if BQUI_ReligionIconsState[BQUI_localPlayerID] == 0 or BQUI_ReligionIconsState[BQUI_localPlayerID] == 3 then    -- bolbas (Right Click on Religion Strength Icon added)
+	--if BQUI_ReligionIconsState[BQUI_localPlayerID] == 0 or BQUI_ReligionIconsState[BQUI_localPlayerID] == 3 then    -- bolbas (Right Click on Religion Strength Icon added)
 		if BQUI_SpreadCharges > 0 or BQUI_ReligiousHealCharges > 0 then
 			BQUI_SetReligionIconUnitList(pUnit, unitEntry.BQUI_ReligionIcon);
 		end
-	end
+	--end
 
 	-- bolbas (Upgrade icon added)
 	local BQUI_upgradeCost = pUnit:GetUpgradeCost();
@@ -965,9 +1114,10 @@ function AddUnitToUnitList(pUnit:table)
 		unitEntry.Button:SetTexture("Controls_ButtonControl_Tan");
 		unitEntry.Button:SetColorByName("Grey");
 	end
-	unitEntry.Button:RegisterCallback( Mouse.eRClick, function() BQUI_OnUnitListEntriesRightClick(pUnit, unitEntry); end );
-
+	unitEntry.Button:RegisterCallback( Mouse.eLClick, function() OnUnitEntryClicked(pUnit:GetID(), unitEntry, true)  end); -- left click closes
+	--unitEntry.Button:RegisterCallback( Mouse.eRClick, function() BQUI_OnUnitListEntriesRightClick(pUnit, unitEntry); end );
 	unitEntry.Button:RegisterCallback( Mouse.eMClick, function() BQUI_CalculateUnits( BQUI_UnitType, unitEntry.BQUI_UnitsSum ); end );    -- bolbas (Middle Click on Unit List entries added - shows total number of units of that type)
+	unitEntry.Button:RegisterCallback( Mouse.eRClick, function() OnUnitEntryClicked(pUnit:GetID(), unitEntry, false) end); -- right click does not close
 
 	--[[ Infixo: not needed???
 	if BQUI_IfUnitListFitsTheScreen then    -- bolbas (Scrollbar area is removed from the Unit List and appears only when scrollbar available)
@@ -976,9 +1126,16 @@ function AddUnitToUnitList(pUnit:table)
 		unitEntry.Button:SetSizeX(292);
 	end
 	--]]
+	-- Infixo: this is Firaxis' function from UnitPanel.lua
+	local function GetPercentFromDamage( damage:number, maxDamage:number )
+		if damage > maxDamage then
+			damage = maxDamage;
+		end
+		return (damage / maxDamage);
+	end
 
 	-- bolbas (Middle Click on Unit List popup added - shows/hides HP bars for damaged units, changes sort units function)
-	if BQUI_HPBarsAndSortTypeState[BQUI_localPlayerID] == 0 or BQUI_HPBarsAndSortTypeState[BQUI_localPlayerID] == 2 then
+	--if BQUI_HPBarsAndSortTypeState[BQUI_localPlayerID] == 0 or BQUI_HPBarsAndSortTypeState[BQUI_localPlayerID] == 2 then
 		local percent		:number = 1 - GetPercentFromDamage( pUnit:GetDamage(), pUnit:GetMaxDamage() );
 		if percent < 1 then
 			unitEntry.BQUI_HPBarBG:SetShow(true);
@@ -995,7 +1152,7 @@ function AddUnitToUnitList(pUnit:table)
 				unitEntry.BQUI_HPBar:SetColor( COLORS.METER_HP_BAD );
 			end
 		end
-	end
+	--end
 
 	UpdateUnitIcon(pUnit, unitEntry);
 
@@ -1024,9 +1181,9 @@ function AddUnitToUnitList(pUnit:table)
 
 		-- bolbas (Upgrade, promotion and charges icons and numbers added)
 		unitEntry.BQUI_UnitName_UnitList:SetColorByName("UnitPanelTextDisabledCS");
-		if BQUI_ReligionIconsState[BQUI_localPlayerID] == 0 or BQUI_ReligionIconsState[BQUI_localPlayerID] == 3 then    -- bolbas (Right Click on Religion Strength Icon added)
+		--if BQUI_ReligionIconsState[BQUI_localPlayerID] == 0 or BQUI_ReligionIconsState[BQUI_localPlayerID] == 3 then    -- bolbas (Right Click on Religion Strength Icon added)
 			unitEntry.BQUI_ReligionIcon:SetColorByName("UnitPanelTextDisabledCS");
-		end
+		--end
 
 		if pUnit:GetMovementMovesRemaining() == 0 then
 			if unitEntry.UnitStatusIcon:GetSizeX() == 20 then    -- bolbas ("Move to" unit status icon added)
@@ -1058,7 +1215,6 @@ function AddUnitToUnitList(pUnit:table)
 	end
 end
 
--- ===========================================================================
 -- Infixo: why is this function overwritten?
 --function SetUnitEntryStatusIcon(unitEntry:table, icon:string)
 	--local textureOffsetX:number, textureOffsetY:number, textureSheet:string = IconManager:FindIconAtlas(icon,22);
@@ -1066,8 +1222,9 @@ end
 	--unitEntry.UnitStatusIcon:SetHide(false);
 --end
 
-
 -- INFIXO: END OF BOLBAS' CODE
+-- ===========================================================================
+
 
 --[[ Infixo: original code
 -- ===========================================================================
@@ -1151,17 +1308,32 @@ function UpdateUnitIcon(pUnit:table, uiUnitEntry:table)
 end
 
 -- ===========================================================================
-function OnUnitEntryClicked(unitID:number, closeList:boolean)
+function OnUnitEntryClicked(unitID:number, unitEntry:table, closeList:boolean)
 	local playerUnits:table = Players[Game.GetLocalPlayer()]:GetUnits();
+	local selectedUnit:table = nil;
 	if playerUnits then
-		local selectedUnit:table = playerUnits:FindID(unitID);
+		selectedUnit = playerUnits:FindID(unitID);
 		if selectedUnit then
 			UI.LookAtPlot(selectedUnit:GetX(), selectedUnit:GetY());
 			UI.SelectUnit( selectedUnit );
 		end
 	end
+	-- bolbas (Right Click on Unit List popup and Unit List entries added, entry with selected unit highlighted)
+	if BQUI_PreviousSelectedUnitEntry then
+		BQUI_PreviousSelectedUnitEntry.Button:SetTexture("Controls_ButtonControl");
+		BQUI_PreviousSelectedUnitEntry.Button:SetColorByName("UnitPanelTextCS");
+		BQUI_PreviousSelectedUnitEntry = nil;
+	end
+	if selectedUnit then
+		unitEntry.Button:SetTexture("Controls_ButtonControl_Tan");
+		unitEntry.Button:SetColorByName("Grey");
+		BQUI_PreviousSelectedUnitEntry = unitEntry;
+	end
 	-- Infixo: close list?
 	if closeList then
+		unitEntry.Button:SetTexture("Controls_ButtonControl");
+		unitEntry.Button:SetColorByName("UnitPanelTextCS");
+		BQUI_PreviousSelectedUnitEntry = nil;
 		UpdateUnitListPanel(true); 
 		StartUnitListSizeUpdate();
 		CheckEnoughRoom();
