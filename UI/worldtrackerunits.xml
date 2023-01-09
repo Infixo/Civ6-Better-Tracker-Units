@@ -6,6 +6,8 @@
 		<Grid ID="UnitListMainPanel" Size="296,auto" Texture="Controls_DrawerUp" SliceCorner="5,4" SliceSize="3,2" SliceTextureSize="14,8" Hidden="1">
 			<Stack ID="MainStack" StackGrowth="Bottom" StackPadding="5">
 				<Grid Size="296,25" Texture="Controls_DrawerUp" SliceCorner="5,4" SliceSize="3,2" SliceTextureSize="14,8">
+					<!-- Infixo: checkbox for showing/hiding traders -->
+					<CheckBox ID="TradersCheck" Anchor="L,C" Offset="6,4" Style="WorldTrackerCheckBox" BoxOnLeft="1" String="LOC_UNIT_TRADER_NAME" TextOffset="-2,0" />
 					<Label Style="PanelHeaderText" String="LOC_WORLDTRACKER_UNIT_LIST" Anchor="C,T" Offset="0,6" FontSize="16"/>
 				</Grid>
 				<Container ID="UnitStackContainer" Anchor="C,T" Size="auto,auto">
@@ -24,11 +26,98 @@
 		</Grid>
 	</Instance>
 
+	<!-- Infixo: original code
 	<Instance Name="UnitListEntry">
 		<GridButton Anchor="L,T" ID="Button" Style="UnitPanelHeader" Size="parent-10,24" Texture="Controls_ButtonControl.dds" SliceCorner="10,10" SliceSize="1,1" SliceTextureSize="24,24" StateOffsetIncrement="0,24" TruncateWidth="150">
 			<Image ID="UnitTypeIcon" Anchor="L,C" Size="22,22" Offset="2,0" />
 			<Image ID="UnitStatusIcon" Anchor="R,C" Size="22,22" Offset="2,0" Texture="Stats22"/>
 		</GridButton>
 	</Instance>
+	-->
+
+	<!-- The below code is taken from bolbas' Better Unit List with persmission from the author; thx! -->
+	<Instance Name="UnitListEntry">
+		<GridButton  Anchor="L,T" ID="Button" Style="UnitPanelHeader" Size="292,24" Offset="0,0" Texture="Controls_ButtonControl.dds" SliceCorner="10,10" SliceSize="1,1" SliceTextureSize="24,24" StateOffsetIncrement="0,24" TruncateWidth="160">    <!-- bolbas (Scrollbar area is removed from the Unit List and appears only when a scrollbar is available) -->
+			<Image ID="UnitTypeIcon" Anchor="L,C" Size="22,22" Offset="2,0" />
+			<Container Offset="27,5" Anchor="L,T">
+				<Label ID="BQUI_UnitsSum" Anchor="C,C" Style="FontFlair14" Color0="214,214,214,255" Color1="0,0,0,55" FontStyle="Stroke" Hidden="1"/>    <!-- bolbas (Middle Click on Unit List entries added - shows total number of units of that type) -->
+			</Container>
+			<Image ID="BQUI_IconUpgrade" Size="13,13" Anchor="L,C" Offset="33,0" Icon="ICON_UNITCOMMAND_UPGRADE" Hidden="1"/>    <!-- bolbas (Upgrade, promotion and charges icons and numbers added) -->
+			<Image ID="BQUI_ReligionIcon" Size="18,18" Anchor="L,C" Offset="30,0" StretchMode="Fill" />    <!-- bolbas (Religion icons added) -->
+			<Image ID="UnitStatusIcon" Anchor="R,C" Size="22,22" Offset="2,0" Texture="Stats22"/>
+			<!-- bolbas (Upgrade, promotion and charges icons and numbers added) -->
+			<Stack Anchor="C,C" AnchorSide="I,I" StackGrowth="Right" Offset="3,0" StackPadding="3">
+				<Label ID="BQUI_UnitName_UnitList" Anchor="C,C" Offset="0,0" Style="UnitPanelHeader" TruncateWidth="159"/>
+				<Label ID="BQUI_UnitNameSuffix_UnitList" Anchor="L,C" Offset="0,0" Style="UnitPanelHeader">    <!-- bolbas (Corps/Army words removed from suffix, unitname and suffix separated) -->
+					<Stack ID="BQUI_IconsStack_UnitList" Anchor="R,C" AnchorSide="O,O" StackGrowth="Right" Offset="-2,0" StackPadding="1">
+						<Container ID="BQUI_PromotionIcons_UnitList" Size="18,18" Offset="0,2" Hidden="1">    <!-- bolbas (Promotion tree added) -->
+							<Line Start="4,2" End="4,12" Width="2" Color="96,100,102,150"/>
+							<Line Start="3,12" End="10,16" Width="2" Color="96,100,102,150"/>
+							<Line Start="10,16" End="16,12" Width="2" Color="96,100,102,150"/>
+							<Line Start="15,12" End="15,2" Width="2" Color="96,100,102,150"/>
+							<Line ID="BQUI_TierPromotion_11_UnitList" Start="2,2" End="5,2" Width="2" Color="200,200,200,200" Hidden="1"/>
+							<Line ID="BQUI_TierPromotion_21_UnitList" Start="2,7" End="5,7" Width="2" Color="200,200,200,200" Hidden="1"/>
+							<Line ID="BQUI_TierPromotion_31_UnitList" Start="2,12" End="5,12" Width="2" Color="200,200,200,200" Hidden="1"/>
+							<Line ID="BQUI_TierPromotion_13_UnitList" Start="14,2" End="17,2" Width="2" Color="200,200,200,200" Hidden="1"/>
+							<Line ID="BQUI_TierPromotion_23_UnitList" Start="14,7" End="17,7" Width="2" Color="200,200,200,200" Hidden="1"/>
+							<Line ID="BQUI_TierPromotion_33_UnitList" Start="14,12" End="17,12" Width="2" Color="200,200,200,200" Hidden="1"/>
+							<Line ID="BQUI_TierPromotion_42_UnitList" Start="8,15" End="11,15" Width="2" Color="200,200,200,200" Hidden="1"/>
+							<Label ID="BQUI_PromotionsCount_UnitList" Anchor="C,T" Offset="0,1" Style="FontFlair14" Color0="214,214,214,255" Color1="0,0,0,55" FontStyle="Stroke" />
+						</Container>
+						<Image ID="BQUI_LeviedUnits_UnitList" Size="17,17" Anchor="L,C" Offset="1,-1" Icon="Turn" Hidden="1"/>    <!-- bolbas (Icons for levied units added) -->
+						<Stack Anchor="L,C" Offset="0,0" StackGrowth="Right" StackPadding="1" Hidden="0">
+							<Image ID="BQUI_IconPromotionAvailable_UnitList" Size="18,18" Anchor="L,C" Offset="0,-1" Icon="ICON_CIVILOPEDIA_UNITPROMOTIONS" Hidden="1"/>
+						</Stack>
+						<Container ID="BQUI_AllAbilities_UnitList" Anchor="L,C" Size="21,1" Offset="-1,8" Hidden="1">
+							<Stack Anchor="C,C" StackGrowth="Right" StackPadding="-5">
+								<Image ID="BQUI_UNIT_ABILITIES_XP_UnitList" Icon="ICON_MAP_PIN_CIRCLE" Size="11,11" Anchor="R,C" Color="0,0,0,255" Hidden="1">
+									<Image ID="BQUI_UNIT_ABILITIES_XP_TIER_UnitList" Icon="ICON_MAP_PIN_CIRCLE" Size="7,7" Anchor="C,C" Color="255,100,255,255" Alpha="0.75"/>
+								</Image>
+								<Image ID="BQUI_UNIT_ABILITIES_STRENGTH_UnitList" Icon="ICON_MAP_PIN_CIRCLE" Size="11,11" Anchor="R,C" Color="0,0,0,255" Hidden="1">
+									<Image ID="BQUI_UNIT_ABILITIES_STRENGTH_TIER_UnitList" Icon="ICON_MAP_PIN_CIRCLE" Size="7,7" Anchor="C,C" Color="96,100,102"/>
+								</Image>
+								<Image ID="BQUI_UNIT_ABILITIES_GP_UnitList" Icon="ICON_MAP_PIN_CIRCLE" Size="11,11" Anchor="R,C" Color="0,0,0,255" Hidden="1">
+									<Image Icon="ICON_MAP_PIN_CIRCLE" Size="7,7" Anchor="C,C" Color="255,255,255,255"/>
+								</Image>
+								<Image ID="BQUI_UNIT_ABILITIES_COMANDANTE_UnitList" Icon="ICON_MAP_PIN_CIRCLE" Size="11,11" Anchor="R,C" Color="0,0,0,255" Hidden="1">
+									<Image Icon="ICON_MAP_PIN_CIRCLE" Size="7,7" Anchor="C,C" Color="255,255,255,255"/>
+								</Image>
+								<Image ID="BQUI_UNIT_ABILITIES_DOUBLE_GP_UnitList" Icon="ICON_MAP_PIN_CIRCLE" Size="12,12" Anchor="R,C" Color="0,0,0,255" Hidden="1">
+									<Image Icon="ICON_MAP_PIN_CIRCLE" Size="8,8" Anchor="C,C" Color="255,255,255,255"/>
+								</Image>
+							</Stack>
+						</Container>
+						<Container ID="BQUI_RealPromotion_1_UnitList" Size="12,12" Anchor="L,C" Offset="3,0" Hidden="1">    <!-- bolbas (Apostle, Spy, Rock Band, Soothsayer promotion and Great Person passive ability icons added) -->
+							<Image ID="BQUI_IconRealPromotion_1_UnitList" Anchor="C,C" />
+							<Image ID="BQUI_WaterParkIcon_1_P1_UnitList" Icon = "ICON_AMENITIES" StretchMode="Tile" Size="16,11" Anchor="C,C" Offset="0,-4" Hidden="1" >
+								<Image ID="BQUI_WaterParkIcon_1_P2_UnitList" Icon="ICON_MAP_PIN_SQUARE" StretchMode="Tile" Size="17,6" Offset="-3,6" Color="230,230,230,255"/>
+								<Line ID="BQUI_WaterParkIcon_1_P3_UnitList" Start="5,12" End="5,15" Width="2" Color="230,230,230,255"/>
+								<Line ID="BQUI_WaterParkIcon_1_P4_UnitList" Start="11,12" End="11,15" Width="2" Color="230,230,230,255"/>
+							</Image>
+						</Container>
+						<Container ID="BQUI_RealPromotion_2_UnitList" Size="12,12" Anchor="L,C" Offset="6,0" Hidden="1">
+							<Image ID="BQUI_IconRealPromotion_2_UnitList" Anchor="C,C" />
+							<Image ID="BQUI_WaterParkIcon_2_P1_UnitList" Icon = "ICON_AMENITIES" StretchMode="Tile" Size="16,11" Anchor="C,C" Offset="0,-4" Hidden="1" >
+								<Image ID="BQUI_WaterParkIcon_2_P2_UnitList" Icon="ICON_MAP_PIN_SQUARE" StretchMode="Tile" Size="17,6" Offset="-3,6" Color="230,230,230,255"/>
+								<Line ID="BQUI_WaterParkIcon_2_P3_UnitList" Start="5,12" End="5,15" Width="2" Color="230,230,230,255"/>
+								<Line ID="BQUI_WaterParkIcon_2_P4_UnitList" Start="11,12" End="11,15" Width="2" Color="230,230,230,255"/>
+							</Image>
+						</Container>
+						<Container ID="BQUI_RealPromotion_3_UnitList" Size="12,12" Anchor="L,C" Offset="6,0" Hidden="1">
+							<Image ID="BQUI_IconRealPromotion_3_UnitList" Anchor="C,C" />
+							<Image ID="BQUI_WaterParkIcon_3_P1_UnitList" Icon = "ICON_AMENITIES" StretchMode="Tile" Size="16,11" Anchor="C,C" Offset="0,-4" Hidden="1" >
+								<Image ID="BQUI_WaterParkIcon_3_P2_UnitList" Icon="ICON_MAP_PIN_SQUARE" StretchMode="Tile" Size="17,6" Offset="-3,6" Color="230,230,230,255"/>
+								<Line ID="BQUI_WaterParkIcon_3_P3_UnitList" Start="5,12" End="5,15" Width="2" Color="230,230,230,255"/>
+								<Line ID="BQUI_WaterParkIcon_3_P4_UnitList" Start="11,12" End="11,15" Width="2" Color="230,230,230,255"/>
+							</Image>
+						</Container>
+					</Stack>
+				</Label>
+			</Stack>
+			<Bar ID="BQUI_HPBarBG" Anchor="R,B" Offset="2,5" Size="3,14" Direction="Down" FGColor="0,0,0,255" Percent="1" Hidden="1" />    <!-- bolbas (Middle Click on Unit List popup added - shows/hides HP bars for damaged units) -->
+			<Bar ID="BQUI_HPBar" Anchor="R,B" Offset="2,5" Size="3,14" Direction="Down" Hidden="1" />    <!-- bolbas (Middle Click on Unit List popup added - shows/hides HP bars for damaged units) -->
+		</GridButton>
+	</Instance>
+
 
 </Root>
