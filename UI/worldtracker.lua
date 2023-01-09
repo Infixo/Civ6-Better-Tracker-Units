@@ -467,12 +467,19 @@ function UpdateUnitListPanel(hideUnitList:boolean)
 		table.sort(tradeUnits, sortFunc);
 
 		-- Add units by sorted groups
-		if m_isUnitListMilitary     then for _, pUnit in ipairs(militaryUnits) do AddUnitToUnitList( pUnit ); end end
-		if m_isUnitListMilitary     then for _, pUnit in ipairs(navalUnits)    do AddUnitToUnitList( pUnit ); end end
-		if m_isUnitListMilitary     then for _, pUnit in ipairs(airUnits)      do AddUnitToUnitList( pUnit ); end end
-		if m_isUnitListMilitary     then for _, pUnit in ipairs(supportUnits)  do AddUnitToUnitList( pUnit ); end end
-		if not m_isUnitListMilitary then for _, pUnit in ipairs(civilianUnits) do AddUnitToUnitList( pUnit ); end end
-		if not m_isUnitListMilitary and m_showTrader then for _, pUnit in ipairs(tradeUnits) do AddUnitToUnitList( pUnit ); end end
+		if m_isUnitListMilitary then
+			if #militaryUnits > 0 then AddHeaderToUnitList("LOC_FORMATION_CLASS_LAND_COMBAT_NAME"); end
+			for _, pUnit in ipairs(militaryUnits) do AddUnitToUnitList( pUnit ); end
+			if #navalUnits > 0 then AddHeaderToUnitList("LOC_FORMATION_CLASS_NAVAL_NAME"); end
+			for _, pUnit in ipairs(navalUnits)    do AddUnitToUnitList( pUnit ); end
+			if #airUnits > 0 then AddHeaderToUnitList("LOC_FORMATION_CLASS_AIR_NAME"); end
+			for _, pUnit in ipairs(airUnits)      do AddUnitToUnitList( pUnit ); end
+			if #supportUnits > 0 then AddHeaderToUnitList("LOC_FORMATION_CLASS_SUPPORT_NAME"); end
+			for _, pUnit in ipairs(supportUnits)  do AddUnitToUnitList( pUnit ); end
+		else -- civilian
+			for _, pUnit in ipairs(civilianUnits) do AddUnitToUnitList( pUnit ); end
+			if m_showTrader then for _, pUnit in ipairs(tradeUnits) do AddUnitToUnitList( pUnit ); end end
+		end
 	else
 		m_unitListInstance.TraderCheck:SetHide(true);
 		m_unitListInstance.NoUnitsLabel:SetHide(false);
@@ -496,17 +503,19 @@ end
 
 -- ===========================================================================
 function UpdateUnitListSize()
+	--print("FUN UpdateUnitListSize()");
 	if(not m_isMinimapInitialized)then
 		UpdateWorldTrackerSize();
 	end
 
 	if(not m_hideUnitList)then
+		m_unitListInstance.UnitStack:CalculateSize();
 		local unitStackSize : number = m_unitListInstance.UnitStack:GetSizeY();
 
 		Controls.WorldTrackerVerticalContainer:CalculateSize();
 
 		local slotSize : number = m_unitListInstance.UnitListMainPanel:GetParent():GetSizeY();
-
+		--print("stack=",unitStackSize,"slot=",slotSize,"space=",slotSize - UNITS_PANEL_PADDING);
 		if(unitStackSize > slotSize - UNITS_PANEL_PADDING)then
 			m_unitListInstance.UnitStackContainer:SetSizeY(slotSize - UNITS_PANEL_PADDING);
 			m_unitListInstance.UnitListScroll:SetSizeY(slotSize - UNITS_PANEL_PADDING);
@@ -548,6 +557,7 @@ end
 -- ===========================================================================
 -- INFIXO: BOLBAS' CODE, USED WITH PERMISSION
 
+local BQUI_PreviousUnitEntrySum = nil;    -- bolbas (Middle Click on Unit List entries added - shows total number of units of that type)
 local BQUI_PreviousSelectedUnitEntry:table = nil;    -- bolbas (Right Click on Unit List popup and Unit List entries added, entry with selected unit highlighted)
 local BQUI_UnitDifferentReligions:number = 0;    -- bolbas (Religion icons added)
 
@@ -647,6 +657,7 @@ local BQUI_UnitAbilitiesIcons:table = {
 function BQUI_SetReligionIconUnitList(pUnit, unitEntry_ReligionIcon)
 	local BQUI_religionID = pUnit:GetReligionType();
 	if BQUI_religionID > 0 then
+		unitEntry_ReligionIcon:SetShow(true);
 		local religion:table = GameInfo.Religions[BQUI_religionID];
 		local ReligionType = religion.ReligionType;
 		--if BQUI_ReligionsStandard[ReligionType] == true then    -- bolbas (Fixed Standard Religions Icons when set their Size to 18)
@@ -665,6 +676,7 @@ function BQUI_SetReligionIconUnitList(pUnit, unitEntry_ReligionIcon)
 			--table.insert(BQUI_ReligionIconEntry, unitEntry_ReligionIcon);    -- bolbas: A table to hide Religion Icons if all player unints believe in the same Religion
 		end
 	else
+		unitEntry_ReligionIcon:SetShow(false);
 		BQUI_UnitDifferentReligions = -1;
 	end
 end
@@ -705,32 +717,24 @@ function AddUnitToUnitList(pUnit:table)
 	--local unitEntry:table = {};
 	--Controls.UnitListPopup:BuildEntry( "UnitListEntry", unitEntry );
 
+	-- check formation and prepare suffix
 	local formation = pUnit:GetMilitaryFormation();
 	local suffix:string = "";
-	local unitInfo:table = GameInfo.Units[pUnit:GetUnitType()];
-	--if (unitInfo.Domain == "DOMAIN_SEA") then    -- bolbas: Igi_PL's offer to remove unnecessary lines
-		if (formation == MilitaryFormationTypes.CORPS_FORMATION) then
-			suffix = "[ICON_Corps]" .. " ";    -- bolbas (Corps/Army words removed from suffix, unitname and suffix separated)
-		elseif (formation == MilitaryFormationTypes.ARMY_FORMATION) then
-			suffix = "[ICON_Army]" .. " ";    -- bolbas (Corps/Army words removed from suffix, unitname and suffix separated)
-		end
-	--[[else    -- bolbas: Igi_PL's offer to remove unnecessary lines
-		if (formation == MilitaryFormationTypes.CORPS_FORMATION) then
-			suffix = " " .. Locale.Lookup("LOC_HUD_UNIT_PANEL_CORPS_SUFFIX");
-		elseif (formation == MilitaryFormationTypes.ARMY_FORMATION) then
-			suffix = " " .. Locale.Lookup("LOC_HUD_UNIT_PANEL_ARMY_SUFFIX");
-		end
-	end--]]    -- bolbas: Igi_PL's offer to remove unnecessary lines
+	if formation == MilitaryFormationTypes.CORPS_FORMATION then
+		suffix = "[ICON_Corps]";
+	elseif formation == MilitaryFormationTypes.ARMY_FORMATION then
+		suffix = "[ICON_Army]";
+	end
 
+	-- name and tooltip
 	local name:string = pUnit:GetName();
-	local uniqueName = Locale.Lookup( name ) .. " " .. suffix;    -- bolbas (Corps/Army words removed from suffix, unitname and suffix separated)
-
+	local uniqueName:string = Locale.Lookup(name).." ".. suffix;
 	local tooltip:string = "";
-	local pUnitDef = GameInfo.Units[pUnit:GetUnitType()];
-	if pUnitDef then
-		local unitTypeName:string = pUnitDef.Name;
+	local unitInfo:table = GameInfo.Units[pUnit:GetUnitType()];
+	if unitInfo then
+		local unitTypeName:string = unitInfo.Name;
 		if name ~= unitTypeName then
-			tooltip = uniqueName .. Locale.Lookup("LOC_UNIT_UNIT_TYPE_NAME_SUFFIX", unitTypeName);    -- bolbas (Corps/Army words removed from suffix, unitname and suffix separated)
+			tooltip = uniqueName.." "..Locale.Lookup("LOC_UNIT_UNIT_TYPE_NAME_SUFFIX", unitTypeName);
 		end
 	end
 	unitEntry.Button:SetToolTipString(tooltip);
@@ -753,6 +757,24 @@ function AddUnitToUnitList(pUnit:table)
 	local BQUI_ReligiousHealCharges = pUnit:GetReligiousHealCharges();
 	local BQUI_CombatStrength = pUnit:GetCombat();
 	local BQUI_RangedCombatStrength = pUnit:GetRangedCombat();
+
+	-- promotions are off by default
+	unitEntry.BQUI_PromotionIcons_UnitList:SetShow(false); -- graphical representation
+	unitEntry.BQUI_RealPromotion_1_UnitList:SetShow(false);
+	unitEntry.BQUI_RealPromotion_2_UnitList:SetShow(false);
+	unitEntry.BQUI_RealPromotion_3_UnitList:SetShow(false);
+	unitEntry.BQUI_UNIT_ABILITIES_XP_UnitList:SetShow(false);
+	unitEntry.BQUI_UNIT_ABILITIES_STRENGTH_UnitList:SetShow(false);
+	unitEntry.BQUI_UNIT_ABILITIES_GP_UnitList:SetShow(false);
+	unitEntry.BQUI_UNIT_ABILITIES_COMANDANTE_UnitList:SetShow(false);
+	unitEntry.BQUI_UNIT_ABILITIES_DOUBLE_GP_UnitList:SetShow(false);
+	unitEntry.BQUI_TierPromotion_11_UnitList:SetShow(false);
+	unitEntry.BQUI_TierPromotion_21_UnitList:SetShow(false);
+	unitEntry.BQUI_TierPromotion_31_UnitList:SetShow(false);
+	unitEntry.BQUI_TierPromotion_13_UnitList:SetShow(false);
+	unitEntry.BQUI_TierPromotion_23_UnitList:SetShow(false);
+	unitEntry.BQUI_TierPromotion_33_UnitList:SetShow(false);
+	unitEntry.BQUI_TierPromotion_42_UnitList:SetShow(false);
 
 	--if BQUI_IconsAndAbilitiesState[BQUI_localPlayerID] ~= nil and BQUI_IconsAndAbilitiesState[BQUI_localPlayerID] ~= 4 then    -- bolbas (Right Click on Unit List popup and Unit List entries added, entry with selected unit highlighted)
 		if #BQUI_PromotionList > 0 then
@@ -1020,11 +1042,11 @@ function AddUnitToUnitList(pUnit:table)
 	--end
 
 	-- bolbas (Religion icons added)
-	--if BQUI_ReligionIconsState[BQUI_localPlayerID] == 0 or BQUI_ReligionIconsState[BQUI_localPlayerID] == 3 then    -- bolbas (Right Click on Religion Strength Icon added)
-		if BQUI_SpreadCharges > 0 or BQUI_ReligiousHealCharges > 0 then
-			BQUI_SetReligionIconUnitList(pUnit, unitEntry.BQUI_ReligionIcon);
-		end
-	--end
+	if BQUI_SpreadCharges > 0 or BQUI_ReligiousHealCharges > 0 then
+		BQUI_SetReligionIconUnitList(pUnit, unitEntry.BQUI_ReligionIcon);
+	else
+		unitEntry.BQUI_ReligionIcon:SetShow(false);
+	end
 
 	-- bolbas (Upgrade icon added)
 	local BQUI_upgradeCost = pUnit:GetUpgradeCost();
@@ -1039,6 +1061,8 @@ function AddUnitToUnitList(pUnit:table)
 		else
 			unitEntry.BQUI_IconUpgrade:SetColorByName("UnitPanelTextDisabledCS");
 		end
+	else
+		unitEntry.BQUI_IconUpgrade:SetShow(false);
 	end
 
 	-- bolbas (Unit Abilities added to Unit List and Unit Panel)
@@ -1124,6 +1148,8 @@ function AddUnitToUnitList(pUnit:table)
 				elseif BQUI_ShowAbilities_COMANDANTE == true then
 					unitEntry.BQUI_UNIT_ABILITIES_COMANDANTE_UnitList:SetShow(true);
 				end
+			else
+				unitEntry.BQUI_AllAbilities_UnitList:SetShow(false);
 			end
 		end
 	--end
@@ -1146,6 +1172,7 @@ function AddUnitToUnitList(pUnit:table)
 		unitEntry.Button:SetSizeX(292);
 	end
 	--]]
+	-- HEALTH
 	-- Infixo: this is Firaxis' function from UnitPanel.lua
 	local function GetPercentFromDamage( damage:number, maxDamage:number )
 		if damage > maxDamage then
@@ -1153,40 +1180,44 @@ function AddUnitToUnitList(pUnit:table)
 		end
 		return (damage / maxDamage);
 	end
+	local percent:number = 1 - GetPercentFromDamage( pUnit:GetDamage(), pUnit:GetMaxDamage() );
+	if percent < 1 then
+		unitEntry.BQUI_HPBarBG:SetShow(true);
+		unitEntry.BQUI_HPBar:SetShow(true);
+		local sizeY = math.max ( math.floor( (14 * percent) + 0.5 ), 2 );    -- bolbas: !!!!! next 3 lines here because Direction="Up" is bugged for bars in UnitPanel.xml. It works only when Speed="1" or more and doesn't work when Speed="0" !!!!! -- bolbas: added "math.max" to make low hp bars more visible
+		unitEntry.BQUI_HPBar:SetSizeY( sizeY );
+		unitEntry.BQUI_HPBar:SetPercent( 1 );
 
-	-- bolbas (Middle Click on Unit List popup added - shows/hides HP bars for damaged units, changes sort units function)
-	--if BQUI_HPBarsAndSortTypeState[BQUI_localPlayerID] == 0 or BQUI_HPBarsAndSortTypeState[BQUI_localPlayerID] == 2 then
-		local percent		:number = 1 - GetPercentFromDamage( pUnit:GetDamage(), pUnit:GetMaxDamage() );
-		if percent < 1 then
-			unitEntry.BQUI_HPBarBG:SetShow(true);
-			unitEntry.BQUI_HPBar:SetShow(true);
-			local sizeY = math.max ( math.floor( (14 * percent) + 0.5 ), 2 );    -- bolbas: !!!!! next 3 lines here because Direction="Up" is bugged for bars in UnitPanel.xml. It works only when Speed="1" or more and doesn't work when Speed="0" !!!!! -- bolbas: added "math.max" to make low hp bars more visible
-			unitEntry.BQUI_HPBar:SetSizeY( sizeY );
-			unitEntry.BQUI_HPBar:SetPercent( 1 );
-
-			if	( percent > 0.7 )	then
-				unitEntry.BQUI_HPBar:SetColor( COLORS.METER_HP_GOOD );
-			elseif ( percent > 0.4 )	then
-				unitEntry.BQUI_HPBar:SetColor( COLORS.METER_HP_OK );
-			else
-				unitEntry.BQUI_HPBar:SetColor( COLORS.METER_HP_BAD );
-			end
+		if	( percent > 0.7 )	then
+			unitEntry.BQUI_HPBar:SetColor( COLORS.METER_HP_GOOD );
+		elseif ( percent > 0.4 )	then
+			unitEntry.BQUI_HPBar:SetColor( COLORS.METER_HP_OK );
+		else
+			unitEntry.BQUI_HPBar:SetColor( COLORS.METER_HP_BAD );
 		end
-	--end
+	else -- no damage
+		unitEntry.BQUI_HPBarBG:SetShow(false);
+		unitEntry.BQUI_HPBar:SetShow(false);
+	end
 
 	UpdateUnitIcon(pUnit, unitEntry);
 
 	-- Update status icon
+	unitEntry.UnitStatusIcon:SetShow(true); -- default, hidden in some cases only
 	local activityType:number = UnitManager.GetActivityType(pUnit);
 	if UnitManager.GetQueuedDestination( pUnit ) then    -- bolbas ("Move to" unit status icon added)
 		unitEntry.UnitStatusIcon:SetSizeVal(20,20);
 		unitEntry.UnitStatusIcon:SetIcon("ICON_MOVES");
+		--unitEntry.UnitStatusIcon:SetHide(false);
 	elseif activityType == ActivityTypes.ACTIVITY_SLEEP then
-		SetUnitEntryStatusIcon(unitEntry, "ICON_STATS_SLEEP");
+		--SetUnitEntryStatusIcon(unitEntry, "ICON_STATS_SLEEP");
+		unitEntry.UnitStatusIcon:SetIcon("ICON_STATS_SLEEP");
 	elseif activityType == ActivityTypes.ACTIVITY_HOLD then
-		SetUnitEntryStatusIcon(unitEntry, "ICON_STATS_SKIP");
+		--SetUnitEntryStatusIcon(unitEntry, "ICON_STATS_SKIP");
+		unitEntry.UnitStatusIcon:SetIcon("ICON_STATS_SKIP");
 	elseif activityType ~= ActivityTypes.ACTIVITY_AWAKE and pUnit:GetFortifyTurns() > 0 then
-		SetUnitEntryStatusIcon(unitEntry, "ICON_DEFENSE");
+		--SetUnitEntryStatusIcon(unitEntry, "ICON_DEFENSE");
+		unitEntry.UnitStatusIcon:SetIcon("ICON_DEFENSE");
 	else
 		unitEntry.UnitStatusIcon:SetHide(true);
 	end
@@ -1233,6 +1264,23 @@ function AddUnitToUnitList(pUnit:table)
 			end
 		--end
 	end
+	
+	-- simplified logic to show/hide controls
+	local isCivilian:boolean = ( unitInfo.FormationClass == "FORMATION_CLASS_CIVILIAN" );
+	local isSupport:boolean  = ( unitInfo.FormationClass == "FORMATION_CLASS_SUPPORT" );
+	unitEntry.UnitTypeIcon:SetShow(true); -- always show
+	--BQUI_UnitsSum -- separate logic
+	--BQUI_IconUpgrade -- separate logic
+	--BQUI_ReligionIcon -- separate logic
+	--UnitStatusIcon -- separate logic
+	--BQUI_UnitName_UnitList -- always visible
+	--BQUI_PromotionIcons_UnitList -- graphical representation
+	--BQUI_AllAbilities_UnitList -- dots for abilities
+	--BQUI_RealPromotion_1_UnitList
+	--BQUI_RealPromotion_2_UnitList
+	--BQUI_RealPromotion_3_UnitList
+	--BQUI_HPBarBG -- separate logic
+	--BQUI_HPBar -- separate logic
 end
 
 -- Infixo: why is this function overwritten?
@@ -1244,6 +1292,23 @@ end
 
 -- INFIXO: END OF BOLBAS' CODE
 -- ===========================================================================
+
+-- ===========================================================================
+function AddHeaderToUnitList(textHeader:string)
+	local uiUnitEntry:table = m_unitEntryIM:GetInstance();
+	uiUnitEntry.BQUI_UnitName_UnitList:SetText( "[ICON_Bolt]  "..Locale.Lookup(textHeader).."  [ICON_Bolt]" );
+	uiUnitEntry.Button:RegisterCallback(Mouse.eLClick, function() end);
+	uiUnitEntry.Button:RegisterCallback(Mouse.eRClick, function() end);
+	uiUnitEntry.UnitTypeIcon:SetHide(true);
+	uiUnitEntry.UnitStatusIcon:SetHide(true);
+	uiUnitEntry.BQUI_UnitsSum:SetHide(true);
+	uiUnitEntry.BQUI_IconUpgrade:SetHide(true);
+	uiUnitEntry.BQUI_ReligionIcon:SetHide(true);
+	uiUnitEntry.BQUI_UnitNameSuffix_UnitList:SetHide(true);
+	uiUnitEntry.Button:GetTextControl():SetColorByName("UnitPanelTextDisabledCS");
+	uiUnitEntry.BQUI_HPBarBG:SetHide(true);
+	uiUnitEntry.BQUI_HPBar:SetHide(true);
+end
 
 
 --[[ Infixo: original code
@@ -1315,9 +1380,10 @@ end
 --]]
 
 -- ===========================================================================
-function SetUnitEntryStatusIcon(unitEntry:table, icon:string)
-	unitEntry.UnitStatusIcon:SetIcon(icon);
-end
+-- Infixo: inlined
+--function SetUnitEntryStatusIcon(unitEntry:table, icon:string)
+	--unitEntry.UnitStatusIcon:SetIcon(icon);
+--end
 
 -- ===========================================================================
 function UpdateUnitIcon(pUnit:table, uiUnitEntry:table)
