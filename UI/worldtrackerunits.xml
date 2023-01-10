@@ -45,7 +45,7 @@
 
 	<!-- The below code is taken from bolbas' Better Unit List with persmission from the author; thx! -->
 	<Instance Name="UnitListEntry">
-		<GridButton ID="Button" Style="UnitPanelHeader" Size="parent-12,24" Offset="-3,0" Texture="Controls_ButtonControl.dds" SliceCorner="10,10" SliceSize="1,1" SliceTextureSize="24,24" StateOffsetIncrement="0,24" TruncateWidth="160">    <!-- bolbas (Scrollbar area is removed from the Unit List and appears only when a scrollbar is available) -->
+		<GridButton ID="Button" Style="UnitPanelHeader" Size="parent-12,24" Offset="-3,0" Texture="Controls_ButtonControl" SliceCorner="10,10" SliceSize="1,1" SliceTextureSize="24,24" StateOffsetIncrement="0,24" TruncateWidth="160">    <!-- bolbas (Scrollbar area is removed from the Unit List and appears only when a scrollbar is available) -->
 			<Image ID="UnitTypeIcon" Anchor="L,C" Size="22,22" Offset="2,0" />
 			<Label ID="BQUI_UnitsSum" Anchor="L,T" Offset="27,5" Style="FontFlair14" Color0="214,214,214,255" Color1="0,0,0,55" FontStyle="Stroke" Hidden="1"/>    <!-- bolbas (Middle Click on Unit List entries added - shows total number of units of that type) -->
 			<Image ID="BQUI_IconUpgrade" Size="13,13" Anchor="L,C" Offset="33,0" Icon="ICON_UNITCOMMAND_UPGRADE" Hidden="1"/>    <!-- bolbas (Upgrade, promotion and charges icons and numbers added) -->

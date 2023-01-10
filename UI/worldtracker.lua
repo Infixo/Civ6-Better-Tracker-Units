@@ -83,6 +83,24 @@ local m_isUnitListMilitary		:boolean = false;
 local m_showTrader				:boolean = false;
 
 
+-- debug routine - prints a table (no recursion)
+function dshowtable(tTable:table)
+	for k,v in pairs(tTable) do
+		print(k, type(v), tostring(v));
+	end
+end
+
+-- debug routine - prints a table, and tables inside recursively (up to 5 levels)
+function dshowrectable(tTable:table, iLevel:number)
+	local level:number = 0;
+	if iLevel ~= nil then level = iLevel; end
+	for k,v in pairs(tTable) do
+		print(string.rep("---:",level), k, type(v), tostring(v));
+		if type(v) == "table" and level < 5 then dshowrectable(v, level+1); end
+	end
+end
+
+
 -- ===========================================================================
 --	FUNCTIONS
 -- ===========================================================================
@@ -580,7 +598,6 @@ end
 -- INFIXO: BOLBAS' CODE, USED WITH PERMISSION
 
 local BQUI_PreviousUnitEntrySum = nil;    -- bolbas (Middle Click on Unit List entries added - shows total number of units of that type)
-local BQUI_PreviousSelectedUnitEntry:table = nil;    -- bolbas (Right Click on Unit List popup and Unit List entries added, entry with selected unit highlighted)
 local BQUI_UnitDifferentReligions:number = 0;    -- bolbas (Religion icons added)
 
 local BQUI_ApostlePromotionIcons:table = {
@@ -763,7 +780,7 @@ function AddUnitToUnitList(pUnit:table)
 
 	--unitEntry.Button:SetText( Locale.ToUpper(uniqueName) );    -- bolbas: removed this because of unitEntry.BQUI_UnitName_UnitList:SetText( Locale.ToUpper(BQUI_uniqueName) );
 	local BQUI_UnitID = pUnit:GetID();    -- bolbas (Unit Abilities added to Unit List and Unit Panel)
-	unitEntry.Button:SetVoids(i, BQUI_UnitID);    -- bolbas (Unit Abilities added to Unit List and Unit Panel)
+	unitEntry.Button:SetVoid1(BQUI_UnitID);
 
 	-- bolbas (Upgrade, promotion and charges icons and numbers added)
 	local BQUI_uniqueName = Locale.Lookup( name );
@@ -1176,12 +1193,9 @@ function AddUnitToUnitList(pUnit:table)
 		end
 	--end
 
-	-- bolbas (Right Click on Unit List popup and Unit List entries added, entry with selected unit highlighted)
-	if UI.IsUnitSelected(pUnit) then
-		BQUI_PreviousSelectedUnitEntry = unitEntry;
-		unitEntry.Button:SetTexture("Controls_ButtonControl_Tan");
-		unitEntry.Button:SetColorByName("Grey");
-	end
+	-- Infixo: highlight the currently selected unit or use default control
+	unitEntry.Button:SetTexture( UI.IsUnitSelected(pUnit) and "Controls_ButtonControl_Tan" or "Controls_ButtonControl");
+	
 	unitEntry.Button:RegisterCallback( Mouse.eLClick, function() OnUnitEntryClicked(pUnit:GetID(), unitEntry, true)  end); -- left click closes
 	--unitEntry.Button:RegisterCallback( Mouse.eRClick, function() BQUI_OnUnitListEntriesRightClick(pUnit, unitEntry); end );
 	unitEntry.Button:RegisterCallback( Mouse.eMClick, function() BQUI_CalculateUnits( BQUI_UnitType, unitEntry.BQUI_UnitsSum ); end );    -- bolbas (Middle Click on Unit List entries added - shows total number of units of that type)
@@ -1426,25 +1440,18 @@ function OnUnitEntryClicked(unitID:number, unitEntry:table, closeList:boolean)
 			UI.SelectUnit( selectedUnit );
 		end
 	end
-	-- bolbas (Right Click on Unit List popup and Unit List entries added, entry with selected unit highlighted)
-	if BQUI_PreviousSelectedUnitEntry then
-		BQUI_PreviousSelectedUnitEntry.Button:SetTexture("Controls_ButtonControl");
-		BQUI_PreviousSelectedUnitEntry.Button:SetColorByName("UnitPanelTextCS");
-		BQUI_PreviousSelectedUnitEntry = nil;
+	-- Infixo: close list, no tricks here
+	if closeList then
+		UpdateUnitListPanel(true); 
+		StartUnitListSizeUpdate();
+		return;
+	end
+	-- Infixo: remove highlight from all units and toggle the selected one
+	for _,uiChild in ipairs(m_unitListInstance.UnitStack:GetChildren()) do
+		uiChild:SetTexture("Controls_ButtonControl");
 	end
 	if selectedUnit then
 		unitEntry.Button:SetTexture("Controls_ButtonControl_Tan");
-		unitEntry.Button:SetColorByName("Grey");
-		BQUI_PreviousSelectedUnitEntry = unitEntry;
-	end
-	-- Infixo: close list?
-	if closeList then
-		unitEntry.Button:SetTexture("Controls_ButtonControl");
-		unitEntry.Button:SetColorByName("UnitPanelTextCS");
-		BQUI_PreviousSelectedUnitEntry = nil;
-		UpdateUnitListPanel(true); 
-		StartUnitListSizeUpdate();
-		--CheckEnoughRoom();
 	end
 end
 
@@ -1779,6 +1786,32 @@ function OnUnitAddedToMap(playerID:number, unitID:number)
 end
 
 -- ===========================================================================
+--	Game Engine Event
+function OnUnitSelectionChanged( playerID:number, unitID:number, hexI:number, hexJ:number, hexK:number, isSelected:boolean, isEditable:boolean )
+	if playerID ~= Game.GetLocalPlayer() then 
+		return;
+	end
+	if isSelected then
+		-- Infixo: toggle the selected one
+		for _,uiChild in ipairs(m_unitListInstance.UnitStack:GetChildren()) do
+			if uiChild:GetVoid1() == unitID then
+				uiChild:SetTexture("Controls_ButtonControl_Tan");
+				break;
+			end
+		end
+	else
+		-- Infixo: remove highlight
+		for _,uiChild in ipairs(m_unitListInstance.UnitStack:GetChildren()) do
+			if uiChild:GetVoid1() == unitID then
+				uiChild:SetTexture("Controls_ButtonControl");
+				break;
+			end
+		end
+	end
+end
+
+
+-- ===========================================================================
 function OnUnitMovementPointsChanged(playerID:number, unitID:number)
 	if(playerID == Game.GetLocalPlayer())then
 		UpdateUnitListPanel();
@@ -1902,6 +1935,7 @@ function Subscribe()
 	Events.CityWorkerChanged.Add( OnUpdateDueToCity );
 	Events.CityFocusChanged.Add( OnUpdateDueToCity );
 	Events.UnitAddedToMap.Add( OnUnitAddedToMap );
+	Events.UnitSelectionChanged.Add( OnUnitSelectionChanged ); -- Infixo
 	Events.UnitCommandStarted.Add( OnUnitCommandStarted );
 	Events.UnitMovementPointsChanged.Add( OnUnitMovementPointsChanged );
 	Events.UnitOperationDeactivated.Add( OnUnitOperationDeactivated );
@@ -1941,6 +1975,7 @@ function Unsubscribe()
 	Events.CityWorkerChanged.Remove( OnUpdateDueToCity );
 	Events.CityFocusChanged.Remove( OnUpdateDueToCity );
 	Events.UnitAddedToMap.Remove( OnUnitAddedToMap );
+	Events.UnitSelectionChanged.Remove( OnUnitSelectionChanged ); -- Infixo
 	Events.UnitCommandStarted.Remove( OnUnitCommandStarted );
 	Events.UnitMovementPointsChanged.Remove( OnUnitMovementPointsChanged );
 	Events.UnitOperationDeactivated.Remove( OnUnitOperationDeactivated );
