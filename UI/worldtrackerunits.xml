@@ -4,25 +4,33 @@
 
 	<Instance Name="UnitListInstance">
 		<Grid ID="UnitListMainPanel" Size="296,auto" Texture="Controls_DrawerUp" SliceCorner="5,4" SliceSize="3,2" SliceTextureSize="14,8" Hidden="1">
-			<Stack ID="MainStack" StackGrowth="Bottom" StackPadding="5">
-				<Grid Size="parent,25" Texture="Controls_DrawerUp" SliceCorner="5,4" SliceSize="3,2" SliceTextureSize="14,8">
+			<!--<Stack ID="MainStack" StackGrowth="Bottom" StackPadding="5">-->
+				<Grid Anchor="L,T" Offset="0,0" Size="parent,30" Texture="Controls_DrawerUp" SliceCorner="5,4" SliceSize="3,2" SliceTextureSize="14,8">
 					<!-- Infixo: checkbox for showing/hiding traders -->
-					<CheckBox ID="TraderCheck" Anchor="L,C" Offset="6,4" Style="WorldTrackerCheckBox" BoxOnLeft="1" String="LOC_UNIT_TRADER_NAME" TextOffset="-2,0" />
-					<Label Style="PanelHeaderText" String="LOC_WORLDTRACKER_UNIT_LIST" Anchor="C,T" Offset="0,6" FontSize="16"/>
+					<CheckBox ID="TraderCheck" Anchor="L,C" Offset="6,2" Style="WorldTrackerCheckBox" String="[ICON_TradeRouteLarge]" ToolTip="LOC_UNIT_TRADER_NAME" TextOffset="-2,2" />
+					<Label Style="PanelHeaderText" String="{LOC_WORLDTRACKER_UNIT_LIST:upper}" Anchor="L,C" Offset="60,4" />
+					<Grid Texture="Controls_Search2" SliceCorner="30,13" SliceTextureSize="41,26" Anchor="R,C" Size="100,26" Offset="25,2" ToolTip="LOC_WORLDTRACKER_UNITS_SEARCH_TT">
+						<EditBox ID="UnitsSearchBox" Style="EditTextArea" Size="parent-30,22" Anchor="L,C" Offset="24,0" EditMode="0" FocusStop="0" KeepFocus="1"/>
+					</Grid>
+				    <Button ID="CloseButton" Anchor="R,T" Offset="2,7" Texture="Controls_CloseButtonAltSmall" Size="21,21" StateOffsetIncrement="0,21" />
 				</Grid>
-				<Container ID="UnitStackContainer" Anchor="C,T" Size="parent,auto">
-					<Stack	ID="UnitStack" Anchor="C,T" StackGrowth="Bottom" />
-					<Label ID="NoUnitsLabel" Style="PanelHeaderText" String="LOC_WORLDTRACKER_NO_UNITS" Anchor="C,C" FontSize="20" Offset="0,-7"/>
+				<!--<Container ID="UnitStackContainer" Anchor="C,T" Size="parent,auto">-->
+					<!--<Stack	ID="UnitStack" Anchor="C,T" StackGrowth="Bottom" />-->
+				<Container Anchor="C,T" Offset="0,30" Size="parent,30">
+					<Label ID="NoUnitsLabel" Style="PanelHeaderText" String="LOC_WORLDTRACKER_NO_UNITS" Anchor="C,C" FontSize="20" Offset="0,0"/>
 				</Container>
-				<ScrollPanel  ID="UnitListScroll"  Anchor="C,T" Vertical="1" Size="parent,0" AutoScrollBar="1" Hidden="1">
+				<ScrollPanel ID="UnitListScroll" Anchor="C,T" Offset="0,30" Vertical="1" Size="parent,auto" AutoScrollBar="1" >
+					<Stack	ID="UnitStack" Anchor="C,T" StackGrowth="Bottom" />
 					<ScrollBar  Style="Slider_Blue" Offset="0,0" Anchor="R,C"/>
 				</ScrollPanel>
+				<!--
 				<Grid Size="parent,30" Texture="Controls_DrawerUp" SliceCorner="5,4" SliceSize="3,2" SliceTextureSize="14,8">
 					<Grid Texture="Controls_Search2" SliceCorner="30,13" SliceTextureSize="41,26" Anchor="C,C" Size="parent-50,26" ToolTip="LOC_WORLDTRACKER_UNITS_SEARCH_TT">
 						<EditBox ID="UnitsSearchBox" Style="EditTextArea" Size="parent-30,22" Anchor="L,C" Offset="24,0" EditMode="0" FocusStop="0" KeepFocus="1"/>
 					</Grid>
 				</Grid>
-			</Stack>
+				-->
+			<!--</Stack>-->
 		</Grid>
 	</Instance>
 

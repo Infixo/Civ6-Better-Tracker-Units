@@ -32,7 +32,7 @@ local WORLD_TRACKER_PANEL_WIDTH			:number = 300;
 local MINIMAP_PADDING					:number = 40;
 
 local UNITS_PANEL_MIN_HEIGHT			:number = 85;
-local UNITS_PANEL_PADDING				:number = 65;
+local UNITS_PANEL_PADDING				:number = 35; -- 65
 local TOPBAR_PADDING					:number = 100;
 
 local WORLD_TRACKER_TOP_PADDING			:number = 200;
@@ -79,8 +79,8 @@ local m_isUnitListSizeDirty		:boolean = false;
 local m_isMinimapInitialized	:boolean = false;
 
 --local m_uiCheckBoxes			:table = {Controls.ChatCheck, Controls.CivicsCheck, Controls.ResearchCheck, Controls.UnitCheck}; -- Infixo: not used
-local m_isUnitListMilitary		:boolean = true;
-local m_showTrader				:boolean = true;
+local m_isUnitListMilitary		:boolean = false;
+local m_showTrader				:boolean = false;
 
 
 -- ===========================================================================
@@ -402,16 +402,23 @@ function UpdateUnitListPanel(hideUnitList:boolean)
 		m_unitListInstance.UnitsSearchBox:LocalizeAndSetToolTip("LOC_WORLDTRACKER_UNITS_SEARCH_TT");
 
 		local militaryUnits : table = {};
-		local navalUnits	: table = {};
-		local airUnits		: table = {};
-		local supportUnits	: table = {};
+		--local navalUnits	: table = {};
+		--local airUnits		: table = {};
+		--local supportUnits	: table = {};
 		local civilianUnits : table = {};
-		local tradeUnits	: table = {};
+		--local tradeUnits	: table = {};
 
 		for i, pUnit in pPlayerUnits:Members() do
 			if((m_unitSearchString ~= "" and string.find(Locale.ToUpper(pUnit:GetName()), m_unitSearchString) ~= nil) or m_unitSearchString == "")then
 				local pUnitInfo : table = GameInfo.Units[pUnit:GetUnitType()];
 
+				-- Infixo: just split into 2 categories
+				if pUnitInfo.FormationClass ~= "FORMATION_CLASS_CIVILIAN" then
+					table.insert(militaryUnits, pUnit);
+				elseif m_showTrader or not pUnitInfo.MakeTradeRoute then
+					table.insert(civilianUnits, pUnit);
+				end
+				--[[
 				if m_isUnitListMilitary then
 					-- military units
 					if pUnitInfo.FormationClass == "FORMATION_CLASS_LAND_COMBAT" then
@@ -431,6 +438,7 @@ function UpdateUnitListPanel(hideUnitList:boolean)
 						table.insert(tradeUnits, pUnit);
 					end
 				end
+				--]]
 				-- Infixo: a better way to group the units is to use FormationClass
 				--[[
 				elseif pUnit:GetCombat() == 0 and pUnit:GetRangedCombat() == 0 then
@@ -459,26 +467,28 @@ function UpdateUnitListPanel(hideUnitList:boolean)
 			end
 			return aName < bName;
 		end
-		table.sort(militaryUnits, sortFunc);
-		table.sort(navalUnits, sortFunc);
-		table.sort(airUnits, sortFunc);
-		table.sort(supportUnits, sortFunc);
-		table.sort(civilianUnits, sortFunc);
-		table.sort(tradeUnits, sortFunc);
+		--table.sort(militaryUnits, sortFunc);
+		--table.sort(navalUnits, sortFunc);
+		--table.sort(airUnits, sortFunc);
+		--table.sort(supportUnits, sortFunc);
+		--table.sort(civilianUnits, sortFunc);
+		--table.sort(tradeUnits, sortFunc);
 
 		-- Add units by sorted groups
 		if m_isUnitListMilitary then
-			if #militaryUnits > 0 then AddHeaderToUnitList("LOC_FORMATION_CLASS_LAND_COMBAT_NAME"); end
+			table.sort(militaryUnits, sortFunc);
+			--if #militaryUnits > 0 then AddHeaderToUnitList("LOC_FORMATION_CLASS_LAND_COMBAT_NAME"); end
 			for _, pUnit in ipairs(militaryUnits) do AddUnitToUnitList( pUnit ); end
-			if #navalUnits > 0 then AddHeaderToUnitList("LOC_FORMATION_CLASS_NAVAL_NAME"); end
-			for _, pUnit in ipairs(navalUnits)    do AddUnitToUnitList( pUnit ); end
-			if #airUnits > 0 then AddHeaderToUnitList("LOC_FORMATION_CLASS_AIR_NAME"); end
-			for _, pUnit in ipairs(airUnits)      do AddUnitToUnitList( pUnit ); end
-			if #supportUnits > 0 then AddHeaderToUnitList("LOC_FORMATION_CLASS_SUPPORT_NAME"); end
-			for _, pUnit in ipairs(supportUnits)  do AddUnitToUnitList( pUnit ); end
+			--if #navalUnits > 0 then AddHeaderToUnitList("LOC_FORMATION_CLASS_NAVAL_NAME"); end
+			--for _, pUnit in ipairs(navalUnits)    do AddUnitToUnitList( pUnit ); end
+			--if #airUnits > 0 then AddHeaderToUnitList("LOC_FORMATION_CLASS_AIR_NAME"); end
+			--for _, pUnit in ipairs(airUnits)      do AddUnitToUnitList( pUnit ); end
+			--if #supportUnits > 0 then AddHeaderToUnitList("LOC_FORMATION_CLASS_SUPPORT_NAME"); end
+			--for _, pUnit in ipairs(supportUnits)  do AddUnitToUnitList( pUnit ); end
 		else -- civilian
+			table.sort(civilianUnits, sortFunc);
 			for _, pUnit in ipairs(civilianUnits) do AddUnitToUnitList( pUnit ); end
-			if m_showTrader then for _, pUnit in ipairs(tradeUnits) do AddUnitToUnitList( pUnit ); end end
+			--if m_showTrader then for _, pUnit in ipairs(tradeUnits) do AddUnitToUnitList( pUnit ); end end
 		end
 	else
 		m_unitListInstance.TraderCheck:SetHide(true);
@@ -496,38 +506,48 @@ function StartUnitListSizeUpdate()
 	m_isUnitListSizeDirty = true;
 
 	--Allow the unit stack to take up it's full size so the auto sizing parent can do it's thing
-	m_unitListInstance.UnitStackContainer:SetHide(false);
-	m_unitListInstance.UnitStack:ChangeParent(m_unitListInstance.UnitStackContainer); 
+	--m_unitListInstance.UnitStackContainer:SetHide(false);
+	--m_unitListInstance.UnitStack:ChangeParent(m_unitListInstance.UnitStackContainer); 
 	ContextPtr:RequestRefresh();
 end
 
 -- ===========================================================================
+-- WorldTrackerVerticalContainer:
+--   = ResearchInstance
+--   = CivicInstance
+--   = .OtherContainer - emergencies, multiple * 144 per one
+--   = UnitListInstance
+--   = .ChatPanelContainer
+--   = .TutorialGoals
+
 function UpdateUnitListSize()
-	--print("FUN UpdateUnitListSize()");
+	print("FUN UpdateUnitListSize()");
 	if(not m_isMinimapInitialized)then
 		UpdateWorldTrackerSize();
 	end
 
 	if(not m_hideUnitList)then
-		m_unitListInstance.UnitStack:CalculateSize();
+		--m_unitListInstance.UnitStack:CalculateSize();
+		--m_unitListInstance.UnitStack:ReprocessAnchoring();
 		local unitStackSize : number = m_unitListInstance.UnitStack:GetSizeY();
+		--m_unitListInstance.UnitListMainPanel:SetSizeY(unitStackSize + UNITS_PANEL_PADDING);
 
-		Controls.WorldTrackerVerticalContainer:CalculateSize();
+		--Controls.WorldTrackerVerticalContainer:CalculateSize();
 
 		local slotSize : number = m_unitListInstance.UnitListMainPanel:GetParent():GetSizeY();
-		--print("stack=",unitStackSize,"slot=",slotSize,"space=",slotSize - UNITS_PANEL_PADDING);
-		if(unitStackSize > slotSize - UNITS_PANEL_PADDING)then
-			m_unitListInstance.UnitStackContainer:SetSizeY(slotSize - UNITS_PANEL_PADDING);
-			m_unitListInstance.UnitListScroll:SetSizeY(slotSize - UNITS_PANEL_PADDING);
-			m_unitListInstance.UnitListScroll:SetHide(false);
-			m_unitListInstance.UnitStack:ChangeParent(m_unitListInstance.UnitListScroll);
-			m_unitListInstance.UnitStackContainer:SetHide(true);
-		else
-			m_unitListInstance.UnitStackContainer:SetSizeY(slotSize - UNITS_PANEL_PADDING);
-			m_unitListInstance.UnitStackContainer:SetHide(false);
-			m_unitListInstance.UnitStack:ChangeParent(m_unitListInstance.UnitStackContainer);
-			m_unitListInstance.UnitListScroll:SetHide(true);
-		end
+		print("stack=",unitStackSize,"slot=",slotSize,"space=",slotSize - UNITS_PANEL_PADDING);
+		--if(unitStackSize > slotSize - UNITS_PANEL_PADDING)then
+			--m_unitListInstance.UnitStackContainer:SetSizeY(slotSize - UNITS_PANEL_PADDING);
+			--m_unitListInstance.UnitListMainPanel:SetSizeY(unitStackSize + UNITS_PANEL_PADDING);
+			--m_unitListInstance.UnitListScroll:SetHide(false);
+			--m_unitListInstance.UnitStack:ChangeParent(m_unitListInstance.UnitListScroll);
+			--m_unitListInstance.UnitStackContainer:SetHide(true);
+		--else
+			--m_unitListInstance.UnitStackContainer:SetSizeY(slotSize - UNITS_PANEL_PADDING);
+			--m_unitListInstance.UnitStackContainer:SetHide(false);
+			--m_unitListInstance.UnitStack:ChangeParent(m_unitListInstance.UnitStackContainer);
+			--m_unitListInstance.UnitListScroll:SetHide(true);
+		--end
 		m_isUnitListSizeDirty = false;
 	end
 end
@@ -2021,13 +2041,6 @@ function Initialize()
 			StartUnitListSizeUpdate();
 			--CheckEnoughRoom();
 		end);
-	Controls.CivilianListButton:RegisterCallback( Mouse.eRClick,
-		function()
-			m_hideUnitList = true;
-			UpdateUnitListPanel(m_hideUnitList);
-			StartUnitListSizeUpdate();
-			--CheckEnoughRoom();
-		end);
 	Controls.MilitaryListButton:RegisterCallback( Mouse.eLClick,
 		function()
 			if not m_hideUnitList and not m_isUnitListMilitary then m_hideUnitList = true; end -- showing civilian units -> change to military -> simulate "hidden"
@@ -2037,14 +2050,14 @@ function Initialize()
 			StartUnitListSizeUpdate();
 			--CheckEnoughRoom();
 		end);
-	Controls.MilitaryListButton:RegisterCallback( Mouse.eRClick,
+	m_unitListInstance.CloseButton:RegisterCallback( Mouse.eLClick,
 		function()
 			m_hideUnitList = true;
 			UpdateUnitListPanel(m_hideUnitList);
 			StartUnitListSizeUpdate();
 			--CheckEnoughRoom();
 		end);
-	m_unitListInstance.TraderCheck:SetCheck(true);
+	m_unitListInstance.TraderCheck:SetCheck(m_showTrader);
 	m_unitListInstance.TraderCheck:RegisterCheckHandler(
 		function()
 			m_showTrader = not m_showTrader;
