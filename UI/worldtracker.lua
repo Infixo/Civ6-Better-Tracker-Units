@@ -32,7 +32,7 @@ local WORLD_TRACKER_PANEL_WIDTH			:number = 300;
 local MINIMAP_PADDING					:number = 40;
 
 local UNITS_PANEL_MIN_HEIGHT			:number = 85;
-local UNITS_PANEL_PADDING				:number = 35; -- 65
+--local UNITS_PANEL_PADDING				:number = 65;
 local TOPBAR_PADDING					:number = 100;
 
 local WORLD_TRACKER_TOP_PADDING			:number = 200;
@@ -141,77 +141,6 @@ function RealizeEmptyMessage()
 end
 
 -- ===========================================================================
---[[ Infixo: remove dropdown
-function ToggleDropdown()
-	if m_dropdownExpanded then
-		m_dropdownExpanded = false;
-		Controls.DropdownAnim:Reverse();
-		Controls.DropdownAnim:Play();
-		UI.PlaySound("Tech_Tray_Slide_Closed");
-	else
-		UI.PlaySound("Tech_Tray_Slide_Open");
-		m_dropdownExpanded = true;
-		Controls.DropdownAnim:SetToBeginning();
-		Controls.DropdownAnim:Play();
-		CheckEnoughRoom();
-	end
-end
---]]
-
--- ===========================================================================
--- Infixo: this function probably is not needed if there is no dropdown menu
---[[
-function CheckEnoughRoom()
-	local availableSpace : number = Controls.WorldTrackerVerticalContainer:GetSizeY();
-	if(m_researchInstance.MainPanel:IsVisible())then
-		availableSpace = availableSpace - CIVIC_RESEARCH_MIN_SIZE;
-	end
-	if(m_civicsInstance.MainPanel:IsVisible())then
-		availableSpace = availableSpace - CIVIC_RESEARCH_MIN_SIZE;
-	end
-	if(m_unitListInstance.UnitListMainPanel:IsVisible())then
-		availableSpace = availableSpace - CIVIC_RESEARCH_MIN_SIZE;
-	end
-	if(Controls.ChatPanelContainer:IsVisible())then
-		availableSpace = availableSpace - CHAT_COLLAPSED_SIZE;
-	end
-	if(Controls.OtherContainer:IsVisible())then
-		availableSpace = availableSpace - Controls.OtherContainer:GetSizeY();
-	end
---]]
-	--[[ Infixo: remove dropdown
-	if(not Controls.ResearchCheck:IsChecked() and availableSpace < CIVIC_RESEARCH_MIN_SIZE)then
-		Controls.ResearchCheck:SetDisabled(true);
-		Controls.ResearchCheck:LocalizeAndSetToolTip("LOC_WORLDTRACKER_NO_ROOM");
-	else
-		Controls.ResearchCheck:SetDisabled(false);
-		Controls.ResearchCheck:SetToolTipString("");
-	end
-	if(not Controls.CivicsCheck:IsChecked() and availableSpace < CIVIC_RESEARCH_MIN_SIZE)then
-		Controls.CivicsCheck:SetDisabled(true);
-		Controls.CivicsCheck:LocalizeAndSetToolTip("LOC_WORLDTRACKER_NO_ROOM");
-	else
-		Controls.CivicsCheck:SetDisabled(false);
-		Controls.CivicsCheck:SetToolTipString("");
-	end
-	if(not Controls.UnitCheck:IsChecked() and availableSpace < UNITS_PANEL_MIN_HEIGHT)then
-		Controls.UnitCheck:SetDisabled(true);
-		Controls.UnitCheck:LocalizeAndSetToolTip("LOC_WORLDTRACKER_NO_ROOM");
-	else
-		Controls.UnitCheck:SetDisabled(false);
-		Controls.UnitCheck:SetToolTipString("");
-	end
-	if(not Controls.ChatCheck:IsChecked() and availableSpace < CHAT_COLLAPSED_SIZE)then
-		Controls.ChatCheck:SetDisabled(true);
-		Controls.ChatCheck:LocalizeAndSetToolTip("LOC_WORLDTRACKER_NO_ROOM");
-	else
-		Controls.ChatCheck:SetDisabled(false);
-		Controls.ChatCheck:SetToolTipString("");
-	end
-	--]]
---end
-
--- ===========================================================================
 function ToggleAll(hideAll:boolean)
 
 	-- Do nothing if value didn't change
@@ -236,11 +165,6 @@ function ToggleAll(hideAll:boolean)
 
 	if( hideAll ) then
 		UI.PlaySound("Tech_Tray_Slide_Closed");
-		-- Infixo: remove dropdown
-		--if( m_dropdownExpanded ) then
-			--Controls.DropdownAnim:SetToBeginning();
-			--m_dropdownExpanded = false;
-		--end
 	end
 
 	Controls.WorldTrackerAlpha:Reverse();
@@ -301,7 +225,6 @@ function UpdateResearchPanel( isHideResearch:boolean )
 	end
 	
 	m_researchInstance.MainPanel:SetHide( m_hideResearch );
-	--Controls.ResearchCheck:SetCheck( not m_hideResearch );
 	LuaEvents.WorldTracker_ToggleResearchPanel(m_hideResearch or m_hideAll);
 	RealizeEmptyMessage();
 	RealizeStack();
@@ -351,7 +274,6 @@ function UpdateCivicsPanel(hideCivics:boolean)
 	end
 
 	m_civicsInstance.MainPanel:SetHide(m_hideCivics); 
-	--Controls.CivicsCheck:SetCheck(not m_hideCivics);
 	LuaEvents.WorldTracker_ToggleCivicPanel(m_hideCivics or m_hideAll);
 	RealizeEmptyMessage();
 	RealizeStack();
@@ -399,7 +321,6 @@ function UpdateUnitListPanel(hideUnitList:boolean)
 
 	if not HasCapability("CAPABILITY_UNIT_LIST") or (ePlayer ~= PlayerTypes.NONE and not pPlayerConfig:IsAlive()) then
 		hideUnitList = true;
-		--Controls.CivicsCheck:SetHide(true); -- TODO: unit list buttons
 		m_unitListInstance.UnitListMainPanel:SetHide(true);
 		return;
 	end
@@ -409,7 +330,6 @@ function UpdateUnitListPanel(hideUnitList:boolean)
 	m_unitEntryIM:ResetInstances();
 
 	m_unitListInstance.UnitListMainPanel:SetHide(m_hideUnitList); 
-	--Controls.UnitCheck:SetCheck(not m_hideUnitList);
 
 	local pPlayer : table = Players[ePlayer];
 	local pPlayerUnits : table = pPlayer:GetUnits();
@@ -420,63 +340,23 @@ function UpdateUnitListPanel(hideUnitList:boolean)
 		m_unitListInstance.UnitsSearchBox:LocalizeAndSetToolTip("LOC_WORLDTRACKER_UNITS_SEARCH_TT");
 
 		local militaryUnits : table = {};
-		--local navalUnits	: table = {};
-		--local airUnits		: table = {};
-		--local supportUnits	: table = {};
 		local civilianUnits : table = {};
-		--local tradeUnits	: table = {};
 
 		for i, pUnit in pPlayerUnits:Members() do
 			if((m_unitSearchString ~= "" and string.find(Locale.ToUpper(pUnit:GetName()), m_unitSearchString) ~= nil) or m_unitSearchString == "")then
 				local pUnitInfo : table = GameInfo.Units[pUnit:GetUnitType()];
-
 				-- Infixo: just split into 2 categories
+				-- Infixo: a better way to group the units is to use FormationClass
 				if pUnitInfo.FormationClass ~= "FORMATION_CLASS_CIVILIAN" then
 					table.insert(militaryUnits, pUnit);
 				elseif m_showTrader or not pUnitInfo.MakeTradeRoute then
 					table.insert(civilianUnits, pUnit);
 				end
-				--[[
-				if m_isUnitListMilitary then
-					-- military units
-					if pUnitInfo.FormationClass == "FORMATION_CLASS_LAND_COMBAT" then
-						table.insert(militaryUnits, pUnit);
-					elseif pUnitInfo.FormationClass == "FORMATION_CLASS_NAVAL" then
-						table.insert(navalUnits, pUnit);
-					elseif pUnitInfo.FormationClass == "FORMATION_CLASS_SUPPORT" then
-						table.insert(supportUnits, pUnit);
-					elseif pUnitInfo.FormationClass == "FORMATION_CLASS_AIR" then
-						table.insert(airUnits, pUnit);
-					end
-				elseif pUnitInfo.FormationClass == "FORMATION_CLASS_CIVILIAN" then
-					-- civilian units
-					if not pUnitInfo.MakeTradeRoute then
-						table.insert(civilianUnits, pUnit);
-					elseif m_showTrader then
-						table.insert(tradeUnits, pUnit);
-					end
-				end
-				--]]
-				-- Infixo: a better way to group the units is to use FormationClass
-				--[[
-				elseif pUnit:GetCombat() == 0 and pUnit:GetRangedCombat() == 0 then
-					-- if we have no attack strength we must be civilian
-					table.insert(civilianUnits, pUnit);
-				elseif pUnitInfo.Domain == "DOMAIN_LAND" then
-					table.insert(militaryUnits, pUnit);
-				elseif pUnitInfo.Domain == "DOMAIN_SEA" then
-					table.insert(navalUnits, pUnit);
-				elseif pUnitInfo.Domain == "DOMAIN_AIR" then
-					table.insert(airUnits, pUnit);
-				end
-				--]]
 			end
 		end
 
 		-- Alphabetize groups
 		local sortFunc = function(a, b) 
-			--local aType:string = GameInfo.Units[a:GetUnitType()].UnitType;
-			--local bType:string = GameInfo.Units[b:GetUnitType()].UnitType;
 			-- Infixo: sort by an actual name (asc) and experience (desc)
 			local aName:string = Locale.Lookup(a:GetName());
 			local bName:string = Locale.Lookup(b:GetName());
@@ -485,28 +365,14 @@ function UpdateUnitListPanel(hideUnitList:boolean)
 			end
 			return aName < bName;
 		end
-		--table.sort(militaryUnits, sortFunc);
-		--table.sort(navalUnits, sortFunc);
-		--table.sort(airUnits, sortFunc);
-		--table.sort(supportUnits, sortFunc);
-		--table.sort(civilianUnits, sortFunc);
-		--table.sort(tradeUnits, sortFunc);
 
 		-- Add units by sorted groups
 		if m_isUnitListMilitary then
 			table.sort(militaryUnits, sortFunc);
-			--if #militaryUnits > 0 then AddHeaderToUnitList("LOC_FORMATION_CLASS_LAND_COMBAT_NAME"); end
 			for _, pUnit in ipairs(militaryUnits) do AddUnitToUnitList( pUnit ); end
-			--if #navalUnits > 0 then AddHeaderToUnitList("LOC_FORMATION_CLASS_NAVAL_NAME"); end
-			--for _, pUnit in ipairs(navalUnits)    do AddUnitToUnitList( pUnit ); end
-			--if #airUnits > 0 then AddHeaderToUnitList("LOC_FORMATION_CLASS_AIR_NAME"); end
-			--for _, pUnit in ipairs(airUnits)      do AddUnitToUnitList( pUnit ); end
-			--if #supportUnits > 0 then AddHeaderToUnitList("LOC_FORMATION_CLASS_SUPPORT_NAME"); end
-			--for _, pUnit in ipairs(supportUnits)  do AddUnitToUnitList( pUnit ); end
 		else -- civilian
 			table.sort(civilianUnits, sortFunc);
 			for _, pUnit in ipairs(civilianUnits) do AddUnitToUnitList( pUnit ); end
-			--if m_showTrader then for _, pUnit in ipairs(tradeUnits) do AddUnitToUnitList( pUnit ); end end
 		end
 	else
 		m_unitListInstance.TraderCheck:SetHide(true);
@@ -522,10 +388,6 @@ end
 -- ===========================================================================
 function StartUnitListSizeUpdate()
 	m_isUnitListSizeDirty = true;
-
-	--Allow the unit stack to take up it's full size so the auto sizing parent can do it's thing
-	--m_unitListInstance.UnitStackContainer:SetHide(false);
-	--m_unitListInstance.UnitStack:ChangeParent(m_unitListInstance.UnitStackContainer); 
 	ContextPtr:RequestRefresh();
 end
 
@@ -539,35 +401,10 @@ end
 --   = .TutorialGoals
 
 function UpdateUnitListSize()
-	print("FUN UpdateUnitListSize()");
 	if(not m_isMinimapInitialized)then
 		UpdateWorldTrackerSize();
 	end
-
 	if(not m_hideUnitList)then
-		--m_unitListInstance.UnitStack:CalculateSize();
-		--m_unitListInstance.UnitStack:ReprocessAnchoring();
-		--m_unitListInstance.UnitListScroll:CalculateInternalSize(); -- DEPRECATED
-
-		local unitStackSize : number = m_unitListInstance.UnitStack:GetSizeY();
-		--m_unitListInstance.UnitListMainPanel:SetSizeY(unitStackSize + UNITS_PANEL_PADDING);
-
-		--Controls.WorldTrackerVerticalContainer:CalculateSize();
-
-		local slotSize : number = m_unitListInstance.UnitListMainPanel:GetParent():GetSizeY();
-		print("stack=",unitStackSize,"slot=",slotSize,"space=",slotSize - UNITS_PANEL_PADDING);
-		--if(unitStackSize > slotSize - UNITS_PANEL_PADDING)then
-			--m_unitListInstance.UnitStackContainer:SetSizeY(slotSize - UNITS_PANEL_PADDING);
-			--m_unitListInstance.UnitListMainPanel:SetSizeY(unitStackSize + UNITS_PANEL_PADDING);
-			--m_unitListInstance.UnitListScroll:SetHide(false);
-			--m_unitListInstance.UnitStack:ChangeParent(m_unitListInstance.UnitListScroll);
-			--m_unitListInstance.UnitStackContainer:SetHide(true);
-		--else
-			--m_unitListInstance.UnitStackContainer:SetSizeY(slotSize - UNITS_PANEL_PADDING);
-			--m_unitListInstance.UnitStackContainer:SetHide(false);
-			--m_unitListInstance.UnitStack:ChangeParent(m_unitListInstance.UnitStackContainer);
-			--m_unitListInstance.UnitListScroll:SetHide(true);
-		--end
 		m_isUnitListSizeDirty = false;
 	end
 end
@@ -1329,23 +1166,6 @@ end
 -- INFIXO: END OF BOLBAS' CODE
 -- ===========================================================================
 
--- ===========================================================================
-function AddHeaderToUnitList(textHeader:string)
-	local uiUnitEntry:table = m_unitEntryIM:GetInstance();
-	uiUnitEntry.BQUI_UnitName_UnitList:SetText( "[ICON_Bolt]  "..Locale.Lookup(textHeader).."  [ICON_Bolt]" );
-	uiUnitEntry.Button:RegisterCallback(Mouse.eLClick, function() end);
-	uiUnitEntry.Button:RegisterCallback(Mouse.eRClick, function() end);
-	uiUnitEntry.UnitTypeIcon:SetHide(true);
-	uiUnitEntry.UnitStatusIcon:SetHide(true);
-	uiUnitEntry.BQUI_UnitsSum:SetHide(true);
-	uiUnitEntry.BQUI_IconUpgrade:SetHide(true);
-	uiUnitEntry.BQUI_ReligionIcon:SetHide(true);
-	uiUnitEntry.BQUI_UnitNameSuffix_UnitList:SetHide(true);
-	uiUnitEntry.Button:GetTextControl():SetColorByName("UnitPanelTextDisabledCS");
-	uiUnitEntry.BQUI_HPBarBG:SetHide(true);
-	uiUnitEntry.BQUI_HPBar:SetHide(true);
-end
-
 
 --[[ Infixo: original code
 -- ===========================================================================
@@ -1384,8 +1204,7 @@ function AddUnitToUnitList(pUnit:table)
 	uiUnitEntry.Button:SetToolTipString(tooltip);
 
 	uiUnitEntry.Button:SetText( Locale.ToUpper(uniqueName) );
-	uiUnitEntry.Button:RegisterCallback(Mouse.eLClick, function() OnUnitEntryClicked(pUnit:GetID(),true)  end); -- left click closes
-	uiUnitEntry.Button:RegisterCallback(Mouse.eRClick, function() OnUnitEntryClicked(pUnit:GetID(),false) end); -- right click does not close
+	uiUnitEntry.Button:RegisterCallback(Mouse.eLClick, function() OnUnitEntryClicked(pUnit:GetID())  end);
 
 	UpdateUnitIcon(pUnit, uiUnitEntry);
 
@@ -1415,11 +1234,6 @@ function AddUnitToUnitList(pUnit:table)
 end
 --]]
 
--- ===========================================================================
--- Infixo: inlined
---function SetUnitEntryStatusIcon(unitEntry:table, icon:string)
-	--unitEntry.UnitStatusIcon:SetIcon(icon);
---end
 
 -- ===========================================================================
 function UpdateUnitIcon(pUnit:table, uiUnitEntry:table)
@@ -2042,19 +1856,12 @@ function Initialize()
 
 	Controls.ChatPanelContainer:ChangeParent( Controls.WorldTrackerVerticalContainer );
 	Controls.TutorialGoals:ChangeParent( Controls.WorldTrackerVerticalContainer );	
-
-	-- Handle any text overflows with truncation and tooltip
-	--local fullString :string = Controls.WorldTracker:GetText();
-	--Controls.DropdownScroll:SetOffsetY(Controls.WorldTrackerHeader:GetSizeY() + STARTING_TRACKER_OPTIONS_OFFSET);	-- Infixo: remove dropdown
 	
 	-- Hot-reload events
 	ContextPtr:SetInitHandler(OnInit);
 	ContextPtr:SetShutdown(OnShutdown);
 	LuaEvents.GameDebug_Return.Add(OnGameDebugReturn);
 	
-	--Controls.ChatCheck:SetCheck(true);
-	--Controls.CivicsCheck:SetCheck(true);
-	--Controls.ResearchCheck:SetCheck(true);
 	Controls.ToggleAllButton:SetCheck(true);
 
 	Controls.ChatButton:RegisterCallback( Mouse.eLClick, function() UpdateChatPanel(not m_hideChat);
