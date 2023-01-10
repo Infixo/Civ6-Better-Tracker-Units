@@ -62,7 +62,7 @@
           </Box>
         </Box>
 
-				<VerticalContainer ID="WorldTrackerVerticalContainer" Size="296, 300">
+				<VerticalContainer ID="WorldTrackerVerticalContainer" Size="296, auto">
 					
 				</VerticalContainer>
 

@@ -3,7 +3,7 @@
 <Root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\..\..\..\CivTech\Libs\ForgeUI\ForgeUI_Assets\Controls.xsd">
 
 	<Instance Name="UnitListInstance">
-		<Grid ID="UnitListMainPanel" Size="296,auto" Texture="Controls_DrawerUp" SliceCorner="5,4" SliceSize="3,2" SliceTextureSize="14,8" Hidden="1">
+		<Grid ID="UnitListMainPanel" Size="296,parent" Texture="Controls_DrawerUp" SliceCorner="5,4" SliceSize="3,2" SliceTextureSize="14,8" Hidden="1">
 			<!--<Stack ID="MainStack" StackGrowth="Bottom" StackPadding="5">-->
 				<Grid Anchor="L,T" Offset="0,0" Size="parent,30" Texture="Controls_DrawerUp" SliceCorner="5,4" SliceSize="3,2" SliceTextureSize="14,8">
 					<!-- Infixo: checkbox for showing/hiding traders -->
@@ -19,7 +19,7 @@
 				<Container Anchor="C,T" Offset="0,30" Size="parent,30">
 					<Label ID="NoUnitsLabel" Style="PanelHeaderText" String="LOC_WORLDTRACKER_NO_UNITS" Anchor="C,C" FontSize="20" Offset="0,0"/>
 				</Container>
-				<ScrollPanel ID="UnitListScroll" Anchor="C,T" Offset="0,30" Vertical="1" Size="parent,auto" AutoScrollBar="1" >
+				<ScrollPanel ID="UnitListScroll" Anchor="C,T" Offset="0,30" Vertical="1" Size="parent,parent" AutoScrollBar="1" >
 					<Stack	ID="UnitStack" Anchor="C,T" StackGrowth="Bottom" />
 					<ScrollBar  Style="Slider_Blue" Offset="0,0" Anchor="R,C"/>
 				</ScrollPanel>

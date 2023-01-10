@@ -529,6 +529,8 @@ function UpdateUnitListSize()
 	if(not m_hideUnitList)then
 		--m_unitListInstance.UnitStack:CalculateSize();
 		--m_unitListInstance.UnitStack:ReprocessAnchoring();
+		--m_unitListInstance.UnitListScroll:CalculateInternalSize(); -- DEPRECATED
+
 		local unitStackSize : number = m_unitListInstance.UnitStack:GetSizeY();
 		--m_unitListInstance.UnitListMainPanel:SetSizeY(unitStackSize + UNITS_PANEL_PADDING);
 
