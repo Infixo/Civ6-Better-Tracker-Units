@@ -72,7 +72,7 @@
 						</Container>
 						<Image ID="BQUI_LeviedUnits_UnitList" Size="17,17" Anchor="L,C" Offset="1,-1" Icon="Turn" Hidden="1"/>    <!-- bolbas (Icons for levied units added) -->
 						<Stack Anchor="L,C" Offset="0,0" StackGrowth="Right" StackPadding="1" Hidden="0">
-							<Image ID="BQUI_IconPromotionAvailable_UnitList" Size="18,18" Anchor="L,C" Offset="0,-1" Icon="ICON_CIVILOPEDIA_UNITPROMOTIONS" Hidden="1"/>
+							<Image ID="BQUI_IconPromotionAvailable" Size="18,18" Anchor="L,C" Offset="0,-1" Icon="ICON_CIVILOPEDIA_UNITPROMOTIONS" Hidden="1"/>
 						</Stack>
 						<Container ID="BQUI_AllAbilities_UnitList" Anchor="L,C" Size="21,1" Offset="-1,8" Hidden="1">
 							<Stack Anchor="C,C" StackGrowth="Right" StackPadding="-5">

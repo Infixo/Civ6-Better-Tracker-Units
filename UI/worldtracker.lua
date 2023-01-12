@@ -30,6 +30,7 @@ print("CQUI      : ", (m_isCQUI and "YES" or "no"));
 -- ===========================================================================
 --	CONSTANTS
 -- ===========================================================================
+local LL = Locale.Lookup;
 local RELOAD_CACHE_ID					:string = "WorldTracker"; -- Must be unique (usually the same as the file name)
 local CHAT_COLLAPSED_SIZE				:number = 118;
 local CIVIC_RESEARCH_MIN_SIZE			:number = 96;
@@ -469,8 +470,8 @@ local CQUI_ApostlePromotionIcons:table = {
 	PROMOTION_PROSELYTIZER 		 = {Icon = "Damaged",		  Size = 20, OffsetY = 0},-- 75% reduce
 	PROMOTION_TRANSLATOR 		 = {Icon = "Bombard",		  Size = 20, OffsetY = 0},-- 3x pressure
 	PROMOTION_MARTYR 			 = {Icon = "GreatWork_Relic", Size = 18, OffsetY = 0},-- relic
-	PROMOTION_ORATOR 			 = {Icon = "ICON_STATS_SPREADCHARGES", Size = 16, OffsetY = 0}, -- adds charges
-	PROMOTION_PILGRIM 			 = {Icon = "ICON_STATS_TERRAIN",	   Size = 16, OffsetY = 0}, -- adds charges
+	--PROMOTION_ORATOR 			 = {Icon = "ICON_STATS_SPREADCHARGES", Size = 16, OffsetY = 0}, -- adds charges
+	--PROMOTION_PILGRIM 		 = {Icon = "ICON_STATS_TERRAIN",	   Size = 16, OffsetY = 0}, -- adds charges
 };
 
 local BQUI_RockBandPromotionIcons:table = {
@@ -695,6 +696,7 @@ function AddUnitToUnitList(pUnit:table)
 	local BQUI_RangedCombatStrength = pUnit:GetRangedCombat();
 
 	-- promotions are off by default
+	unitEntry.BQUI_IconPromotionAvailable:SetShow(false);
 	unitEntry.BQUI_PromotionIcons_UnitList:SetShow(false); -- graphical representation
 	unitEntry.BQUI_RealPromotion_1_UnitList:SetShow(false);
 	unitEntry.BQUI_RealPromotion_2_UnitList:SetShow(false);
@@ -724,11 +726,10 @@ function AddUnitToUnitList(pUnit:table)
 		SetPromotionIconByName(unitEntry, idx, iconInfo.Icon, iconInfo.Size, iconInfo.OffsetY);
 	end
 
+	-- *** PROMOTIONS ***
 	if #BQUI_PromotionList > 0 then
-		if BQUI_ExperiencePoints == BQUI_MaxExperience and ( ( BQUI_UnitType ~= "UNIT_LAHORE_NIHANG" and #BQUI_PromotionList < 7 ) or ( BQUI_UnitType == "UNIT_LAHORE_NIHANG" and #BQUI_PromotionList < 5 ) ) then
-			unitEntry.BQUI_IconPromotionAvailable_UnitList:SetShow(true);
-		end
 
+		-- Military Units - graphical tree
 		if BQUI_CombatStrength > 0 or BQUI_RangedCombatStrength > 0 then
 			unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
 			unitEntry.BQUI_PromotionsCount_UnitList:SetText(#BQUI_PromotionList);
@@ -774,10 +775,9 @@ function AddUnitToUnitList(pUnit:table)
 			end
 				
 		--- *** RELIGIOUS UNITS ***
-		elseif BQUI_SpreadCharges > 0 then
-			unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
-			unitEntry.BQUI_PromotionsCount_UnitList:SetText(BQUI_SpreadCharges);
-
+		elseif pUnit:GetReligiousStrength() > 0 then
+			--unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true); -- Infixo: this is later
+			--unitEntry.BQUI_PromotionsCount_UnitList:SetText(BQUI_SpreadCharges);
 			for i,promo in ipairs(BQUI_PromotionList) do
 				local promoInfo:table = GameInfo.UnitPromotions[promo];
 				--dshowtable(promoInfo);
@@ -846,27 +846,43 @@ function AddUnitToUnitList(pUnit:table)
 				end
 			end
 		end
+	end -- PROMOTIONS
 
-	elseif BQUI_ExperiencePoints == BQUI_MaxExperience then -- TODO: add check if the unit can be promoted at all
-		unitEntry.BQUI_IconPromotionAvailable_UnitList:SetShow(true);
-		if BQUI_SpreadCharges > 0 then
-			unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
-			unitEntry.BQUI_PromotionsCount_UnitList:SetText(BQUI_SpreadCharges);
-		end
+	-- *** PROMO AVAILABLE ***
+	if BQUI_ExperiencePoints == BQUI_MaxExperience then
+		unitEntry.BQUI_IconPromotionAvailable:SetShow(true);
+		--if BQUI_SpreadCharges > 0 then
+			--unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
+			--unitEntry.BQUI_PromotionsCount_UnitList:SetText(BQUI_SpreadCharges);
+		--end
+	end
 	
-	elseif pUnit:GetBuildCharges() > 0 and BQUI_CombatStrength == 0 and BQUI_RangedCombatStrength == 0 then
+	-- *** BUILDER ***
+	if pUnit:GetBuildCharges() > 0 and BQUI_CombatStrength == 0 and BQUI_RangedCombatStrength == 0 then
 		unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
 		unitEntry.BQUI_PromotionsCount_UnitList:SetText(pUnit:GetBuildCharges());
-		
-	elseif BQUI_SpreadCharges > 0 then
+	end
+	
+	-- *** RELIGIOUS CHARGES ***
+	if BQUI_SpreadCharges > 0 then
 		unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
 		unitEntry.BQUI_PromotionsCount_UnitList:SetText(BQUI_SpreadCharges);
-		
-	elseif BQUI_ReligiousHealCharges > 0 then
+	end
+	
+	-- *** HEALING CHARGES ***
+	if BQUI_ReligiousHealCharges > 0 then
 		unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
 		unitEntry.BQUI_PromotionsCount_UnitList:SetText(BQUI_ReligiousHealCharges);
-		
-	elseif BQUI_UnitType == "UNIT_ARCHAEOLOGIST" then
+	end
+	
+	-- *** DISASTER CHARGES ***
+	if pUnit:GetDisasterCharges() > 0 then
+		unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
+		unitEntry.BQUI_PromotionsCount_UnitList:SetText(pUnit:GetDisasterCharges());
+	end
+	
+	-- *** ARCHAEOLOGIST ***
+	if BQUI_UnitType == "UNIT_ARCHAEOLOGIST" then
 		--local localPlayer = Players[Game.GetLocalPlayer()];
 		--local idArchaeologyHomeCity = pUnit:GetArchaeologyHomeCity();
 		local pCity = Players[Game.GetLocalPlayer()]:GetCities():FindID( pUnit:GetArchaeologyHomeCity() );
@@ -882,12 +898,23 @@ function AddUnitToUnitList(pUnit:table)
 		end
 		unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
 		unitEntry.BQUI_PromotionsCount_UnitList:SetText(ArchaeologistCharges);
+	end
 		
 	-- *** GREAT GENERAL / ADMIRAL ***
-	elseif BQUI_UnitType == "UNIT_GREAT_ADMIRAL" or BQUI_UnitType == "UNIT_GREAT_GENERAL" then    -- bolbas (Apostle, Spy, Rock Band, Soothsayer promotion and Great Person passive ability icons added)
+	if BQUI_UnitType == "UNIT_GREAT_ADMIRAL" or BQUI_UnitType == "UNIT_GREAT_GENERAL" then
 		local individual:number = pUnit:GetGreatPerson():GetIndividual();
-		if individual >= 0 then
+		if individual > -1 then
 			local individualEraType:string = GameInfo.GreatPersonIndividuals[individual].EraType;
+			local eraInfo:table = GameInfo.Eras[individualEraType];
+			--local eraIndex:number = eraInfo.Index;
+			-- create special suffix and tooltip
+			--suffix = string.format("%d - %d", eraInfo.ChronologyIndex, eraInfo.ChronologyIndex+1);
+			--unitEntry.BQUI_UnitNameSuffix:SetText(suffix); -- corps/army icon
+			unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
+			unitEntry.BQUI_PromotionsCount_UnitList:SetText(eraInfo.ChronologyIndex);
+			table.insert(tt, string.format("%s [ICON_GoingTo] %s", LL(eraInfo.Name), LL(GameInfo.Eras[eraInfo.Index+1].Name)));
+			--print(individualEraType);
+			--[[
 			if BQUI_GreatPersonEras[individualEraType] ~= nil then
 				for i = 1, 2 do
 					if BQUI_GreatPersonEras[individualEraType]["Icon_" .. i] ~= nil then
@@ -899,11 +926,8 @@ function AddUnitToUnitList(pUnit:table)
 				end
 				--table.insert (BQUI_GreatPersonEntriesToSetOffset, {unitEntry = unitEntry});
 			end
+			--]]
 		end
-		
-	elseif pUnit:GetDisasterCharges() > 0 then
-		unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
-		unitEntry.BQUI_PromotionsCount_UnitList:SetText(pUnit:GetDisasterCharges());
 	end
 
 	-- bolbas (Icons for levied units added)
@@ -1001,7 +1025,7 @@ function AddUnitToUnitList(pUnit:table)
 
 		if BQUI_AbilitiesXP > 0 or BQUI_AbilitiesStrength > 0 or BQUI_ShowAbilities_GP == true or BQUI_ShowAbilities_COMANDANTE == true then
 			unitEntry.BQUI_AllAbilities_UnitList:SetShow(true);
-			if not unitEntry.BQUI_IconPromotionAvailable_UnitList:IsHidden() then
+			if not unitEntry.BQUI_IconPromotionAvailable:IsHidden() then
 				unitEntry.BQUI_AllAbilities_UnitList:SetOffsetX(-20);
 			end
 
@@ -1125,7 +1149,7 @@ function AddUnitToUnitList(pUnit:table)
 
 			--if BQUI_IconsAndAbilitiesState[BQUI_localPlayerID] ~= nil and BQUI_IconsAndAbilitiesState[BQUI_localPlayerID] ~= 4 then    -- bolbas (Right Click on Unit List popup and Unit List entries added, entry with selected unit highlighted)
 				if BQUI_ExperiencePoints == BQUI_MaxExperience then
-					unitEntry.BQUI_IconPromotionAvailable_UnitList:SetColorByName("UnitPanelTextDisabledCS");
+					unitEntry.BQUI_IconPromotionAvailable:SetColorByName("UnitPanelTextDisabledCS");
 				end
 			--end
 		end
@@ -1133,9 +1157,9 @@ function AddUnitToUnitList(pUnit:table)
 		--if BQUI_IconsAndAbilitiesState[BQUI_localPlayerID] ~= nil and BQUI_IconsAndAbilitiesState[BQUI_localPlayerID] ~= 4 then    -- bolbas (Right Click on Unit List popup and Unit List entries added, entry with selected unit highlighted)
 			unitEntry.BQUI_PromotionsCount_UnitList:SetColorByName("UnitPanelTextDisabledCS");
 			unitEntry.BQUI_LeviedUnits_UnitList:SetColorByName("UnitPanelTextDisabledCS");
-			unitEntry.BQUI_IconRealPromotion_1_UnitList:SetColorByName("UnitPanelTextDisabledCS");
-			unitEntry.BQUI_IconRealPromotion_2_UnitList:SetColorByName("UnitPanelTextDisabledCS");
-			unitEntry.BQUI_IconRealPromotion_3_UnitList:SetColorByName("UnitPanelTextDisabledCS");
+			unitEntry.PromotionIcon1:SetColorByName("UnitPanelTextDisabledCS");
+			unitEntry.PromotionIcon2:SetColorByName("UnitPanelTextDisabledCS");
+			unitEntry.PromotionIcon3:SetColorByName("UnitPanelTextDisabledCS");
 			--[[
 			if BQUI_UnitType == "UNIT_ROCK_BAND" then    -- bolbas (new Water Park icon for Rock Band promotions added)
 				for i = 1, 3 do
