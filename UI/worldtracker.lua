@@ -20,9 +20,11 @@ include("CivicsTreeIconLoader_", true);
 local m_isHeroes:boolean     = GameCapabilities.HasCapability("CAPABILITY_HEROES"); -- Heroes & Legends Mode
 local m_isApocalypse:boolean = GameCapabilities.HasCapability("CAPABILITY_MEGADISASTERS"); -- Apocalypse Mode
 local m_isBES:boolean        = Modding.IsModActive("07D5DFAB-44CE-8F63-8344-93E427E9376E"); -- Better Espionage Screen for new spy icons
+local m_isCQUI:boolean       = Modding.IsModActive("1d44b5e7-753e-405b-af24-5ee634ec8a01"); -- for new apostle icons
 print("Apocalypse: ", (m_isApocalypse and "YES" or "no"));
 print("Heroes    : ", (m_isHeroes and "YES" or "no"));
 print("BES       : ", (m_isBES and "YES" or "no"));
+print("CQUI      : ", (m_isCQUI and "YES" or "no"));
 
 
 -- ===========================================================================
@@ -446,8 +448,20 @@ end
 local BQUI_PreviousUnitEntrySum = nil;    -- bolbas (Middle Click on Unit List entries added - shows total number of units of that type)
 local BQUI_UnitDifferentReligions:number = 0;    -- bolbas (Religion icons added)
 
--- Infixo: icons update to be in sync with CQUI
 local BQUI_ApostlePromotionIcons:table = {
+	PROMOTION_CHAPLAIN =			{Icon = "ICON_UNIT_MEDIC",			Size = 16,	OffsetY = -1},
+	PROMOTION_DEBATER =				{Icon = "ICON_STRENGTH",			Size = 14,	OffsetY = -1},
+	PROMOTION_HEATHEN_CONVERSION =	{Icon = "ICON_NOTIFICATION_NEW_BARBARIAN_CAMP",	Size = 18,	OffsetY = -1},
+	PROMOTION_INDULGENCE_VENDOR =	{Icon = "ICON_MAP_PIN_CIRCLE",		Size = 12,	OffsetY = -1},
+	PROMOTION_PROSELYTIZER =		{Icon = "ICON_UNIT_INQUISITOR",		Size = 17,	OffsetY = 0},
+	PROMOTION_TRANSLATOR =			{Icon = "ICON_QUEUE",				Size = 18,	OffsetY = -1},
+	PROMOTION_MARTYR =				{Icon = "ICON_GREATWORKOBJECT_RELIC",	Size = 12,	OffsetY = 0},
+	PROMOTION_ORATOR =				{Icon = "ICON_STATS_SPREADCHARGES",	Size = 16,	OffsetY = 0},
+	PROMOTION_PILGRIM =				{Icon = "ICON_STATS_TERRAIN",		Size = 16,	OffsetY = 0},
+};
+
+-- Infixo: icons update to be in sync with CQUI
+local CQUI_ApostlePromotionIcons:table = {
 	PROMOTION_CHAPLAIN 			 = {Icon = "Religion",		  Size = 20, OffsetY = 0},-- medic
 	PROMOTION_DEBATER 			 = {Icon = "Ability",		  Size = 20, OffsetY = 0},-- +20 combat
 	PROMOTION_HEATHEN_CONVERSION = {Icon = "Barbarian",		  Size = 20, OffsetY = 0},-- barbs
@@ -753,6 +767,7 @@ function AddUnitToUnitList(pUnit:table)
 				local promoInfo:table = GameInfo.UnitPromotions[promo];
 				--dshowtable(promoInfo);
 				local iconInfo:table = BQUI_ApostlePromotionIcons[ promoInfo.UnitPromotionType ];
+				if m_isCQUI then iconInfo = CQUI_ApostlePromotionIcons[ promoInfo.UnitPromotionType ]; end
 				if iconInfo ~= nil and i <= 3 then SetPromotionIconByIcon(unitEntry, i, iconInfo); end
 				table.insert(tt, "[ICON_Bullet]"..Locale.Lookup(promoInfo.Description)); -- add to the tooltip
 			end
