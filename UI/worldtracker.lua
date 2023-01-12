@@ -473,8 +473,23 @@ local CQUI_ApostlePromotionIcons:table = {
 	PROMOTION_PILGRIM 			 = {Icon = "ICON_STATS_TERRAIN",	   Size = 16, OffsetY = 0}, -- adds charges
 };
 
--- Infixo: updated icons to better reflect description (e.g. district icons used)
 local BQUI_RockBandPromotionIcons:table = {
+	PROMOTION_ALBUM_COVER_ART =	{Icon = "ICON_STAT_WONDERS",		Size = 16,	OffsetY = -1},
+	PROMOTION_ARENA_ROCK =		{Icon = "ICON_AMENITIES",			Size = 17,	OffsetY = 0},
+	PROMOTION_GLAM_ROCK =		{Icon = "ICON_UNIT_GREAT_WRITER",	Size = 16,	OffsetY = 0},
+	PROMOTION_GOES_TO =			{Icon = "PressureRight",			Size = 16,	OffsetY = 0},
+	PROMOTION_INDIE =			{Icon = "ICON_STAT_CULTURAL_FLAG",	Size = 15,	OffsetY = 0},
+	PROMOTION_MUSIC_FESTIVAL =	{Icon = "ICON_STATS_TERRAIN",		Size = 16,	OffsetY = 0},
+	PROMOTION_POP =				{Icon = "ICON_MAP_PIN_CIRCLE",		Size = 12,	OffsetY = -1},
+	PROMOTION_REGGAE_ROCK =		{Icon = "ICON_AMENITIES",			Size = 17,	OffsetY = 0},    -- Infixo: fixed
+	PROMOTION_RELIGIOUS_ROCK =	{Icon = "ICON_RELIGION",			Size = 18,	OffsetY = 0},
+	PROMOTION_ROADIES =			{Icon = "ICON_MOVES",				Size = 14,	OffsetY = 0},
+	PROMOTION_SPACE_ROCK =		{Icon = "ICON_UNIT_GREAT_SCIENTIST",Size = 15,	OffsetY = 0},
+	PROMOTION_SURF_ROCK =		{Icon = "ICON_UNIT_GREAT_ADMIRAL",	Size = 15,	OffsetY = 0},
+};
+
+-- Infixo: updated icons to better reflect description (e.g. district icons used)
+local CQUI_RockBandPromotionIcons:table = {
 	PROMOTION_ALBUM_COVER_ART =	{Icon = "ICON_STAT_WONDERS",    Size = 16, OffsetY = 0},
 	PROMOTION_ARENA_ROCK =		{Icon = "ICON_AMENITIES",		Size = 16, OffsetY = 0},
 	PROMOTION_GLAM_ROCK =		{Icon = "ICON_DISTRICT_THEATER",Size = 16, OffsetY = 0},
@@ -769,7 +784,7 @@ function AddUnitToUnitList(pUnit:table)
 				local iconInfo:table = BQUI_ApostlePromotionIcons[ promoInfo.UnitPromotionType ];
 				if m_isCQUI then iconInfo = CQUI_ApostlePromotionIcons[ promoInfo.UnitPromotionType ]; end
 				if iconInfo ~= nil and i <= 3 then SetPromotionIconByIcon(unitEntry, i, iconInfo); end
-				table.insert(tt, "[ICON_Bullet]"..Locale.Lookup(promoInfo.Description)); -- add to the tooltip
+				table.insert(tt, "[ICON_Promotion] "..Locale.Lookup(promoInfo.Name)); -- add to the tooltip
 			end
 
 		-- *** SPY ***
@@ -787,7 +802,7 @@ function AddUnitToUnitList(pUnit:table)
 					local iconInfo:table = BQUI_SpyPromotionIcons[ promoInfo.UnitPromotionType ];
 					if iconInfo ~= nil and i <= 3 then SetPromotionIconByIcon(unitEntry, i, iconInfo); end
 				end
-				table.insert(tt, "[ICON_Bullet]"..Locale.Lookup(promoInfo.Description)); -- add to the tooltip
+				table.insert(tt, "[ICON_Promotion] "..Locale.Lookup(promoInfo.Name)); -- add to the tooltip
 			end
 
 		-- *** ROCK BAND ***
@@ -799,8 +814,9 @@ function AddUnitToUnitList(pUnit:table)
 			for i,promo in ipairs(BQUI_PromotionList) do
 				local promoInfo:table = GameInfo.UnitPromotions[promo];
 				local iconInfo:table = BQUI_RockBandPromotionIcons[ promoInfo.UnitPromotionType ];
+				if m_isCQUI then iconInfo = CQUI_RockBandPromotionIcons[ promoInfo.UnitPromotionType ]; end
 				if iconInfo ~= nil and i <= 3 then SetPromotionIconByIcon(unitEntry, i, iconInfo); end
-				table.insert(tt, "[ICON_Bullet]"..Locale.Lookup(promoInfo.Description)); -- add to the tooltip
+				table.insert(tt, "[ICON_Promotion] "..Locale.Lookup(promoInfo.Name)); -- add to the tooltip
 			end
 				
 		-- *** SOOTHSAYER ***
