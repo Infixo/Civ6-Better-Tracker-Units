@@ -19,8 +19,8 @@
 				<Container Anchor="C,T" Offset="0,30" Size="parent,30">
 					<Label ID="NoUnitsLabel" Style="PanelHeaderText" String="LOC_WORLDTRACKER_NO_UNITS" Anchor="C,C" FontSize="20" Offset="0,0"/>
 				</Container>
-				<ScrollPanel ID="UnitListScroll" Anchor="C,T" Offset="0,30" Vertical="1" Size="parent,parent-6" AutoScrollBar="1" >
-					<Stack	ID="UnitStack" Anchor="C,T" StackGrowth="Bottom" />
+				<ScrollPanel ID="UnitListScroll" Anchor="L,T" Offset="0,32" Vertical="1" Size="parent,parent-34" AutoScrollBar="1" >
+					<Stack	ID="UnitStack" Anchor="L,T" Offset="4,0" StackGrowth="Bottom" />
 					<ScrollBar  Style="Slider_Blue" Offset="0,0" Anchor="R,C"/>
 				</ScrollPanel>
 				<!--
