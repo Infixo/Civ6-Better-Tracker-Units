@@ -93,32 +93,18 @@
 								</Image>
 							</Stack>
 						</Container>
-						<!-- RealPromotion 1 -->
-						<Container ID="BQUI_RealPromotion_1_UnitList" Size="12,12" Anchor="L,C" Offset="3,0" Hidden="1">    <!-- bolbas (Apostle, Spy, Rock Band, Soothsayer promotion and Great Person passive ability icons added) -->
-							<Image ID="BQUI_IconRealPromotion_1_UnitList" Anchor="C,C" />
-							<Image ID="BQUI_WaterParkIcon_1_P1_UnitList" Icon = "ICON_AMENITIES" StretchMode="Tile" Size="16,11" Anchor="C,C" Offset="0,-4" Hidden="1" >
-								<Image ID="BQUI_WaterParkIcon_1_P2_UnitList" Icon="ICON_MAP_PIN_SQUARE" StretchMode="Tile" Size="17,6" Offset="-3,6" Color="230,230,230,255"/>
-								<Line ID="BQUI_WaterParkIcon_1_P3_UnitList" Start="5,12" End="5,15" Width="2" Color="230,230,230,255"/>
-								<Line ID="BQUI_WaterParkIcon_1_P4_UnitList" Start="11,12" End="11,15" Width="2" Color="230,230,230,255"/>
-							</Image>
+						<!-- Infixo: RealPromotions made a bit less complex -->
+						<Container ID="BQUI_RealPromotion_1_UnitList" Size="16,16" Anchor="L,C" Hidden="1">
+							<Image ID="BQUI_IconRealPromotion_1_UnitList" Anchor="C,C" Hidden="1" />
+							<Image ID="PromotionIcon1" Anchor="C,C" />
 						</Container>
-						<!-- RealPromotion 2 -->
-						<Container ID="BQUI_RealPromotion_2_UnitList" Size="12,12" Anchor="L,C" Offset="6,0" Hidden="1">
-							<Image ID="BQUI_IconRealPromotion_2_UnitList" Anchor="C,C" />
-							<Image ID="BQUI_WaterParkIcon_2_P1_UnitList" Icon = "ICON_AMENITIES" StretchMode="Tile" Size="16,11" Anchor="C,C" Offset="0,-4" Hidden="1" >
-								<Image ID="BQUI_WaterParkIcon_2_P2_UnitList" Icon="ICON_MAP_PIN_SQUARE" StretchMode="Tile" Size="17,6" Offset="-3,6" Color="230,230,230,255"/>
-								<Line ID="BQUI_WaterParkIcon_2_P3_UnitList" Start="5,12" End="5,15" Width="2" Color="230,230,230,255"/>
-								<Line ID="BQUI_WaterParkIcon_2_P4_UnitList" Start="11,12" End="11,15" Width="2" Color="230,230,230,255"/>
-							</Image>
+						<Container ID="BQUI_RealPromotion_2_UnitList" Size="16,16" Anchor="L,C" Hidden="1">
+							<Image ID="BQUI_IconRealPromotion_2_UnitList" Anchor="C,C" Hidden="1" />
+							<Image ID="PromotionIcon2" Anchor="C,C" />
 						</Container>
-						<!-- RealPromotion 3 -->
-						<Container ID="BQUI_RealPromotion_3_UnitList" Size="12,12" Anchor="L,C" Offset="6,0" Hidden="1">
-							<Image ID="BQUI_IconRealPromotion_3_UnitList" Anchor="C,C" />
-							<Image ID="BQUI_WaterParkIcon_3_P1_UnitList" Icon = "ICON_AMENITIES" StretchMode="Tile" Size="16,11" Anchor="C,C" Offset="0,-4" Hidden="1" >
-								<Image ID="BQUI_WaterParkIcon_3_P2_UnitList" Icon="ICON_MAP_PIN_SQUARE" StretchMode="Tile" Size="17,6" Offset="-3,6" Color="230,230,230,255"/>
-								<Line ID="BQUI_WaterParkIcon_3_P3_UnitList" Start="5,12" End="5,15" Width="2" Color="230,230,230,255"/>
-								<Line ID="BQUI_WaterParkIcon_3_P4_UnitList" Start="11,12" End="11,15" Width="2" Color="230,230,230,255"/>
-							</Image>
+						<Container ID="BQUI_RealPromotion_3_UnitList" Size="16,16" Anchor="L,C" Hidden="1">
+							<Image ID="BQUI_IconRealPromotion_3_UnitList" Anchor="C,C" Hidden="1" />
+							<Image ID="PromotionIcon3" Anchor="C,C" />
 						</Container>
 					</Stack>
 				</Label>

@@ -449,6 +449,22 @@ local BQUI_ApostlePromotionIcons:table = {
 	PROMOTION_MARTYR 			 = {Icon = "ICON_GREATWORKOBJECT_RELIC", Size = 12,	OffsetY = 0},
 };
 
+-- Infixo: updated icons to better reflect description (e.g. district icons used)
+local BQUI_RockBandPromotionIcons:table = {
+	PROMOTION_ALBUM_COVER_ART =	{Icon = "ICON_STAT_WONDERS",    Size = 16, OffsetY = 0}, -- ok
+	PROMOTION_ARENA_ROCK =		{Icon = "ICON_AMENITIES",		Size = 16, OffsetY = 0},
+	PROMOTION_GLAM_ROCK =		{Icon = "ICON_DISTRICT_THEATER",Size = 16, OffsetY = 0},
+	PROMOTION_GOES_TO =			{Icon = "PressureRight",		Size = 18, OffsetY = 0},
+	PROMOTION_INDIE =			{Icon = "PressureDown",			Size = 22, OffsetY = 0}, -- ICON_STAT_CULTURAL_FLAG
+	PROMOTION_MUSIC_FESTIVAL =	{Icon = "ICON_STATS_TERRAIN",	Size = 16, OffsetY = 0}, -- ok
+	PROMOTION_POP =				{Icon = "Gold",					Size = 22, OffsetY = 0},
+	PROMOTION_REGGAE_ROCK =		{Icon = "ICON_DISTRICT_WATER_ENTERTAINMENT_COMPLEX", Size = 16, OffsetY = 0}, -- Infixo: fixed
+	PROMOTION_RELIGIOUS_ROCK =	{Icon = "ICON_RELIGION",		Size = 20, OffsetY = 0}, -- ok
+	PROMOTION_ROADIES =			{Icon = "ICON_MOVES",			Size = 14, OffsetY = 0},
+	PROMOTION_SPACE_ROCK =		{Icon = "ICON_DISTRICT_CAMPUS", Size = 16, OffsetY = 0},
+	PROMOTION_SURF_ROCK =		{Icon = "ICON_DISTRICT_HARBOR", Size = 16, OffsetY = 0}, -- ICON_UNIT_GREAT_ADMIRAL, 15
+};
+
 local BQUI_SpyPromotionIcons:table = {
 	PROMOTION_SPY_ACE_DRIVER =		{Icon = "ICON_NOTIFICATION_SPY_CHOOSE_ESCAPE_ROUTE",	Size = 18,	OffsetY = 0},
 	PROMOTION_SPY_CAT_BURGLAR =		{Icon = "ICON_NOTIFICATION_SPY_HEIST_GREAT_WORK",		Size = 16,	OffsetY = -1},
@@ -469,6 +485,24 @@ local BQUI_SpyPromotionIcons:table = {
 	PROMOTION_SPY_SURVEILLANCE =	{Icon = "ICON_STAT_DISTRICTS",							Size = 16,	OffsetY = -1},
 };
 
+local BQUI_SoothsayerPromotionIcons:table = {
+	PROMOTION_SOOTHSAYER_MESSENGER =   {Icon = "ICON_MOVES",				  Size = 14, OffsetY = 0},
+	PROMOTION_SOOTHSAYER_INQUISITOR =  {Icon = "ICON_NOTIFICATION_SPY_GROUP", Size = 14, OffsetY = -1},
+	PROMOTION_SOOTHSAYER_ZEALOT =	   {Icon = "ICON_MAP_PIN_CHARGES",		  Size = 14, OffsetY = -1},
+	PROMOTION_SOOTHSAYER_INCANTATION = {Icon = "ICON_STRENGTH",				  Size = 14, OffsetY = -1},
+	PROMOTION_SOOTHSAYER_PLAGUE_BEARER = {Icon = "ICON_UNITOPERATION_SPY_TRAVEL_NEW_CITY", Size = 16, OffsetY = -2},
+};
+--[[
+local BQUI_PromotionsWithoutIcons:table = {
+	UNIT_APOSTLE = true,
+	UNIT_SPY = true,
+	UNIT_ROCK_BAND = true,
+	UNIT_WARRIOR_MONK = true,
+	UNIT_GIANT_DEATH_ROBOT = true,
+	UNIT_LAHORE_NIHANG = true,
+	UNIT_SOOTHSAYER = true,
+};
+--]]
 local BQUI_GreatPersonEras:table = {
 	ERA_CLASSICAL =   {Icon_1 = "ICON_GREATWORKOBJECT_ARTIFACT_ERA_CLASSICAL",   Size_1 = 13, OffsetY_1 = -1, Icon_2 = "ICON_GREATWORKOBJECT_ARTIFACT_ERA_MEDIEVAL",    Size_2 = 14, OffsetY_2 = -1},
 	ERA_MEDIEVAL =    {Icon_1 = "ICON_GREATWORKOBJECT_ARTIFACT_ERA_MEDIEVAL",    Size_1 = 14, OffsetY_1 = -1, Icon_2 = "ICON_GREATWORKOBJECT_ARTIFACT_ERA_RENAISSANCE", Size_2 = 14, OffsetY_2 = -1},
@@ -603,6 +637,7 @@ function AddUnitToUnitList(pUnit:table)
 	end
 
 	-- name and tooltip
+	local tt:table = {};
 	local name:string = pUnit:GetName();
 	local uniqueName:string = Locale.Lookup(name).." ".. suffix;
 	local tooltip:string = "";
@@ -611,9 +646,10 @@ function AddUnitToUnitList(pUnit:table)
 		local unitTypeName:string = unitInfo.Name;
 		if name ~= unitTypeName then
 			tooltip = uniqueName.." "..Locale.Lookup("LOC_UNIT_UNIT_TYPE_NAME_SUFFIX", unitTypeName);
+			table.insert(tt, tooltip);
 		end
 	end
-	unitEntry.Button:SetToolTipString(tooltip);
+	--unitEntry.Button:SetToolTipString(tooltip);
 
 	--unitEntry.Button:SetText( Locale.ToUpper(uniqueName) );    -- bolbas: removed this because of unitEntry.BQUI_UnitName_UnitList:SetText( Locale.ToUpper(BQUI_uniqueName) );
 	local BQUI_UnitID = pUnit:GetID();    -- bolbas (Unit Abilities added to Unit List and Unit Panel)
@@ -653,268 +689,262 @@ function AddUnitToUnitList(pUnit:table)
 	unitEntry.BQUI_TierPromotion_42_UnitList:SetShow(false);
 
 	--if BQUI_IconsAndAbilitiesState[BQUI_localPlayerID] ~= nil and BQUI_IconsAndAbilitiesState[BQUI_localPlayerID] ~= 4 then    -- bolbas (Right Click on Unit List popup and Unit List entries added, entry with selected unit highlighted)
-		if #BQUI_PromotionList > 0 then
-			if BQUI_ExperiencePoints == BQUI_MaxExperience and ( ( BQUI_UnitType ~= "UNIT_LAHORE_NIHANG" and #BQUI_PromotionList < 7 ) or ( BQUI_UnitType == "UNIT_LAHORE_NIHANG" and #BQUI_PromotionList < 5 ) ) then
-				unitEntry.BQUI_IconPromotionAvailable_UnitList:SetShow(true);
-			end
-
-			if BQUI_CombatStrength > 0 or BQUI_RangedCombatStrength > 0 then
-				unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
-				unitEntry.BQUI_PromotionsCount_UnitList:SetText(#BQUI_PromotionList);
-
-				-- bolbas (Promotion tree added)
-				if BQUI_UnitType ~= "UNIT_LAHORE_NIHANG" and #BQUI_PromotionList < 7 then
-					for i = 1, #BQUI_PromotionList do
-						local b = GameInfo.UnitPromotions[BQUI_PromotionList[i]].Column;
-						if b > 0 then
-							local a = GameInfo.UnitPromotions[BQUI_PromotionList[i]].Level;
-							if BQUI_PromotionTreeCheck[a .. b] ~= nil then
-								unitEntry["BQUI_TierPromotion_" .. a .. b .. "_UnitList"]:SetShow(true);
-							else
-								for number, value in pairs(BQUI_PromotionTreeCheck) do
-									unitEntry["BQUI_TierPromotion_" .. number .. "_UnitList"]:SetShow(false);
-								end
-								break;
-							end
-						else
-							break;
-						end
-					end
-				elseif BQUI_UnitType == "UNIT_LAHORE_NIHANG" and #BQUI_PromotionList < 5 then
-					for i = 1, #BQUI_PromotionList do
-						local b = GameInfo.UnitPromotions[BQUI_PromotionList[i]].Column;
-						if b > 0 then
-							local a = GameInfo.UnitPromotions[BQUI_PromotionList[i]].Level;
-							if a == 3 and b == 2 then
-								a = 4;
-							end
-							if BQUI_PromotionTreeCheck[a .. b] ~= nil then
-								unitEntry["BQUI_TierPromotion_" .. a .. b .. "_UnitList"]:SetShow(true);
-							else
-								for number, value in pairs(BQUI_PromotionTreeCheck) do
-									unitEntry["BQUI_TierPromotion_" .. number .. "_UnitList"]:SetShow(false);
-								end
-								break;
-							end
-						else
-							break;
-						end
-					end
-				end
-			elseif BQUI_SpreadCharges > 0 then
-				unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
-				unitEntry.BQUI_PromotionsCount_UnitList:SetText(BQUI_SpreadCharges);
-
-			-- bolbas (Apostle, Spy, Rock Band, Soothsayer promotion and Great Person passive ability icons added)
-				local k = 0;    -- bolbas: added variable k to set Martyr promotion to the last position
-				for i = 1, #BQUI_PromotionList do
-					if i > 3 then
-						break;
-					end
-
-					local BQUI_PromotionType = GameInfo.UnitPromotions[BQUI_PromotionList[i]].UnitPromotionType;
-					if BQUI_ApostlePromotionIcons[BQUI_PromotionType] ~= nil then
-						k = k + 1;    -- bolbas: added variable k to set Martyr promotion to the last position
-						local PromotionIconSize = BQUI_ApostlePromotionIcons[BQUI_PromotionType].Size;
-						if BQUI_PromotionType == "PROMOTION_MARTYR" then    -- bolbas: check for Martyr promotion and set it to the last position
-							unitEntry["BQUI_RealPromotion_" .. #BQUI_PromotionList .. "_UnitList"]:SetShow(true);
-							unitEntry["BQUI_IconRealPromotion_" .. #BQUI_PromotionList .. "_UnitList"]:SetSizeVal(PromotionIconSize, PromotionIconSize);
-							unitEntry["BQUI_IconRealPromotion_" .. #BQUI_PromotionList .. "_UnitList"]:SetIcon(BQUI_ApostlePromotionIcons[BQUI_PromotionType].Icon);
-							unitEntry["BQUI_IconRealPromotion_" .. #BQUI_PromotionList .. "_UnitList"]:SetOffsetY(BQUI_ApostlePromotionIcons[BQUI_PromotionType].OffsetY);
-							if i ~= #BQUI_PromotionList then
-								k = k - 1;    -- bolbas: added variable k to set Martyr promotion to the last position
-							end
-						elseif unitEntry["BQUI_RealPromotion_" .. k .. "_UnitList"]:IsHidden() then
-							unitEntry["BQUI_RealPromotion_" .. k .. "_UnitList"]:SetShow(true);
-							unitEntry["BQUI_IconRealPromotion_" .. k .. "_UnitList"]:SetSizeVal(PromotionIconSize, PromotionIconSize);
-							unitEntry["BQUI_IconRealPromotion_" .. k .. "_UnitList"]:SetIcon(BQUI_ApostlePromotionIcons[BQUI_PromotionType].Icon);
-							unitEntry["BQUI_IconRealPromotion_" .. k .. "_UnitList"]:SetOffsetY(BQUI_ApostlePromotionIcons[BQUI_PromotionType].OffsetY);
-						end
-					else    -- bolbas: added compatibility with mods that add custom unit promotions
-						if i > 1 then
-							for j = 1, i - 1 do
-								unitEntry["BQUI_RealPromotion_" .. j .. "_UnitList"]:SetShow(false);
-							end
-						end
-						break;
-					end
-				end
-			elseif BQUI_UnitType == "UNIT_SPY" then
-				local TruncateWidth = 185;
-				if #BQUI_PromotionList > 2 or ( #BQUI_PromotionList == 2 and BQUI_ExperiencePoints == BQUI_MaxExperience ) then
-					TruncateWidth = 135;
-				end
-				--table.insert (BQUI_SpyEntriesToSetOffset, {unitEntry = unitEntry, TruncateWidth = TruncateWidth});
-
-				for i = 1, #BQUI_PromotionList do
-					if i > 3 then
-						break;
-					end
-
-					local BQUI_PromotionType = GameInfo.UnitPromotions[BQUI_PromotionList[i]].UnitPromotionType;
-					if BQUI_SpyPromotionIcons[BQUI_PromotionType] ~= nil then
-						unitEntry["BQUI_RealPromotion_" .. i .. "_UnitList"]:SetShow(true);
-						local PromotionIconSize = BQUI_SpyPromotionIcons[BQUI_PromotionType].Size;
-						unitEntry["BQUI_IconRealPromotion_" .. i .. "_UnitList"]:SetSizeVal(PromotionIconSize, PromotionIconSize);
-						unitEntry["BQUI_IconRealPromotion_" .. i .. "_UnitList"]:SetIcon(BQUI_SpyPromotionIcons[BQUI_PromotionType].Icon);
-						unitEntry["BQUI_IconRealPromotion_" .. i .. "_UnitList"]:SetOffsetY(BQUI_SpyPromotionIcons[BQUI_PromotionType].OffsetY);
-					else
-						unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
-						unitEntry.BQUI_PromotionsCount_UnitList:SetText(#BQUI_PromotionList);
-						if i > 1 then
-							for j = 1, i - 1 do
-								unitEntry["BQUI_RealPromotion_" .. j .. "_UnitList"]:SetShow(false);
-							end
-						end
-						break;
-					end
-				end
-			elseif BQUI_UnitType == "UNIT_ROCK_BAND" then
-				local TruncateWidth = 185;
-				if #BQUI_PromotionList > 2 or ( #BQUI_PromotionList == 2 and BQUI_ExperiencePoints == BQUI_MaxExperience ) then
-					TruncateWidth = 135;
-				end
-				--table.insert (BQUI_RockBandEntriesToSetOffset, {unitEntry = unitEntry, TruncateWidth = TruncateWidth});
-
-				for i = 1, #BQUI_PromotionList do
-					if i > 3 then
-						break;
-					end
-
-					local BQUI_PromotionType = GameInfo.UnitPromotions[BQUI_PromotionList[i]].UnitPromotionType;
-					if BQUI_RockBandPromotionIcons[BQUI_PromotionType] ~= nil then
-						unitEntry["BQUI_RealPromotion_" .. i .. "_UnitList"]:SetShow(true);
-						if BQUI_PromotionType ~= "PROMOTION_REGGAE_ROCK" then    -- bolbas (new Water Park icon for Rock Band promotions added)
-							local PromotionIconSize = BQUI_RockBandPromotionIcons[BQUI_PromotionType].Size;
-							unitEntry["BQUI_IconRealPromotion_" .. i .. "_UnitList"]:SetSizeVal(PromotionIconSize, PromotionIconSize);
-							unitEntry["BQUI_IconRealPromotion_" .. i .. "_UnitList"]:SetIcon(BQUI_RockBandPromotionIcons[BQUI_PromotionType].Icon);
-							unitEntry["BQUI_IconRealPromotion_" .. i .. "_UnitList"]:SetOffsetY(BQUI_RockBandPromotionIcons[BQUI_PromotionType].OffsetY);
-						else
-							unitEntry["BQUI_WaterParkIcon_" .. i .. "_P1_UnitList"]:SetShow(true);    -- bolbas (new Water Park icon for Rock Band promotions added)
-						end
-					else
-						unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
-						unitEntry.BQUI_PromotionsCount_UnitList:SetText(#BQUI_PromotionList);
-						if i > 1 then
-							for j = 1, i - 1 do
-								unitEntry["BQUI_RealPromotion_" .. j .. "_UnitList"]:SetShow(false);
-							end
-						end
-						break;
-					end
-				end
-			elseif pUnit:GetDisasterCharges() > 0 then
-				unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
-				unitEntry.BQUI_PromotionsCount_UnitList:SetText(pUnit:GetDisasterCharges());
-
-				for i = 1, #BQUI_PromotionList do
-					if i > 3 then
-						break;
-					end
-
-					local BQUI_PromotionType = GameInfo.UnitPromotions[BQUI_PromotionList[i]].UnitPromotionType;
-					if BQUI_SoothsayerPromotionIcons[BQUI_PromotionType] ~= nil then
-						unitEntry["BQUI_RealPromotion_" .. i .. "_UnitList"]:SetShow(true);
-						local PromotionIconSize = BQUI_SoothsayerPromotionIcons[BQUI_PromotionType].Size;
-						unitEntry["BQUI_IconRealPromotion_" .. i .. "_UnitList"]:SetSizeVal(PromotionIconSize, PromotionIconSize);
-						unitEntry["BQUI_IconRealPromotion_" .. i .. "_UnitList"]:SetIcon(BQUI_SoothsayerPromotionIcons[BQUI_PromotionType].Icon);
-						unitEntry["BQUI_IconRealPromotion_" .. i .. "_UnitList"]:SetOffsetY(BQUI_SoothsayerPromotionIcons[BQUI_PromotionType].OffsetY);
-					else
-						if i > 1 then
-							for j = 1, i - 1 do
-								unitEntry["BQUI_RealPromotion_" .. j .. "_UnitList"]:SetShow(false);
-							end
-						end
-						break;
-					end
-				end
-			end
-
-		elseif BQUI_ExperiencePoints == BQUI_MaxExperience then
+	if #BQUI_PromotionList > 0 then
+		if BQUI_ExperiencePoints == BQUI_MaxExperience and ( ( BQUI_UnitType ~= "UNIT_LAHORE_NIHANG" and #BQUI_PromotionList < 7 ) or ( BQUI_UnitType == "UNIT_LAHORE_NIHANG" and #BQUI_PromotionList < 5 ) ) then
 			unitEntry.BQUI_IconPromotionAvailable_UnitList:SetShow(true);
-			if BQUI_SpreadCharges > 0 then
-				unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
-				unitEntry.BQUI_PromotionsCount_UnitList:SetText(BQUI_SpreadCharges);
-			elseif BQUI_UnitType == "UNIT_SPY" then    -- bolbas (Apostle, Spy, Rock Band, Soothsayer promotion and Great Person passive ability icons added)
-				--table.insert (BQUI_SpyEntriesToSetOffset, {unitEntry = unitEntry, TruncateWidth = 185});
-			elseif BQUI_UnitType == "UNIT_ROCK_BAND" then    -- bolbas (Apostle, Spy, Rock Band, Soothsayer promotion and Great Person passive ability icons added)
-				--table.insert (BQUI_RockBandEntriesToSetOffset, {unitEntry = unitEntry, TruncateWidth = 185});
-			end
-		elseif pUnit:GetBuildCharges() > 0 and BQUI_CombatStrength == 0 and BQUI_RangedCombatStrength == 0 then
+		end
+
+		if BQUI_CombatStrength > 0 or BQUI_RangedCombatStrength > 0 then
 			unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
-			unitEntry.BQUI_PromotionsCount_UnitList:SetText(pUnit:GetBuildCharges());
+			unitEntry.BQUI_PromotionsCount_UnitList:SetText(#BQUI_PromotionList);
+
+			-- bolbas (Promotion tree added)
+			if BQUI_UnitType ~= "UNIT_LAHORE_NIHANG" and #BQUI_PromotionList < 7 then
+				for i = 1, #BQUI_PromotionList do
+					local b = GameInfo.UnitPromotions[BQUI_PromotionList[i]].Column;
+					if b > 0 then
+						local a = GameInfo.UnitPromotions[BQUI_PromotionList[i]].Level;
+						if BQUI_PromotionTreeCheck[a .. b] ~= nil then
+							unitEntry["BQUI_TierPromotion_" .. a .. b .. "_UnitList"]:SetShow(true);
+						else
+							for number, value in pairs(BQUI_PromotionTreeCheck) do
+								unitEntry["BQUI_TierPromotion_" .. number .. "_UnitList"]:SetShow(false);
+							end
+							break;
+						end
+					else
+						break;
+					end
+				end
+			elseif BQUI_UnitType == "UNIT_LAHORE_NIHANG" and #BQUI_PromotionList < 5 then
+				for i = 1, #BQUI_PromotionList do
+					local b = GameInfo.UnitPromotions[BQUI_PromotionList[i]].Column;
+					if b > 0 then
+						local a = GameInfo.UnitPromotions[BQUI_PromotionList[i]].Level;
+						if a == 3 and b == 2 then
+							a = 4;
+						end
+						if BQUI_PromotionTreeCheck[a .. b] ~= nil then
+							unitEntry["BQUI_TierPromotion_" .. a .. b .. "_UnitList"]:SetShow(true);
+						else
+							for number, value in pairs(BQUI_PromotionTreeCheck) do
+								unitEntry["BQUI_TierPromotion_" .. number .. "_UnitList"]:SetShow(false);
+							end
+							break;
+						end
+					else
+						break;
+					end
+				end
+			end
+				
+		--- *** RELIGIOUS UNITS ***
 		elseif BQUI_SpreadCharges > 0 then
 			unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
 			unitEntry.BQUI_PromotionsCount_UnitList:SetText(BQUI_SpreadCharges);
-		elseif BQUI_ReligiousHealCharges > 0 then
-			unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
-			unitEntry.BQUI_PromotionsCount_UnitList:SetText(BQUI_ReligiousHealCharges);
-		elseif BQUI_UnitType == "UNIT_ARCHAEOLOGIST" then
-			local pPlayer = Players[BQUI_localPlayerID];
-			local idArchaeologyHomeCity = pUnit:GetArchaeologyHomeCity();
-			local pCity = pPlayer:GetCities():FindID(idArchaeologyHomeCity);
-			local pCityBldgs:table = pCity:GetBuildings();
-			local ArchaeologicalMuseumIndex = GameInfo.Buildings["BUILDING_MUSEUM_ARTIFACT"].Index
-			local numSlots:number = pCityBldgs:GetNumGreatWorkSlots(ArchaeologicalMuseumIndex);
-			local ArchaeologistCharges = 0;
-			for index:number = 0, numSlots - 1 do
-				local greatWorkIndex:number = pCityBldgs:GetGreatWorkInSlot(ArchaeologicalMuseumIndex, index);
-				if (greatWorkIndex == -1) then
-					ArchaeologistCharges = ArchaeologistCharges + 1;
+
+		-- bolbas (Apostle, Spy, Rock Band, Soothsayer promotion and Great Person passive ability icons added)
+			local k = 0;    -- bolbas: added variable k to set Martyr promotion to the last position
+			for i = 1, #BQUI_PromotionList do
+				if i > 3 then
+					break;
 				end
-			end
-			unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
-			unitEntry.BQUI_PromotionsCount_UnitList:SetText(ArchaeologistCharges);
-		elseif BQUI_UnitType == "UNIT_SPY" then    -- bolbas (Apostle, Spy, Rock Band, Soothsayer promotion and Great Person passive ability icons added)
-			--table.insert (BQUI_SpyEntriesToSetOffset, {unitEntry = unitEntry, TruncateWidth = 185});
-		elseif BQUI_UnitType == "UNIT_ROCK_BAND" then    -- bolbas (Apostle, Spy, Rock Band, Soothsayer promotion and Great Person passive ability icons added)
-			--table.insert (BQUI_RockBandEntriesToSetOffset, {unitEntry = unitEntry, TruncateWidth = 185});
-		elseif BQUI_UnitType == "UNIT_GREAT_ADMIRAL" or BQUI_UnitType == "UNIT_GREAT_GENERAL" then    -- bolbas (Apostle, Spy, Rock Band, Soothsayer promotion and Great Person passive ability icons added)
-			local individual:number = pUnit:GetGreatPerson():GetIndividual();
-			if individual >= 0 then
-				local individualEraType:string = GameInfo.GreatPersonIndividuals[individual].EraType;
-				if BQUI_GreatPersonEras[individualEraType] ~= nil then
-					for i = 1, 2 do
-						if BQUI_GreatPersonEras[individualEraType]["Icon_" .. i] ~= nil then
-							unitEntry["BQUI_RealPromotion_" .. i .. "_UnitList"]:SetShow(true);
-							unitEntry["BQUI_IconRealPromotion_" .. i .. "_UnitList"]:SetSizeVal(BQUI_GreatPersonEras[individualEraType]["Size_" .. i], BQUI_GreatPersonEras[individualEraType]["Size_" .. i]);
-							unitEntry["BQUI_IconRealPromotion_" .. i .. "_UnitList"]:SetIcon(BQUI_GreatPersonEras[individualEraType]["Icon_" .. i]);
-							unitEntry["BQUI_IconRealPromotion_" .. i .. "_UnitList"]:SetOffsetY(BQUI_GreatPersonEras[individualEraType]["OffsetY_" .. i]);
+
+				local BQUI_PromotionType = GameInfo.UnitPromotions[BQUI_PromotionList[i]].UnitPromotionType;
+				if BQUI_ApostlePromotionIcons[BQUI_PromotionType] ~= nil then
+					k = k + 1;    -- bolbas: added variable k to set Martyr promotion to the last position
+					local PromotionIconSize = BQUI_ApostlePromotionIcons[BQUI_PromotionType].Size;
+					if BQUI_PromotionType == "PROMOTION_MARTYR" then    -- bolbas: check for Martyr promotion and set it to the last position
+						unitEntry["BQUI_RealPromotion_" .. #BQUI_PromotionList .. "_UnitList"]:SetShow(true);
+						unitEntry["BQUI_IconRealPromotion_" .. #BQUI_PromotionList .. "_UnitList"]:SetSizeVal(PromotionIconSize, PromotionIconSize);
+						unitEntry["BQUI_IconRealPromotion_" .. #BQUI_PromotionList .. "_UnitList"]:SetIcon(BQUI_ApostlePromotionIcons[BQUI_PromotionType].Icon);
+						unitEntry["BQUI_IconRealPromotion_" .. #BQUI_PromotionList .. "_UnitList"]:SetOffsetY(BQUI_ApostlePromotionIcons[BQUI_PromotionType].OffsetY);
+						if i ~= #BQUI_PromotionList then
+							k = k - 1;    -- bolbas: added variable k to set Martyr promotion to the last position
+						end
+					elseif unitEntry["BQUI_RealPromotion_" .. k .. "_UnitList"]:IsHidden() then
+						unitEntry["BQUI_RealPromotion_" .. k .. "_UnitList"]:SetShow(true);
+						unitEntry["BQUI_IconRealPromotion_" .. k .. "_UnitList"]:SetSizeVal(PromotionIconSize, PromotionIconSize);
+						unitEntry["BQUI_IconRealPromotion_" .. k .. "_UnitList"]:SetIcon(BQUI_ApostlePromotionIcons[BQUI_PromotionType].Icon);
+						unitEntry["BQUI_IconRealPromotion_" .. k .. "_UnitList"]:SetOffsetY(BQUI_ApostlePromotionIcons[BQUI_PromotionType].OffsetY);
+					end
+				else    -- bolbas: added compatibility with mods that add custom unit promotions
+					if i > 1 then
+						for j = 1, i - 1 do
+							unitEntry["BQUI_RealPromotion_" .. j .. "_UnitList"]:SetShow(false);
 						end
 					end
-					--table.insert (BQUI_GreatPersonEntriesToSetOffset, {unitEntry = unitEntry});
+					break;
 				end
 			end
+				
+		-- *** SPY ***
+		elseif BQUI_UnitType == "UNIT_SPY" then
+			local TruncateWidth = 185;
+			if #BQUI_PromotionList > 2 or ( #BQUI_PromotionList == 2 and BQUI_ExperiencePoints == BQUI_MaxExperience ) then
+				TruncateWidth = 135;
+			end
+			--table.insert (BQUI_SpyEntriesToSetOffset, {unitEntry = unitEntry, TruncateWidth = TruncateWidth});
+
+			for i = 1, #BQUI_PromotionList do
+				if i > 3 then
+					break;
+				end
+
+				local BQUI_PromotionType = GameInfo.UnitPromotions[BQUI_PromotionList[i]].UnitPromotionType;
+				if BQUI_SpyPromotionIcons[BQUI_PromotionType] ~= nil then
+					unitEntry["BQUI_RealPromotion_" .. i .. "_UnitList"]:SetShow(true);
+					local PromotionIconSize = BQUI_SpyPromotionIcons[BQUI_PromotionType].Size;
+					unitEntry["BQUI_IconRealPromotion_" .. i .. "_UnitList"]:SetSizeVal(PromotionIconSize, PromotionIconSize);
+					unitEntry["BQUI_IconRealPromotion_" .. i .. "_UnitList"]:SetIcon(BQUI_SpyPromotionIcons[BQUI_PromotionType].Icon);
+					unitEntry["BQUI_IconRealPromotion_" .. i .. "_UnitList"]:SetOffsetY(BQUI_SpyPromotionIcons[BQUI_PromotionType].OffsetY);
+				else
+					unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
+					unitEntry.BQUI_PromotionsCount_UnitList:SetText(#BQUI_PromotionList);
+					if i > 1 then
+						for j = 1, i - 1 do
+							unitEntry["BQUI_RealPromotion_" .. j .. "_UnitList"]:SetShow(false);
+						end
+					end
+					break;
+				end
+			end
+
+		-- *** ROCK BAND ***
+		elseif BQUI_UnitType == "UNIT_ROCK_BAND" then
+			local TruncateWidth = 185;
+			if #BQUI_PromotionList > 2 or ( #BQUI_PromotionList == 2 and BQUI_ExperiencePoints == BQUI_MaxExperience ) then
+				TruncateWidth = 135;
+			end
+			local function SetPromotionIcon(unitEntry:table, idx:number, iconInfo:table)
+				unitEntry["BQUI_RealPromotion_" .. idx .. "_UnitList"]:SetShow(true);
+				unitEntry["PromotionIcon"..idx]:SetSizeVal(iconInfo.Size, iconInfo.Size);
+				unitEntry["PromotionIcon"..idx]:SetIcon(iconInfo.Icon);
+				unitEntry["PromotionIcon"..idx]:SetOffsetY(iconInfo.OffsetY);
+			end
+			for i,promo in ipairs(BQUI_PromotionList) do
+				local promoInfo:table = GameInfo.UnitPromotions[promo];
+				local iconInfo:table = BQUI_RockBandPromotionIcons[ promoInfo.UnitPromotionType ];
+				if iconInfo ~= nil and i <= 3 then SetPromotionIcon(unitEntry, i, iconInfo); end
+				table.insert(tt, "[ICON_Bullet]"..Locale.Lookup(promoInfo.Description)); -- add to the tooltip
+			end
+				
+		-- *** SOOTHSAYER ***
 		elseif pUnit:GetDisasterCharges() > 0 then
 			unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
 			unitEntry.BQUI_PromotionsCount_UnitList:SetText(pUnit:GetDisasterCharges());
+
+			for i = 1, #BQUI_PromotionList do
+				if i > 3 then
+					break;
+				end
+
+				local BQUI_PromotionType = GameInfo.UnitPromotions[BQUI_PromotionList[i]].UnitPromotionType;
+				if BQUI_SoothsayerPromotionIcons[BQUI_PromotionType] ~= nil then
+					unitEntry["BQUI_RealPromotion_" .. i .. "_UnitList"]:SetShow(true);
+					local PromotionIconSize = BQUI_SoothsayerPromotionIcons[BQUI_PromotionType].Size;
+					unitEntry["BQUI_IconRealPromotion_" .. i .. "_UnitList"]:SetSizeVal(PromotionIconSize, PromotionIconSize);
+					unitEntry["BQUI_IconRealPromotion_" .. i .. "_UnitList"]:SetIcon(BQUI_SoothsayerPromotionIcons[BQUI_PromotionType].Icon);
+					unitEntry["BQUI_IconRealPromotion_" .. i .. "_UnitList"]:SetOffsetY(BQUI_SoothsayerPromotionIcons[BQUI_PromotionType].OffsetY);
+				else
+					if i > 1 then
+						for j = 1, i - 1 do
+							unitEntry["BQUI_RealPromotion_" .. j .. "_UnitList"]:SetShow(false);
+						end
+					end
+					break;
+				end
+			end
 		end
 
-		-- bolbas (Icons for levied units added)
-		if BQUI_CombatStrength > 0 then
-			local iOwner = pUnit:GetOwner();
-			local iOriginalOwner = pUnit:GetOriginalOwner();
-			if (iOwner ~= iOriginalOwner) then
-				local pOriginalOwner = Players[iOriginalOwner];
-				if (pOriginalOwner ~= nil and pOriginalOwner:GetInfluence() ~= nil) then
-					local iLevyTurnCounter = pOriginalOwner:GetInfluence():GetLevyTurnCounter();
-					if (iLevyTurnCounter >= 0 and iOwner == pOriginalOwner:GetInfluence():GetSuzerain()) then
-						unitEntry.BQUI_LeviedUnits_UnitList:SetShow(true);
-						if #BQUI_PromotionList > 0 then
-							unitEntry.BQUI_LeviedUnits_UnitList:SetOffsetX(-18);
-							unitEntry.BQUI_PromotionsCount_UnitList:SetHide(true);
+	elseif BQUI_ExperiencePoints == BQUI_MaxExperience then
+		unitEntry.BQUI_IconPromotionAvailable_UnitList:SetShow(true);
+		if BQUI_SpreadCharges > 0 then
+			unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
+			unitEntry.BQUI_PromotionsCount_UnitList:SetText(BQUI_SpreadCharges);
+		--elseif BQUI_UnitType == "UNIT_SPY" then    -- bolbas (Apostle, Spy, Rock Band, Soothsayer promotion and Great Person passive ability icons added)
+			--table.insert (BQUI_SpyEntriesToSetOffset, {unitEntry = unitEntry, TruncateWidth = 185});
+		--elseif BQUI_UnitType == "UNIT_ROCK_BAND" then    -- bolbas (Apostle, Spy, Rock Band, Soothsayer promotion and Great Person passive ability icons added)
+			--table.insert (BQUI_RockBandEntriesToSetOffset, {unitEntry = unitEntry, TruncateWidth = 185});
+		end
+	elseif pUnit:GetBuildCharges() > 0 and BQUI_CombatStrength == 0 and BQUI_RangedCombatStrength == 0 then
+		unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
+		unitEntry.BQUI_PromotionsCount_UnitList:SetText(pUnit:GetBuildCharges());
+	elseif BQUI_SpreadCharges > 0 then
+		unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
+		unitEntry.BQUI_PromotionsCount_UnitList:SetText(BQUI_SpreadCharges);
+	elseif BQUI_ReligiousHealCharges > 0 then
+		unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
+		unitEntry.BQUI_PromotionsCount_UnitList:SetText(BQUI_ReligiousHealCharges);
+		
+	elseif BQUI_UnitType == "UNIT_ARCHAEOLOGIST" then
+		local pPlayer = Players[BQUI_localPlayerID];
+		local idArchaeologyHomeCity = pUnit:GetArchaeologyHomeCity();
+		local pCity = pPlayer:GetCities():FindID(idArchaeologyHomeCity);
+		local pCityBldgs:table = pCity:GetBuildings();
+		local ArchaeologicalMuseumIndex = GameInfo.Buildings["BUILDING_MUSEUM_ARTIFACT"].Index
+		local numSlots:number = pCityBldgs:GetNumGreatWorkSlots(ArchaeologicalMuseumIndex);
+		local ArchaeologistCharges = 0;
+		for index:number = 0, numSlots - 1 do
+			local greatWorkIndex:number = pCityBldgs:GetGreatWorkInSlot(ArchaeologicalMuseumIndex, index);
+			if (greatWorkIndex == -1) then
+				ArchaeologistCharges = ArchaeologistCharges + 1;
+			end
+		end
+		unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
+		unitEntry.BQUI_PromotionsCount_UnitList:SetText(ArchaeologistCharges);
+	--elseif BQUI_UnitType == "UNIT_SPY" then    -- bolbas (Apostle, Spy, Rock Band, Soothsayer promotion and Great Person passive ability icons added)
+		--table.insert (BQUI_SpyEntriesToSetOffset, {unitEntry = unitEntry, TruncateWidth = 185});
+	--elseif BQUI_UnitType == "UNIT_ROCK_BAND" then    -- bolbas (Apostle, Spy, Rock Band, Soothsayer promotion and Great Person passive ability icons added)
+		--table.insert (BQUI_RockBandEntriesToSetOffset, {unitEntry = unitEntry, TruncateWidth = 185});
+		
+	-- *** GREAT GENERAL / ADMIRAL ***
+	elseif BQUI_UnitType == "UNIT_GREAT_ADMIRAL" or BQUI_UnitType == "UNIT_GREAT_GENERAL" then    -- bolbas (Apostle, Spy, Rock Band, Soothsayer promotion and Great Person passive ability icons added)
+		local individual:number = pUnit:GetGreatPerson():GetIndividual();
+		if individual >= 0 then
+			local individualEraType:string = GameInfo.GreatPersonIndividuals[individual].EraType;
+			if BQUI_GreatPersonEras[individualEraType] ~= nil then
+				for i = 1, 2 do
+					if BQUI_GreatPersonEras[individualEraType]["Icon_" .. i] ~= nil then
+						unitEntry["BQUI_RealPromotion_" .. i .. "_UnitList"]:SetShow(true);
+						unitEntry["BQUI_IconRealPromotion_" .. i .. "_UnitList"]:SetSizeVal(BQUI_GreatPersonEras[individualEraType]["Size_" .. i], BQUI_GreatPersonEras[individualEraType]["Size_" .. i]);
+						unitEntry["BQUI_IconRealPromotion_" .. i .. "_UnitList"]:SetIcon(BQUI_GreatPersonEras[individualEraType]["Icon_" .. i]);
+						unitEntry["BQUI_IconRealPromotion_" .. i .. "_UnitList"]:SetOffsetY(BQUI_GreatPersonEras[individualEraType]["OffsetY_" .. i]);
+					end
+				end
+				--table.insert (BQUI_GreatPersonEntriesToSetOffset, {unitEntry = unitEntry});
+			end
+		end
+	elseif pUnit:GetDisasterCharges() > 0 then
+		unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
+		unitEntry.BQUI_PromotionsCount_UnitList:SetText(pUnit:GetDisasterCharges());
+	end
 
-							-- bolbas (Promotion tree added)
-							if #BQUI_PromotionList == 7 then
-								for number, value in pairs(BQUI_PromotionTreeCheck) do
-									unitEntry["BQUI_TierPromotion_" .. number .. "_UnitList"]:SetShow(true);
-								end
+	-- bolbas (Icons for levied units added)
+	if BQUI_CombatStrength > 0 then
+		local iOwner = pUnit:GetOwner();
+		local iOriginalOwner = pUnit:GetOriginalOwner();
+		if (iOwner ~= iOriginalOwner) then
+			local pOriginalOwner = Players[iOriginalOwner];
+			if (pOriginalOwner ~= nil and pOriginalOwner:GetInfluence() ~= nil) then
+				local iLevyTurnCounter = pOriginalOwner:GetInfluence():GetLevyTurnCounter();
+				if (iLevyTurnCounter >= 0 and iOwner == pOriginalOwner:GetInfluence():GetSuzerain()) then
+					unitEntry.BQUI_LeviedUnits_UnitList:SetShow(true);
+					if #BQUI_PromotionList > 0 then
+						unitEntry.BQUI_LeviedUnits_UnitList:SetOffsetX(-18);
+						unitEntry.BQUI_PromotionsCount_UnitList:SetHide(true);
+
+						-- bolbas (Promotion tree added)
+						if #BQUI_PromotionList == 7 then
+							for number, value in pairs(BQUI_PromotionTreeCheck) do
+								unitEntry["BQUI_TierPromotion_" .. number .. "_UnitList"]:SetShow(true);
 							end
 						end
 					end
 				end
 			end
 		end
+	end
 	--end
 
 	-- bolbas (Religion icons added)
@@ -1127,7 +1157,7 @@ function AddUnitToUnitList(pUnit:table)
 			unitEntry.BQUI_IconRealPromotion_1_UnitList:SetColorByName("UnitPanelTextDisabledCS");
 			unitEntry.BQUI_IconRealPromotion_2_UnitList:SetColorByName("UnitPanelTextDisabledCS");
 			unitEntry.BQUI_IconRealPromotion_3_UnitList:SetColorByName("UnitPanelTextDisabledCS");
-
+			--[[
 			if BQUI_UnitType == "UNIT_ROCK_BAND" then    -- bolbas (new Water Park icon for Rock Band promotions added)
 				for i = 1, 3 do
 					for j = 1, 4 do
@@ -1135,6 +1165,7 @@ function AddUnitToUnitList(pUnit:table)
 					end
 				end
 			end
+			--]]
 		--end
 	end
 	
@@ -1154,6 +1185,9 @@ function AddUnitToUnitList(pUnit:table)
 	--BQUI_RealPromotion_3_UnitList
 	--BQUI_HPBarBG -- separate logic
 	--BQUI_HPBar -- separate logic
+	
+	-- Infixo: build and show the tooltip
+	unitEntry.Button:SetToolTipString(table.concat(tt, "[NEWLINE]"));
 end
 
 -- Infixo: why is this function overwritten?
