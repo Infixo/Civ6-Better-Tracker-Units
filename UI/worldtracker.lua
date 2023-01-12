@@ -16,10 +16,13 @@ include("WorldTrackerItem_", true);
 g_ExtraIconData = {};
 include("CivicsTreeIconLoader_", true);
 
-
-local isBES:boolean = Modding.IsModActive("07D5DFAB-44CE-8F63-8344-93E427E9376E"); -- Better Espionage Screen for new spy icons
---local bIsGatheringStorm:boolean = Modding.IsModActive("4873eb62-8ccc-4574-b784-dda455e74e68"); -- Gathering Storm
---local bIsMonopolies:boolean = GameCapabilities.HasCapability("CAPABILITY_MONOPOLIES"); -- Monopoly and Corporations Mode
+-- check extensions, modes and mods ;)
+local m_isHeroes:boolean     = GameCapabilities.HasCapability("CAPABILITY_HEROES"); -- Heroes & Legends Mode
+local m_isApocalypse:boolean = GameCapabilities.HasCapability("CAPABILITY_MEGADISASTERS"); -- Apocalypse Mode
+local m_isBES:boolean        = Modding.IsModActive("07D5DFAB-44CE-8F63-8344-93E427E9376E"); -- Better Espionage Screen for new spy icons
+print("Apocalypse: ", (m_isApocalypse and "YES" or "no"));
+print("Heroes    : ", (m_isHeroes and "YES" or "no"));
+print("BES       : ", (m_isBES and "YES" or "no"));
 
 
 -- ===========================================================================
@@ -438,36 +441,38 @@ end
 
 -- ===========================================================================
 -- INFIXO: BOLBAS' CODE, USED WITH PERMISSION
+-- Refactoring (new icons, simplifications) by Infixo
 
 local BQUI_PreviousUnitEntrySum = nil;    -- bolbas (Middle Click on Unit List entries added - shows total number of units of that type)
 local BQUI_UnitDifferentReligions:number = 0;    -- bolbas (Religion icons added)
 
+-- Infixo: icons update to be in sync with CQUI
 local BQUI_ApostlePromotionIcons:table = {
-	PROMOTION_CHAPLAIN 			 = {Icon = "ICON_UNIT_MEDIC",			 Size = 16,	OffsetY = -1},
-	PROMOTION_DEBATER 			 = {Icon = "ICON_STRENGTH",			     Size = 14,	OffsetY = -1},
-	PROMOTION_HEATHEN_CONVERSION = {Icon = "ICON_NOTIFICATION_NEW_BARBARIAN_CAMP",	Size = 18,	OffsetY = -1},
-	PROMOTION_INDULGENCE_VENDOR  = {Icon = "ICON_MAP_PIN_CIRCLE",		 Size = 12,	OffsetY = -1},
-	PROMOTION_ORATOR 			 = {Icon = "ICON_STATS_SPREADCHARGES",	 Size = 16,	OffsetY = 0},
-	PROMOTION_PILGRIM 			 = {Icon = "ICON_STATS_TERRAIN",		 Size = 16,	OffsetY = 0},
-	PROMOTION_PROSELYTIZER 		 = {Icon = "ICON_UNIT_INQUISITOR",		 Size = 17,	OffsetY = 0},
-	PROMOTION_TRANSLATOR 		 = {Icon = "ICON_QUEUE",				 Size = 18,	OffsetY = -1},
-	PROMOTION_MARTYR 			 = {Icon = "ICON_GREATWORKOBJECT_RELIC", Size = 12,	OffsetY = 0},
+	PROMOTION_CHAPLAIN 			 = {Icon = "Religion",		  Size = 20, OffsetY = 0},-- medic
+	PROMOTION_DEBATER 			 = {Icon = "Ability",		  Size = 20, OffsetY = 0},-- +20 combat
+	PROMOTION_HEATHEN_CONVERSION = {Icon = "Barbarian",		  Size = 20, OffsetY = 0},-- barbs
+	PROMOTION_INDULGENCE_VENDOR  = {Icon = "Gold",		 	  Size = 18, OffsetY = 0},-- gold
+	PROMOTION_PROSELYTIZER 		 = {Icon = "Damaged",		  Size = 20, OffsetY = 0},-- 75% reduce
+	PROMOTION_TRANSLATOR 		 = {Icon = "Bombard",		  Size = 20, OffsetY = 0},-- 3x pressure
+	PROMOTION_MARTYR 			 = {Icon = "GreatWork_Relic", Size = 18, OffsetY = 0},-- relic
+	PROMOTION_ORATOR 			 = {Icon = "ICON_STATS_SPREADCHARGES", Size = 16, OffsetY = 0}, -- adds charges
+	PROMOTION_PILGRIM 			 = {Icon = "ICON_STATS_TERRAIN",	   Size = 16, OffsetY = 0}, -- adds charges
 };
 
 -- Infixo: updated icons to better reflect description (e.g. district icons used)
 local BQUI_RockBandPromotionIcons:table = {
-	PROMOTION_ALBUM_COVER_ART =	{Icon = "ICON_STAT_WONDERS",    Size = 16, OffsetY = 0}, -- ok
+	PROMOTION_ALBUM_COVER_ART =	{Icon = "ICON_STAT_WONDERS",    Size = 16, OffsetY = 0},
 	PROMOTION_ARENA_ROCK =		{Icon = "ICON_AMENITIES",		Size = 16, OffsetY = 0},
 	PROMOTION_GLAM_ROCK =		{Icon = "ICON_DISTRICT_THEATER",Size = 16, OffsetY = 0},
 	PROMOTION_GOES_TO =			{Icon = "PressureRight",		Size = 18, OffsetY = 0},
-	PROMOTION_INDIE =			{Icon = "PressureDown",			Size = 22, OffsetY = 0}, -- ICON_STAT_CULTURAL_FLAG
-	PROMOTION_MUSIC_FESTIVAL =	{Icon = "ICON_STATS_TERRAIN",	Size = 16, OffsetY = 0}, -- ok
-	PROMOTION_POP =				{Icon = "Gold",					Size = 22, OffsetY = 0},
+	PROMOTION_INDIE =			{Icon = "PressureDown",			Size = 22, OffsetY = 0},
+	PROMOTION_MUSIC_FESTIVAL =	{Icon = "ICON_STATS_TERRAIN",	Size = 16, OffsetY = 0},
+	PROMOTION_POP =				{Icon = "Gold",					Size = 20, OffsetY = 0},
 	PROMOTION_REGGAE_ROCK =		{Icon = "ICON_DISTRICT_WATER_ENTERTAINMENT_COMPLEX", Size = 16, OffsetY = 0}, -- Infixo: fixed
-	PROMOTION_RELIGIOUS_ROCK =	{Icon = "ICON_RELIGION",		Size = 20, OffsetY = 0}, -- ok
+	PROMOTION_RELIGIOUS_ROCK =	{Icon = "ICON_RELIGION",		Size = 20, OffsetY = 0},
 	PROMOTION_ROADIES =			{Icon = "ICON_MOVES",			Size = 14, OffsetY = 0},
 	PROMOTION_SPACE_ROCK =		{Icon = "ICON_DISTRICT_CAMPUS", Size = 16, OffsetY = 0},
-	PROMOTION_SURF_ROCK =		{Icon = "ICON_DISTRICT_HARBOR", Size = 16, OffsetY = 0}, -- ICON_UNIT_GREAT_ADMIRAL, 15
+	PROMOTION_SURF_ROCK =		{Icon = "ICON_DISTRICT_HARBOR", Size = 16, OffsetY = 0},
 };
 
 local BQUI_SpyPromotionIcons:table = {
@@ -497,17 +502,7 @@ local BQUI_SoothsayerPromotionIcons:table = {
 	PROMOTION_SOOTHSAYER_INCANTATION = {Icon = "ICON_STRENGTH",				  Size = 14, OffsetY = -1},
 	PROMOTION_SOOTHSAYER_PLAGUE_BEARER = {Icon = "ICON_UNITOPERATION_SPY_TRAVEL_NEW_CITY", Size = 16, OffsetY = -2},
 };
---[[
-local BQUI_PromotionsWithoutIcons:table = {
-	UNIT_APOSTLE = true,
-	UNIT_SPY = true,
-	UNIT_ROCK_BAND = true,
-	UNIT_WARRIOR_MONK = true,
-	UNIT_GIANT_DEATH_ROBOT = true,
-	UNIT_LAHORE_NIHANG = true,
-	UNIT_SOOTHSAYER = true,
-};
---]]
+
 local BQUI_GreatPersonEras:table = {
 	ERA_CLASSICAL =   {Icon_1 = "ICON_GREATWORKOBJECT_ARTIFACT_ERA_CLASSICAL",   Size_1 = 13, OffsetY_1 = -1, Icon_2 = "ICON_GREATWORKOBJECT_ARTIFACT_ERA_MEDIEVAL",    Size_2 = 14, OffsetY_2 = -1},
 	ERA_MEDIEVAL =    {Icon_1 = "ICON_GREATWORKOBJECT_ARTIFACT_ERA_MEDIEVAL",    Size_1 = 14, OffsetY_1 = -1, Icon_2 = "ICON_GREATWORKOBJECT_ARTIFACT_ERA_RENAISSANCE", Size_2 = 14, OffsetY_2 = -1},
@@ -627,43 +622,38 @@ end
 --function AddUnitToUnitList(pUnit:table, BQUI_localPlayerID:number, BQUI_IfUnitListFitsTheScreen:boolean)    -- bolbas (Scrollbar area is removed from the Unit List and appears only when scrollbar available)
 function AddUnitToUnitList(pUnit:table)
 	local BQUI_localPlayerID:number = Game.GetLocalPlayer();
-	-- Create entry
 	local unitEntry:table = m_unitEntryIM:GetInstance();
-	--local unitEntry:table = {};
-	--Controls.UnitListPopup:BuildEntry( "UnitListEntry", unitEntry );
 
 	-- check formation and prepare suffix
-	local formation = pUnit:GetMilitaryFormation();
-	local suffix:string = "";
-	if formation == MilitaryFormationTypes.CORPS_FORMATION then
-		suffix = "[ICON_Corps]";
-	elseif formation == MilitaryFormationTypes.ARMY_FORMATION then
-		suffix = "[ICON_Army]";
+	local suffix:string = " ";
+	if     pUnit:GetMilitaryFormation() == MilitaryFormationTypes.CORPS_FORMATION then suffix = "[ICON_Corps]";
+	elseif pUnit:GetMilitaryFormation() == MilitaryFormationTypes.ARMY_FORMATION  then suffix = "[ICON_Army]"; end
+	
+	-- Infixo: Heroes Mode
+	if m_isHeroes then
+		local eHeroClass = Game.GetHeroesManager():GetUnitHeroClass( pUnit:GetUnitType() );
+		if eHeroClass > -1 then
+			suffix = "[ICON_Capital]";
+		end
 	end
-
+	
 	-- name and tooltip
 	local tt:table = {};
 	local name:string = pUnit:GetName();
-	local uniqueName:string = Locale.Lookup(name).." ".. suffix;
-	local tooltip:string = "";
+	local tooltip:string = Locale.Lookup(name);
+	if suffix ~= " " then tooltip = tooltip.." "..suffix; end
 	local unitInfo:table = GameInfo.Units[pUnit:GetUnitType()];
-	if unitInfo then
-		local unitTypeName:string = unitInfo.Name;
-		if name ~= unitTypeName then
-			tooltip = uniqueName.." "..Locale.Lookup("LOC_UNIT_UNIT_TYPE_NAME_SUFFIX", unitTypeName);
-			table.insert(tt, tooltip);
-		end
+	local unitTypeName:string = unitInfo.Name;
+	if name ~= unitTypeName then
+		tooltip = tooltip.." "..Locale.Lookup("LOC_UNIT_UNIT_TYPE_NAME_SUFFIX", unitTypeName); -- <Text> ({1_UnitTypeName})</Text>
+		table.insert(tt, tooltip);
 	end
-	--unitEntry.Button:SetToolTipString(tooltip);
-
-	--unitEntry.Button:SetText( Locale.ToUpper(uniqueName) );    -- bolbas: removed this because of unitEntry.BQUI_UnitName_UnitList:SetText( Locale.ToUpper(BQUI_uniqueName) );
-	local BQUI_UnitID = pUnit:GetID();    -- bolbas (Unit Abilities added to Unit List and Unit Panel)
+	unitEntry.BQUI_UnitName:SetText(Locale.ToUpper(Locale.Lookup(name))); -- actual name
+	unitEntry.BQUI_UnitNameSuffix:SetText(suffix); -- corps/army icon
+	
+	-- attach unit ID to the control for future use
+	local BQUI_UnitID = pUnit:GetID();
 	unitEntry.Button:SetVoid1(BQUI_UnitID);
-
-	-- bolbas (Upgrade, promotion and charges icons and numbers added)
-	local BQUI_uniqueName = Locale.Lookup( name );
-	unitEntry.BQUI_UnitName_UnitList:SetText( Locale.ToUpper(BQUI_uniqueName) );
-	unitEntry.BQUI_UnitNameSuffix_UnitList:SetText( suffix .. " " );    -- bolbas (Corps/Army words removed from suffix, unitname and suffix separated)
 
 	local BQUI_UnitType = unitInfo.UnitType;
 	local BQUI_unitExperience = pUnit:GetExperience();
@@ -694,6 +684,7 @@ function AddUnitToUnitList(pUnit:table)
 	unitEntry.BQUI_TierPromotion_42_UnitList:SetShow(false);
 	
 	local function SetPromotionIconByName(unitEntry:table, idx:number, iconName:string, size:number, offsetY:number)
+		--print("FUN SetPromotionIconByName",idx,iconName,size,offsetY);
 		unitEntry["BQUI_RealPromotion_" .. idx .. "_UnitList"]:SetShow(true);
 		unitEntry["PromotionIcon"..idx]:SetIcon(iconName);
 		unitEntry["PromotionIcon"..idx]:SetSizeVal(size, size);
@@ -702,14 +693,8 @@ function AddUnitToUnitList(pUnit:table)
 	
 	local function SetPromotionIconByIcon(unitEntry:table, idx:number, iconInfo:table)
 		SetPromotionIconByName(unitEntry, idx, iconInfo.Icon, iconInfo.Size, iconInfo.OffsetY);
-		--unitEntry["BQUI_RealPromotion_" .. idx .. "_UnitList"]:SetShow(true);
-		--unitEntry["PromotionIcon"..idx]:SetSizeVal(iconInfo.Size, iconInfo.Size);
-		--unitEntry["PromotionIcon"..idx]:SetIcon(iconInfo.Icon);
-		--unitEntry["PromotionIcon"..idx]:SetOffsetY(iconInfo.OffsetY);
 	end
-	
 
-	--if BQUI_IconsAndAbilitiesState[BQUI_localPlayerID] ~= nil and BQUI_IconsAndAbilitiesState[BQUI_localPlayerID] ~= 4 then    -- bolbas (Right Click on Unit List popup and Unit List entries added, entry with selected unit highlighted)
 	if #BQUI_PromotionList > 0 then
 		if BQUI_ExperiencePoints == BQUI_MaxExperience and ( ( BQUI_UnitType ~= "UNIT_LAHORE_NIHANG" and #BQUI_PromotionList < 7 ) or ( BQUI_UnitType == "UNIT_LAHORE_NIHANG" and #BQUI_PromotionList < 5 ) ) then
 			unitEntry.BQUI_IconPromotionAvailable_UnitList:SetShow(true);
@@ -764,41 +749,14 @@ function AddUnitToUnitList(pUnit:table)
 			unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
 			unitEntry.BQUI_PromotionsCount_UnitList:SetText(BQUI_SpreadCharges);
 
-		-- bolbas (Apostle, Spy, Rock Band, Soothsayer promotion and Great Person passive ability icons added)
-			local k = 0;    -- bolbas: added variable k to set Martyr promotion to the last position
-			for i = 1, #BQUI_PromotionList do
-				if i > 3 then
-					break;
-				end
-
-				local BQUI_PromotionType = GameInfo.UnitPromotions[BQUI_PromotionList[i]].UnitPromotionType;
-				if BQUI_ApostlePromotionIcons[BQUI_PromotionType] ~= nil then
-					k = k + 1;    -- bolbas: added variable k to set Martyr promotion to the last position
-					local PromotionIconSize = BQUI_ApostlePromotionIcons[BQUI_PromotionType].Size;
-					if BQUI_PromotionType == "PROMOTION_MARTYR" then    -- bolbas: check for Martyr promotion and set it to the last position
-						unitEntry["BQUI_RealPromotion_" .. #BQUI_PromotionList .. "_UnitList"]:SetShow(true);
-						unitEntry["BQUI_IconRealPromotion_" .. #BQUI_PromotionList .. "_UnitList"]:SetSizeVal(PromotionIconSize, PromotionIconSize);
-						unitEntry["BQUI_IconRealPromotion_" .. #BQUI_PromotionList .. "_UnitList"]:SetIcon(BQUI_ApostlePromotionIcons[BQUI_PromotionType].Icon);
-						unitEntry["BQUI_IconRealPromotion_" .. #BQUI_PromotionList .. "_UnitList"]:SetOffsetY(BQUI_ApostlePromotionIcons[BQUI_PromotionType].OffsetY);
-						if i ~= #BQUI_PromotionList then
-							k = k - 1;    -- bolbas: added variable k to set Martyr promotion to the last position
-						end
-					elseif unitEntry["BQUI_RealPromotion_" .. k .. "_UnitList"]:IsHidden() then
-						unitEntry["BQUI_RealPromotion_" .. k .. "_UnitList"]:SetShow(true);
-						unitEntry["BQUI_IconRealPromotion_" .. k .. "_UnitList"]:SetSizeVal(PromotionIconSize, PromotionIconSize);
-						unitEntry["BQUI_IconRealPromotion_" .. k .. "_UnitList"]:SetIcon(BQUI_ApostlePromotionIcons[BQUI_PromotionType].Icon);
-						unitEntry["BQUI_IconRealPromotion_" .. k .. "_UnitList"]:SetOffsetY(BQUI_ApostlePromotionIcons[BQUI_PromotionType].OffsetY);
-					end
-				else    -- bolbas: added compatibility with mods that add custom unit promotions
-					if i > 1 then
-						for j = 1, i - 1 do
-							unitEntry["BQUI_RealPromotion_" .. j .. "_UnitList"]:SetShow(false);
-						end
-					end
-					break;
-				end
+			for i,promo in ipairs(BQUI_PromotionList) do
+				local promoInfo:table = GameInfo.UnitPromotions[promo];
+				--dshowtable(promoInfo);
+				local iconInfo:table = BQUI_ApostlePromotionIcons[ promoInfo.UnitPromotionType ];
+				if iconInfo ~= nil and i <= 3 then SetPromotionIconByIcon(unitEntry, i, iconInfo); end
+				table.insert(tt, "[ICON_Bullet]"..Locale.Lookup(promoInfo.Description)); -- add to the tooltip
 			end
-				
+
 		-- *** SPY ***
 		elseif BQUI_UnitType == "UNIT_SPY" then
 			local TruncateWidth = 185;
@@ -807,7 +765,7 @@ function AddUnitToUnitList(pUnit:table)
 			end
 			for i,promo in ipairs(BQUI_PromotionList) do
 				local promoInfo:table = GameInfo.UnitPromotions[promo];
-				if isBES then
+				if m_isBES then
 					--local iconInfo:table = BQUI_SpyPromotionIcons[ promoInfo.UnitPromotionType ];
 					if i <= 3 then SetPromotionIconByName(unitEntry, i, promoInfo.UnitPromotionType, 16, 0); end
 				else
@@ -858,30 +816,29 @@ function AddUnitToUnitList(pUnit:table)
 			end
 		end
 
-	elseif BQUI_ExperiencePoints == BQUI_MaxExperience then
+	elseif BQUI_ExperiencePoints == BQUI_MaxExperience then -- TODO: add check if the unit can be promoted at all
 		unitEntry.BQUI_IconPromotionAvailable_UnitList:SetShow(true);
 		if BQUI_SpreadCharges > 0 then
 			unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
 			unitEntry.BQUI_PromotionsCount_UnitList:SetText(BQUI_SpreadCharges);
-		--elseif BQUI_UnitType == "UNIT_SPY" then    -- bolbas (Apostle, Spy, Rock Band, Soothsayer promotion and Great Person passive ability icons added)
-			--table.insert (BQUI_SpyEntriesToSetOffset, {unitEntry = unitEntry, TruncateWidth = 185});
-		--elseif BQUI_UnitType == "UNIT_ROCK_BAND" then    -- bolbas (Apostle, Spy, Rock Band, Soothsayer promotion and Great Person passive ability icons added)
-			--table.insert (BQUI_RockBandEntriesToSetOffset, {unitEntry = unitEntry, TruncateWidth = 185});
 		end
+	
 	elseif pUnit:GetBuildCharges() > 0 and BQUI_CombatStrength == 0 and BQUI_RangedCombatStrength == 0 then
 		unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
 		unitEntry.BQUI_PromotionsCount_UnitList:SetText(pUnit:GetBuildCharges());
+		
 	elseif BQUI_SpreadCharges > 0 then
 		unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
 		unitEntry.BQUI_PromotionsCount_UnitList:SetText(BQUI_SpreadCharges);
+		
 	elseif BQUI_ReligiousHealCharges > 0 then
 		unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
 		unitEntry.BQUI_PromotionsCount_UnitList:SetText(BQUI_ReligiousHealCharges);
 		
 	elseif BQUI_UnitType == "UNIT_ARCHAEOLOGIST" then
-		local pPlayer = Players[BQUI_localPlayerID];
-		local idArchaeologyHomeCity = pUnit:GetArchaeologyHomeCity();
-		local pCity = pPlayer:GetCities():FindID(idArchaeologyHomeCity);
+		--local localPlayer = Players[Game.GetLocalPlayer()];
+		--local idArchaeologyHomeCity = pUnit:GetArchaeologyHomeCity();
+		local pCity = Players[Game.GetLocalPlayer()]:GetCities():FindID( pUnit:GetArchaeologyHomeCity() );
 		local pCityBldgs:table = pCity:GetBuildings();
 		local ArchaeologicalMuseumIndex = GameInfo.Buildings["BUILDING_MUSEUM_ARTIFACT"].Index
 		local numSlots:number = pCityBldgs:GetNumGreatWorkSlots(ArchaeologicalMuseumIndex);
@@ -894,10 +851,6 @@ function AddUnitToUnitList(pUnit:table)
 		end
 		unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
 		unitEntry.BQUI_PromotionsCount_UnitList:SetText(ArchaeologistCharges);
-	--elseif BQUI_UnitType == "UNIT_SPY" then    -- bolbas (Apostle, Spy, Rock Band, Soothsayer promotion and Great Person passive ability icons added)
-		--table.insert (BQUI_SpyEntriesToSetOffset, {unitEntry = unitEntry, TruncateWidth = 185});
-	--elseif BQUI_UnitType == "UNIT_ROCK_BAND" then    -- bolbas (Apostle, Spy, Rock Band, Soothsayer promotion and Great Person passive ability icons added)
-		--table.insert (BQUI_RockBandEntriesToSetOffset, {unitEntry = unitEntry, TruncateWidth = 185});
 		
 	-- *** GREAT GENERAL / ADMIRAL ***
 	elseif BQUI_UnitType == "UNIT_GREAT_ADMIRAL" or BQUI_UnitType == "UNIT_GREAT_GENERAL" then    -- bolbas (Apostle, Spy, Rock Band, Soothsayer promotion and Great Person passive ability icons added)
@@ -916,6 +869,7 @@ function AddUnitToUnitList(pUnit:table)
 				--table.insert (BQUI_GreatPersonEntriesToSetOffset, {unitEntry = unitEntry});
 			end
 		end
+		
 	elseif pUnit:GetDisasterCharges() > 0 then
 		unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
 		unitEntry.BQUI_PromotionsCount_UnitList:SetText(pUnit:GetDisasterCharges());
@@ -974,108 +928,101 @@ function AddUnitToUnitList(pUnit:table)
 
 	-- bolbas (Unit Abilities added to Unit List and Unit Panel)
 	--if BQUI_IconsAndAbilitiesState[BQUI_localPlayerID] ~= nil and (BQUI_IconsAndAbilitiesState[BQUI_localPlayerID] < 2 or BQUI_IconsAndAbilitiesState[BQUI_localPlayerID] == 5) then    -- bolbas (Right Click on Unit List popup and Unit List entries added, entry with selected unit highlighted)
-		if BQUI_CombatStrength > 0 or BQUI_RangedCombatStrength > 0 then
-			local BQUI_AbilitiesXP = 0;
-			local BQUI_AbilitiesStrength = 0;
-			local BQUI_ShowAbilities_GP = false;
-			local BQUI_ShowAbilities_COMANDANTE = false;
-			local unitAbilitiesList = pUnit:GetAbility():GetAbilities();
-			if (unitAbilitiesList ~= nil and table.count(unitAbilitiesList) > 0) then
-				for i, ability in ipairs (unitAbilitiesList) do
-					local abilityDef = GameInfo.UnitAbilities[ability];
-					if (abilityDef ~= nil) then
-						if (abilityDef.Description ~= nil) then
-							local BQUI_AbilityType = abilityDef.UnitAbilityType;
-							if BQUI_UnitAbilitiesIcons[BQUI_AbilityType] ~= nil then
-								if BQUI_UnitAbilitiesIcons[BQUI_AbilityType] <= 18 then    -- bolbas: XP abilities
-									if #BQUI_PromotionList < 7 then
-										if BQUI_UnitAbilitiesIcons[BQUI_AbilityType] < 13 then
-											BQUI_AbilitiesXP = BQUI_AbilitiesXP + 1;    -- bolbas: +25% XP
-										elseif BQUI_UnitAbilitiesIcons[BQUI_AbilityType] < 15 then
-											BQUI_AbilitiesXP = BQUI_AbilitiesXP + 2;    -- bolbas: +50% XP
-										elseif BQUI_UnitAbilitiesIcons[BQUI_AbilityType] < 16 then
-											BQUI_AbilitiesXP = BQUI_AbilitiesXP + 3;    -- bolbas: +75% XP
-										elseif BQUI_UnitAbilitiesIcons[BQUI_AbilityType] < 18 then
-											BQUI_AbilitiesXP = BQUI_AbilitiesXP + 4;    -- bolbas: +100% XP
-										else
-											BQUI_AbilitiesXP = BQUI_AbilitiesXP + 5;    -- bolbas: > +100% XP
-										end
+	if BQUI_CombatStrength > 0 or BQUI_RangedCombatStrength > 0 then
+		local BQUI_AbilitiesXP = 0;
+		local BQUI_AbilitiesStrength = 0;
+		local BQUI_ShowAbilities_GP = false;
+		local BQUI_ShowAbilities_COMANDANTE = false;
+		local unitAbilitiesList = pUnit:GetAbility():GetAbilities();
+		if (unitAbilitiesList ~= nil and table.count(unitAbilitiesList) > 0) then
+			for i, ability in ipairs (unitAbilitiesList) do
+				local abilityDef = GameInfo.UnitAbilities[ability];
+				if (abilityDef ~= nil) then
+					if (abilityDef.Description ~= nil) then
+						local BQUI_AbilityType = abilityDef.UnitAbilityType;
+						if BQUI_UnitAbilitiesIcons[BQUI_AbilityType] ~= nil then
+							if BQUI_UnitAbilitiesIcons[BQUI_AbilityType] <= 18 then    -- bolbas: XP abilities
+								if #BQUI_PromotionList < 7 then
+									if BQUI_UnitAbilitiesIcons[BQUI_AbilityType] < 13 then
+										BQUI_AbilitiesXP = BQUI_AbilitiesXP + 1;    -- bolbas: +25% XP
+									elseif BQUI_UnitAbilitiesIcons[BQUI_AbilityType] < 15 then
+										BQUI_AbilitiesXP = BQUI_AbilitiesXP + 2;    -- bolbas: +50% XP
+									elseif BQUI_UnitAbilitiesIcons[BQUI_AbilityType] < 16 then
+										BQUI_AbilitiesXP = BQUI_AbilitiesXP + 3;    -- bolbas: +75% XP
+									elseif BQUI_UnitAbilitiesIcons[BQUI_AbilityType] < 18 then
+										BQUI_AbilitiesXP = BQUI_AbilitiesXP + 4;    -- bolbas: +100% XP
+									else
+										BQUI_AbilitiesXP = BQUI_AbilitiesXP + 5;    -- bolbas: > +100% XP
 									end
-								elseif BQUI_UnitAbilitiesIcons[BQUI_AbilityType] <= 24 then    -- bolbas: Strength abilities
-									BQUI_AbilitiesStrength = BQUI_AbilitiesStrength + 1;
-								elseif BQUI_UnitAbilitiesIcons[BQUI_AbilityType] <= 26 then    -- bolbas: GP abilities
-									BQUI_ShowAbilities_GP = true;
-								else    -- bolbas: Comandante abilities
-									BQUI_ShowAbilities_COMANDANTE = true;
 								end
+							elseif BQUI_UnitAbilitiesIcons[BQUI_AbilityType] <= 24 then    -- bolbas: Strength abilities
+								BQUI_AbilitiesStrength = BQUI_AbilitiesStrength + 1;
+							elseif BQUI_UnitAbilitiesIcons[BQUI_AbilityType] <= 26 then    -- bolbas: GP abilities
+								BQUI_ShowAbilities_GP = true;
+							else    -- bolbas: Comandante abilities
+								BQUI_ShowAbilities_COMANDANTE = true;
 							end
 						end
 					end
 				end
 			end
-
-			if BQUI_AbilitiesXP > 0 or BQUI_AbilitiesStrength > 0 or BQUI_ShowAbilities_GP == true or BQUI_ShowAbilities_COMANDANTE == true then
-				unitEntry.BQUI_AllAbilities_UnitList:SetShow(true);
-				if not unitEntry.BQUI_IconPromotionAvailable_UnitList:IsHidden() then
-					unitEntry.BQUI_AllAbilities_UnitList:SetOffsetX(-20);
-				end
-
-				if BQUI_AbilitiesXP > 0 then
-					unitEntry.BQUI_UNIT_ABILITIES_XP_UnitList:SetShow(true);
-					if BQUI_AbilitiesXP == 2 then
-						unitEntry.BQUI_UNIT_ABILITIES_XP_TIER_UnitList:SetColorByName("PolicyEconomic");
-					elseif BQUI_AbilitiesXP == 3 then
-						unitEntry.BQUI_UNIT_ABILITIES_XP_TIER_UnitList:SetColorByName("StatGoodCS");
-					elseif BQUI_AbilitiesXP == 4 then
-						unitEntry.BQUI_UNIT_ABILITIES_XP_TIER_UnitList:SetColorByName("COLOR_FLOAT_SCIENCE");
-					elseif BQUI_AbilitiesXP >= 5 then
-						unitEntry.BQUI_UNIT_ABILITIES_XP_TIER_UnitList:SetColor( BQUI_Color_Tier_5 );
-					end
-				end
-
-				if BQUI_AbilitiesStrength > 0 then
-					unitEntry.BQUI_UNIT_ABILITIES_STRENGTH_UnitList:SetShow(true);
-					if BQUI_AbilitiesStrength == 2 then
-						unitEntry.BQUI_UNIT_ABILITIES_STRENGTH_TIER_UnitList:SetColorByName("Gray");
-					elseif BQUI_AbilitiesStrength == 3 then
-						unitEntry.BQUI_UNIT_ABILITIES_STRENGTH_TIER_UnitList:SetColorByName("AirportDark");
-					elseif BQUI_AbilitiesStrength == 4 then
-						unitEntry.BQUI_UNIT_ABILITIES_STRENGTH_TIER_UnitList:SetColorByName("Airport");
-					elseif BQUI_AbilitiesStrength >= 5 then
-						unitEntry.BQUI_UNIT_ABILITIES_STRENGTH_TIER_UnitList:SetColorByName("MilitaryDark");
-					end
-				end
-
-				if BQUI_ShowAbilities_GP == true then
-					if BQUI_ShowAbilities_COMANDANTE == false then
-						unitEntry.BQUI_UNIT_ABILITIES_GP_UnitList:SetShow(true);
-					else
-						unitEntry.BQUI_UNIT_ABILITIES_DOUBLE_GP_UnitList:SetShow(true);
-					end
-				elseif BQUI_ShowAbilities_COMANDANTE == true then
-					unitEntry.BQUI_UNIT_ABILITIES_COMANDANTE_UnitList:SetShow(true);
-				end
-			else
-				unitEntry.BQUI_AllAbilities_UnitList:SetShow(false);
-			end
 		end
+
+		if BQUI_AbilitiesXP > 0 or BQUI_AbilitiesStrength > 0 or BQUI_ShowAbilities_GP == true or BQUI_ShowAbilities_COMANDANTE == true then
+			unitEntry.BQUI_AllAbilities_UnitList:SetShow(true);
+			if not unitEntry.BQUI_IconPromotionAvailable_UnitList:IsHidden() then
+				unitEntry.BQUI_AllAbilities_UnitList:SetOffsetX(-20);
+			end
+
+			if BQUI_AbilitiesXP > 0 then
+				unitEntry.BQUI_UNIT_ABILITIES_XP_UnitList:SetShow(true);
+				if BQUI_AbilitiesXP == 2 then
+					unitEntry.BQUI_UNIT_ABILITIES_XP_TIER_UnitList:SetColorByName("PolicyEconomic");
+				elseif BQUI_AbilitiesXP == 3 then
+					unitEntry.BQUI_UNIT_ABILITIES_XP_TIER_UnitList:SetColorByName("StatGoodCS");
+				elseif BQUI_AbilitiesXP == 4 then
+					unitEntry.BQUI_UNIT_ABILITIES_XP_TIER_UnitList:SetColorByName("COLOR_FLOAT_SCIENCE");
+				elseif BQUI_AbilitiesXP >= 5 then
+					unitEntry.BQUI_UNIT_ABILITIES_XP_TIER_UnitList:SetColor( BQUI_Color_Tier_5 );
+				end
+			end
+
+			if BQUI_AbilitiesStrength > 0 then
+				unitEntry.BQUI_UNIT_ABILITIES_STRENGTH_UnitList:SetShow(true);
+				if BQUI_AbilitiesStrength == 2 then
+					unitEntry.BQUI_UNIT_ABILITIES_STRENGTH_TIER_UnitList:SetColorByName("Gray");
+				elseif BQUI_AbilitiesStrength == 3 then
+					unitEntry.BQUI_UNIT_ABILITIES_STRENGTH_TIER_UnitList:SetColorByName("AirportDark");
+				elseif BQUI_AbilitiesStrength == 4 then
+					unitEntry.BQUI_UNIT_ABILITIES_STRENGTH_TIER_UnitList:SetColorByName("Airport");
+				elseif BQUI_AbilitiesStrength >= 5 then
+					unitEntry.BQUI_UNIT_ABILITIES_STRENGTH_TIER_UnitList:SetColorByName("MilitaryDark");
+				end
+			end
+
+			if BQUI_ShowAbilities_GP == true then
+				if BQUI_ShowAbilities_COMANDANTE == false then
+					unitEntry.BQUI_UNIT_ABILITIES_GP_UnitList:SetShow(true);
+				else
+					unitEntry.BQUI_UNIT_ABILITIES_DOUBLE_GP_UnitList:SetShow(true);
+				end
+			elseif BQUI_ShowAbilities_COMANDANTE == true then
+				unitEntry.BQUI_UNIT_ABILITIES_COMANDANTE_UnitList:SetShow(true);
+			end
+				
+		else
+			unitEntry.BQUI_AllAbilities_UnitList:SetShow(false);
+		end
+	end
 	--end
 
 	-- Infixo: highlight the currently selected unit or use default control
 	unitEntry.Button:SetTexture( UI.IsUnitSelected(pUnit) and "Controls_ButtonControl_Tan" or "Controls_ButtonControl");
 	
 	unitEntry.Button:RegisterCallback( Mouse.eLClick, function() OnUnitEntryClicked(pUnit:GetID(), unitEntry, true)  end); -- left click closes
-	--unitEntry.Button:RegisterCallback( Mouse.eRClick, function() BQUI_OnUnitListEntriesRightClick(pUnit, unitEntry); end );
 	unitEntry.Button:RegisterCallback( Mouse.eMClick, function() BQUI_CalculateUnits( BQUI_UnitType, unitEntry.BQUI_UnitsSum ); end );    -- bolbas (Middle Click on Unit List entries added - shows total number of units of that type)
 	unitEntry.Button:RegisterCallback( Mouse.eRClick, function() OnUnitEntryClicked(pUnit:GetID(), unitEntry, false) end); -- right click does not close
 
-	--[[ Infixo: not needed???
-	if BQUI_IfUnitListFitsTheScreen then    -- bolbas (Scrollbar area is removed from the Unit List and appears only when scrollbar available)
-		unitEntry.Button:SetSizeX(302);
-	else
-		unitEntry.Button:SetSizeX(292);
-	end
-	--]]
 	-- HEALTH
 	-- Infixo: this is Firaxis' function from UnitPanel.lua
 	local function GetPercentFromDamage( damage:number, maxDamage:number )
@@ -1135,7 +1082,7 @@ function AddUnitToUnitList(pUnit:table)
 		unitEntry.UnitTypeIcon:SetColorByName("UnitPanelTextDisabledCS");
 
 		-- bolbas (Upgrade, promotion and charges icons and numbers added)
-		unitEntry.BQUI_UnitName_UnitList:SetColorByName("UnitPanelTextDisabledCS");
+		unitEntry.BQUI_UnitName:SetColorByName("UnitPanelTextDisabledCS");
 		--if BQUI_ReligionIconsState[BQUI_localPlayerID] == 0 or BQUI_ReligionIconsState[BQUI_localPlayerID] == 3 then    -- bolbas (Right Click on Religion Strength Icon added)
 			unitEntry.BQUI_ReligionIcon:SetColorByName("UnitPanelTextDisabledCS");
 		--end
@@ -1171,8 +1118,8 @@ function AddUnitToUnitList(pUnit:table)
 	end
 	
 	-- simplified logic to show/hide controls
-	local isCivilian:boolean = ( unitInfo.FormationClass == "FORMATION_CLASS_CIVILIAN" );
-	local isSupport:boolean  = ( unitInfo.FormationClass == "FORMATION_CLASS_SUPPORT" );
+	--local isCivilian:boolean = ( unitInfo.FormationClass == "FORMATION_CLASS_CIVILIAN" );
+	--local isSupport:boolean  = ( unitInfo.FormationClass == "FORMATION_CLASS_SUPPORT" );
 	unitEntry.UnitTypeIcon:SetShow(true); -- always show
 	--BQUI_UnitsSum -- separate logic
 	--BQUI_IconUpgrade -- separate logic

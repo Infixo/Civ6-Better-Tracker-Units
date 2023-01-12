@@ -53,8 +53,8 @@
 			<Image ID="UnitStatusIcon" Anchor="R,C" Size="22,22" Offset="2,0" Texture="Stats22"/>
 			<!-- bolbas (Upgrade, promotion and charges icons and numbers added) -->
 			<Stack Anchor="C,C" AnchorSide="I,I" StackGrowth="Right" Offset="3,0" StackPadding="3">
-				<Label ID="BQUI_UnitName_UnitList" Anchor="C,C" Offset="0,0" Style="UnitPanelHeader" TruncateWidth="159"/>
-				<Label ID="BQUI_UnitNameSuffix_UnitList" Anchor="L,C" Offset="0,0" Style="UnitPanelHeader">    <!-- bolbas (Corps/Army words removed from suffix, unitname and suffix separated) -->
+				<Label ID="BQUI_UnitName" Anchor="C,C" Offset="0,0" Style="UnitPanelHeader" TruncateWidth="159"/>
+				<Label ID="BQUI_UnitNameSuffix" Anchor="L,C" Offset="0,0" Style="UnitPanelHeader">    <!-- bolbas (Corps/Army words removed from suffix, unitname and suffix separated) -->
 					<Stack ID="BQUI_IconsStack_UnitList" Anchor="R,C" AnchorSide="O,O" StackGrowth="Right" Offset="-2,0" StackPadding="1">
 						<Container ID="BQUI_PromotionIcons_UnitList" Size="18,18" Offset="0,2" Hidden="1">    <!-- bolbas (Promotion tree added) -->
 							<Line Start="4,2" End="4,12" Width="2" Color="96,100,102,150"/>
