@@ -17,6 +17,8 @@
 				<File>UI/worldtracker.lua</File>
 				<File>UI/worldtracker.xml</File>
 				<File>UI/worldtrackerunits.xml</File>
+				<File>UI/btu_button_tech.dds</File>
+				<File>UI/btu_button_civ.dds</File>
 			</Items>
 		</ImportFiles>
 		<!-- CQUI replaces the original script, so we need to get it back and call CQUI's one in .lua -->
@@ -34,5 +36,7 @@
 		<File>UI/worldtracker.lua</File>
 		<File>UI/worldtracker.xml</File>
 		<File>UI/worldtrackerunits.xml</File>
+		<File>UI/btu_button_tech.dds</File>
+		<File>UI/btu_button_civ.dds</File>
 	</Files>
 </Mod>

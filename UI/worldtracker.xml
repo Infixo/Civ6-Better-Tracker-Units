@@ -18,12 +18,10 @@
           <Label ID="WorldTracker" Anchor="C,C" String="{LOC_WORLD_TRACKER_HEADER:upper}" WrapWidth="Parent-40" Align="Center" Style="FontFlair16" Color2="143,122,82,255" Color0="106,93,69,230" SmallCaps="20" SmallCapsLeading="0" SmallCapsType="EveryWord" KerningAdjustment="0" />
 		  
 		  <!-- Infixo: remove dropdown, all visibility controls are accessible right away -->
-		  <GridButton ID="ResearchButton" Offset="0,2" Size="25,25" Texture="Controls_ButtonControl_Brown" SliceTextureSize="24,24" StateOffsetIncrement="0,24" ToolTip="LOC_HIDE_RESEARCH_PANEL">
-            <Image Size="22,22" Anchor="C,C" Texture="FontIcons" TextureOffset="88,66" />
-          </GridButton>
-		  <GridButton ID="CivicsButton"   Offset="25,2" Size="25,25" Texture="Controls_ButtonControl_Brown" SliceTextureSize="24,24" StateOffsetIncrement="0,24" ToolTip="LOC_HIDE_CIVICS_PANEL">
-            <Image Size="22,22" Anchor="C,C" Texture="FontIcons" TextureOffset="176,66" />
-          </GridButton>
+		  <Button ID="ResearchButton" Offset="2,4" Size="22,22" Texture="btu_button_tech.dds" ToolTip="LOC_HIDE_RESEARCH_PANEL" />
+            <!--<Image Size="22,22" Anchor="C,C" Texture="FontIcons" TextureOffset="88,66" />-->
+		  <Button ID="CivicsButton"   Offset="26,4" Size="22,22" Texture="btu_button_civ.dds" ToolTip="LOC_HIDE_CIVICS_PANEL" />
+            <!--<Image Size="22,22" Anchor="C,C" Texture="FontIcons" TextureOffset="176,66" />-->
 		  <GridButton ID="ChatButton"     Offset="50,2" Size="25,25" Texture="Controls_ButtonControl_Brown" SliceTextureSize="24,24" StateOffsetIncrement="0,24" ToolTip="LOC_HIDE_CHAT_PANEL">
             <Image Size="22,22" Anchor="C,C" Texture="FontIcons" TextureOffset="132,330" />
           </GridButton>
