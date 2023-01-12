@@ -821,15 +821,24 @@ function AddUnitToUnitList(pUnit:table)
 				
 		-- *** SOOTHSAYER ***
 		elseif pUnit:GetDisasterCharges() > 0 then
-			unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
-			unitEntry.BQUI_PromotionsCount_UnitList:SetText(pUnit:GetDisasterCharges());
+			--unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true); -- later
+			--unitEntry.BQUI_PromotionsCount_UnitList:SetText(pUnit:GetDisasterCharges());
+			for i,promo in ipairs(BQUI_PromotionList) do
+				local promoInfo:table = GameInfo.UnitPromotions[promo];
+				local iconInfo:table = BQUI_SoothsayerPromotionIcons[ promoInfo.UnitPromotionType ];
+				if iconInfo ~= nil and i <= 3 then SetPromotionIconByIcon(unitEntry, i, iconInfo); end
+				table.insert(tt, "[ICON_Promotion] "..Locale.Lookup(promoInfo.Name)); -- add to the tooltip
+			end
 
+
+
+			--[[
 			for i = 1, #BQUI_PromotionList do
 				if i > 3 then
 					break;
 				end
 
-				local BQUI_PromotionType = GameInfo.UnitPromotions[BQUI_PromotionList[i]].UnitPromotionType;
+				local BQUI_PromotionType = GameInfo.UnitPromotions[ BQUI_PromotionList[i] ].UnitPromotionType;
 				if BQUI_SoothsayerPromotionIcons[BQUI_PromotionType] ~= nil then
 					unitEntry["BQUI_RealPromotion_" .. i .. "_UnitList"]:SetShow(true);
 					local PromotionIconSize = BQUI_SoothsayerPromotionIcons[BQUI_PromotionType].Size;
@@ -845,6 +854,7 @@ function AddUnitToUnitList(pUnit:table)
 					break;
 				end
 			end
+			--]]
 		end
 	end -- PROMOTIONS
 
@@ -906,27 +916,9 @@ function AddUnitToUnitList(pUnit:table)
 		if individual > -1 then
 			local individualEraType:string = GameInfo.GreatPersonIndividuals[individual].EraType;
 			local eraInfo:table = GameInfo.Eras[individualEraType];
-			--local eraIndex:number = eraInfo.Index;
-			-- create special suffix and tooltip
-			--suffix = string.format("%d - %d", eraInfo.ChronologyIndex, eraInfo.ChronologyIndex+1);
-			--unitEntry.BQUI_UnitNameSuffix:SetText(suffix); -- corps/army icon
 			unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
 			unitEntry.BQUI_PromotionsCount_UnitList:SetText(eraInfo.ChronologyIndex);
 			table.insert(tt, string.format("%s [ICON_GoingTo] %s", LL(eraInfo.Name), LL(GameInfo.Eras[eraInfo.Index+1].Name)));
-			--print(individualEraType);
-			--[[
-			if BQUI_GreatPersonEras[individualEraType] ~= nil then
-				for i = 1, 2 do
-					if BQUI_GreatPersonEras[individualEraType]["Icon_" .. i] ~= nil then
-						unitEntry["BQUI_RealPromotion_" .. i .. "_UnitList"]:SetShow(true);
-						unitEntry["BQUI_IconRealPromotion_" .. i .. "_UnitList"]:SetSizeVal(BQUI_GreatPersonEras[individualEraType]["Size_" .. i], BQUI_GreatPersonEras[individualEraType]["Size_" .. i]);
-						unitEntry["BQUI_IconRealPromotion_" .. i .. "_UnitList"]:SetIcon(BQUI_GreatPersonEras[individualEraType]["Icon_" .. i]);
-						unitEntry["BQUI_IconRealPromotion_" .. i .. "_UnitList"]:SetOffsetY(BQUI_GreatPersonEras[individualEraType]["OffsetY_" .. i]);
-					end
-				end
-				--table.insert (BQUI_GreatPersonEntriesToSetOffset, {unitEntry = unitEntry});
-			end
-			--]]
 		end
 	end
 
@@ -1106,13 +1098,16 @@ function AddUnitToUnitList(pUnit:table)
 		unitEntry.BQUI_HPBar:SetShow(false);
 	end
 
+	-- Unit icon
 	UpdateUnitIcon(pUnit, unitEntry);
+	unitEntry.UnitTypeIcon:SetShow(true); -- always show
 
 	-- Update status icon
+	--UnitManager.GetOperationTypeName(pUnit)	
 	unitEntry.UnitStatusIcon:SetShow(true); -- default, hidden in some cases only
 	local activityType:number = UnitManager.GetActivityType(pUnit);
 	if UnitManager.GetQueuedDestination( pUnit ) then    -- bolbas ("Move to" unit status icon added)
-		unitEntry.UnitStatusIcon:SetSizeVal(20,20);
+		--unitEntry.UnitStatusIcon:SetSizeVal(20,20);
 		unitEntry.UnitStatusIcon:SetIcon("ICON_MOVES");
 		--unitEntry.UnitStatusIcon:SetHide(false);
 	elseif activityType == ActivityTypes.ACTIVITY_SLEEP then
@@ -1130,64 +1125,28 @@ function AddUnitToUnitList(pUnit:table)
 
 	-- Update entry color if unit cannot take any action
 	if pUnit:IsReadyToMove() then
-		unitEntry.Button:GetTextControl():SetColorByName("UnitPanelTextCS");
+		--unitEntry.Button:GetTextControl():SetColorByName("UnitPanelTextCS");
 		unitEntry.UnitTypeIcon:SetColorByName("UnitPanelTextCS");
+		unitEntry.BQUI_UnitName:SetColorByName("UnitPanelTextCS");
+		unitEntry.BQUI_ReligionIcon:SetColorByName("UnitPanelTextCS");
+		unitEntry.UnitStatusIcon:SetColorByName("UnitPanelTextCS");
+		unitEntry.BQUI_PromotionsCount_UnitList:SetColorByName("UnitPanelTextCS");
+		unitEntry.BQUI_LeviedUnits_UnitList:SetColorByName("UnitPanelTextCS");
+		unitEntry.PromotionIcon1:SetColorByName("UnitPanelTextCS");
+		unitEntry.PromotionIcon2:SetColorByName("UnitPanelTextCS");
+		unitEntry.PromotionIcon3:SetColorByName("UnitPanelTextCS");
 	else
-		unitEntry.Button:GetTextControl():SetColorByName("UnitPanelTextDisabledCS");
+		--unitEntry.Button:GetTextControl():SetColorByName("UnitPanelTextDisabledCS");
 		unitEntry.UnitTypeIcon:SetColorByName("UnitPanelTextDisabledCS");
-
-		-- bolbas (Upgrade, promotion and charges icons and numbers added)
 		unitEntry.BQUI_UnitName:SetColorByName("UnitPanelTextDisabledCS");
-		--if BQUI_ReligionIconsState[BQUI_localPlayerID] == 0 or BQUI_ReligionIconsState[BQUI_localPlayerID] == 3 then    -- bolbas (Right Click on Religion Strength Icon added)
-			unitEntry.BQUI_ReligionIcon:SetColorByName("UnitPanelTextDisabledCS");
-		--end
-
-		if pUnit:GetMovementMovesRemaining() == 0 then
-			if unitEntry.UnitStatusIcon:GetSizeX() == 20 then    -- bolbas ("Move to" unit status icon added)
-				unitEntry.UnitStatusIcon:SetColorByName("UnitPanelTextDisabledCS");
-			end
-
-			--if BQUI_IconsAndAbilitiesState[BQUI_localPlayerID] ~= nil and BQUI_IconsAndAbilitiesState[BQUI_localPlayerID] ~= 4 then    -- bolbas (Right Click on Unit List popup and Unit List entries added, entry with selected unit highlighted)
-				if BQUI_ExperiencePoints == BQUI_MaxExperience then
-					unitEntry.BQUI_IconPromotionAvailable:SetColorByName("UnitPanelTextDisabledCS");
-				end
-			--end
-		end
-
-		--if BQUI_IconsAndAbilitiesState[BQUI_localPlayerID] ~= nil and BQUI_IconsAndAbilitiesState[BQUI_localPlayerID] ~= 4 then    -- bolbas (Right Click on Unit List popup and Unit List entries added, entry with selected unit highlighted)
-			unitEntry.BQUI_PromotionsCount_UnitList:SetColorByName("UnitPanelTextDisabledCS");
-			unitEntry.BQUI_LeviedUnits_UnitList:SetColorByName("UnitPanelTextDisabledCS");
-			unitEntry.PromotionIcon1:SetColorByName("UnitPanelTextDisabledCS");
-			unitEntry.PromotionIcon2:SetColorByName("UnitPanelTextDisabledCS");
-			unitEntry.PromotionIcon3:SetColorByName("UnitPanelTextDisabledCS");
-			--[[
-			if BQUI_UnitType == "UNIT_ROCK_BAND" then    -- bolbas (new Water Park icon for Rock Band promotions added)
-				for i = 1, 3 do
-					for j = 1, 4 do
-						unitEntry["BQUI_WaterParkIcon_" .. i .. "_P" .. j .. "_UnitList"]:SetColorByName("UnitPanelTextDisabledCS");
-					end
-				end
-			end
-			--]]
-		--end
+		unitEntry.BQUI_ReligionIcon:SetColorByName("UnitPanelTextDisabledCS");
+		unitEntry.UnitStatusIcon:SetColorByName("UnitPanelTextDisabledCS");
+		unitEntry.BQUI_PromotionsCount_UnitList:SetColorByName("UnitPanelTextDisabledCS");
+		unitEntry.BQUI_LeviedUnits_UnitList:SetColorByName("UnitPanelTextDisabledCS");
+		unitEntry.PromotionIcon1:SetColorByName("UnitPanelTextDisabledCS");
+		unitEntry.PromotionIcon2:SetColorByName("UnitPanelTextDisabledCS");
+		unitEntry.PromotionIcon3:SetColorByName("UnitPanelTextDisabledCS");
 	end
-	
-	-- simplified logic to show/hide controls
-	--local isCivilian:boolean = ( unitInfo.FormationClass == "FORMATION_CLASS_CIVILIAN" );
-	--local isSupport:boolean  = ( unitInfo.FormationClass == "FORMATION_CLASS_SUPPORT" );
-	unitEntry.UnitTypeIcon:SetShow(true); -- always show
-	--BQUI_UnitsSum -- separate logic
-	--BQUI_IconUpgrade -- separate logic
-	--BQUI_ReligionIcon -- separate logic
-	--UnitStatusIcon -- separate logic
-	--BQUI_UnitName_UnitList -- always visible
-	--BQUI_PromotionIcons_UnitList -- graphical representation
-	--BQUI_AllAbilities_UnitList -- dots for abilities
-	--BQUI_RealPromotion_1_UnitList
-	--BQUI_RealPromotion_2_UnitList
-	--BQUI_RealPromotion_3_UnitList
-	--BQUI_HPBarBG -- separate logic
-	--BQUI_HPBar -- separate logic
 	
 	-- Infixo: build and show the tooltip
 	unitEntry.Button:SetToolTipString(table.concat(tt, "[NEWLINE]"));

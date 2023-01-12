@@ -50,7 +50,7 @@
 			<Label ID="BQUI_UnitsSum" Anchor="L,T" Offset="27,5" Style="FontFlair14" Color0="214,214,214,255" Color1="0,0,0,55" FontStyle="Stroke" Hidden="1"/>    <!-- bolbas (Middle Click on Unit List entries added - shows total number of units of that type) -->
 			<Image ID="BQUI_IconUpgrade" Size="13,13" Anchor="L,C" Offset="33,0" Icon="ICON_UNITCOMMAND_UPGRADE" Hidden="1"/>    <!-- bolbas (Upgrade, promotion and charges icons and numbers added) -->
 			<Image ID="BQUI_ReligionIcon" Size="18,18" Anchor="L,C" Offset="30,0" StretchMode="Fill" />    <!-- bolbas (Religion icons added) -->
-			<Image ID="UnitStatusIcon" Anchor="R,C" Size="22,22" Offset="2,0" Texture="Stats22"/>
+			<Image ID="UnitStatusIcon" Anchor="R,C" Size="16,16" Offset="2,0" Texture="Stats16"/>
 			<!-- bolbas (Upgrade, promotion and charges icons and numbers added) -->
 			<Stack Anchor="C,C" AnchorSide="I,I" StackGrowth="Right" Offset="3,0" StackPadding="3">
 				<Label ID="BQUI_UnitName" Anchor="C,C" Offset="0,0" Style="UnitPanelHeader" TruncateWidth="159"/>
