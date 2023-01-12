@@ -1103,22 +1103,18 @@ function AddUnitToUnitList(pUnit:table)
 	unitEntry.UnitTypeIcon:SetShow(true); -- always show
 
 	-- Update status icon
-	--UnitManager.GetOperationTypeName(pUnit)	
 	unitEntry.UnitStatusIcon:SetShow(true); -- default, hidden in some cases only
 	local activityType:number = UnitManager.GetActivityType(pUnit);
-	if UnitManager.GetQueuedDestination( pUnit ) then    -- bolbas ("Move to" unit status icon added)
-		--unitEntry.UnitStatusIcon:SetSizeVal(20,20);
+	if UnitManager.GetQueuedDestination( pUnit ) then
 		unitEntry.UnitStatusIcon:SetIcon("ICON_MOVES");
-		--unitEntry.UnitStatusIcon:SetHide(false);
-	elseif activityType == ActivityTypes.ACTIVITY_SLEEP then
-		--SetUnitEntryStatusIcon(unitEntry, "ICON_STATS_SLEEP");
-		unitEntry.UnitStatusIcon:SetIcon("ICON_STATS_SLEEP");
-	elseif activityType == ActivityTypes.ACTIVITY_HOLD then
-		--SetUnitEntryStatusIcon(unitEntry, "ICON_STATS_SKIP");
-		unitEntry.UnitStatusIcon:SetIcon("ICON_STATS_SKIP");
-	elseif activityType ~= ActivityTypes.ACTIVITY_AWAKE and pUnit:GetFortifyTurns() > 0 then
-		--SetUnitEntryStatusIcon(unitEntry, "ICON_DEFENSE");
+	elseif pUnit:GetFortifyTurns() > 0 then
 		unitEntry.UnitStatusIcon:SetIcon("ICON_DEFENSE");
+	elseif activityType == ActivityTypes.ACTIVITY_HEAL      then unitEntry.UnitStatusIcon:SetIcon("ICON_DAMAGE");
+	elseif activityType == ActivityTypes.ACTIVITY_HOLD      then unitEntry.UnitStatusIcon:SetIcon("ICON_STATS_SKIP");
+	elseif activityType == ActivityTypes.ACTIVITY_INTERCEPT then unitEntry.UnitStatusIcon:SetIcon("ICON_STATS_INTERCEPTOR");
+	elseif activityType == ActivityTypes.ACTIVITY_OPERATION then unitEntry.UnitStatusIcon:SetIcon("ICON_OVERVIEW");
+	elseif activityType == ActivityTypes.ACTIVITY_SENTRY    then unitEntry.UnitStatusIcon:SetIcon("ICON_STATS_GENERIC_MODIFIER");
+	elseif activityType == ActivityTypes.ACTIVITY_SLEEP     then unitEntry.UnitStatusIcon:SetIcon("ICON_STATS_SLEEP");
 	else
 		unitEntry.UnitStatusIcon:SetHide(true);
 	end
