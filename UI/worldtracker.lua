@@ -17,6 +17,11 @@ g_ExtraIconData = {};
 include("CivicsTreeIconLoader_", true);
 
 
+local isBES:boolean = Modding.IsModActive("07D5DFAB-44CE-8F63-8344-93E427E9376E"); -- Better Espionage Screen for new spy icons
+--local bIsGatheringStorm:boolean = Modding.IsModActive("4873eb62-8ccc-4574-b784-dda455e74e68"); -- Gathering Storm
+--local bIsMonopolies:boolean = GameCapabilities.HasCapability("CAPABILITY_MONOPOLIES"); -- Monopoly and Corporations Mode
+
+
 -- ===========================================================================
 --	CONSTANTS
 -- ===========================================================================
@@ -687,6 +692,22 @@ function AddUnitToUnitList(pUnit:table)
 	unitEntry.BQUI_TierPromotion_23_UnitList:SetShow(false);
 	unitEntry.BQUI_TierPromotion_33_UnitList:SetShow(false);
 	unitEntry.BQUI_TierPromotion_42_UnitList:SetShow(false);
+	
+	local function SetPromotionIconByName(unitEntry:table, idx:number, iconName:string, size:number, offsetY:number)
+		unitEntry["BQUI_RealPromotion_" .. idx .. "_UnitList"]:SetShow(true);
+		unitEntry["PromotionIcon"..idx]:SetIcon(iconName);
+		unitEntry["PromotionIcon"..idx]:SetSizeVal(size, size);
+		unitEntry["PromotionIcon"..idx]:SetOffsetY(offsetY);
+	end
+	
+	local function SetPromotionIconByIcon(unitEntry:table, idx:number, iconInfo:table)
+		SetPromotionIconByName(unitEntry, idx, iconInfo.Icon, iconInfo.Size, iconInfo.OffsetY);
+		--unitEntry["BQUI_RealPromotion_" .. idx .. "_UnitList"]:SetShow(true);
+		--unitEntry["PromotionIcon"..idx]:SetSizeVal(iconInfo.Size, iconInfo.Size);
+		--unitEntry["PromotionIcon"..idx]:SetIcon(iconInfo.Icon);
+		--unitEntry["PromotionIcon"..idx]:SetOffsetY(iconInfo.OffsetY);
+	end
+	
 
 	--if BQUI_IconsAndAbilitiesState[BQUI_localPlayerID] ~= nil and BQUI_IconsAndAbilitiesState[BQUI_localPlayerID] ~= 4 then    -- bolbas (Right Click on Unit List popup and Unit List entries added, entry with selected unit highlighted)
 	if #BQUI_PromotionList > 0 then
@@ -784,30 +805,16 @@ function AddUnitToUnitList(pUnit:table)
 			if #BQUI_PromotionList > 2 or ( #BQUI_PromotionList == 2 and BQUI_ExperiencePoints == BQUI_MaxExperience ) then
 				TruncateWidth = 135;
 			end
-			--table.insert (BQUI_SpyEntriesToSetOffset, {unitEntry = unitEntry, TruncateWidth = TruncateWidth});
-
-			for i = 1, #BQUI_PromotionList do
-				if i > 3 then
-					break;
-				end
-
-				local BQUI_PromotionType = GameInfo.UnitPromotions[BQUI_PromotionList[i]].UnitPromotionType;
-				if BQUI_SpyPromotionIcons[BQUI_PromotionType] ~= nil then
-					unitEntry["BQUI_RealPromotion_" .. i .. "_UnitList"]:SetShow(true);
-					local PromotionIconSize = BQUI_SpyPromotionIcons[BQUI_PromotionType].Size;
-					unitEntry["BQUI_IconRealPromotion_" .. i .. "_UnitList"]:SetSizeVal(PromotionIconSize, PromotionIconSize);
-					unitEntry["BQUI_IconRealPromotion_" .. i .. "_UnitList"]:SetIcon(BQUI_SpyPromotionIcons[BQUI_PromotionType].Icon);
-					unitEntry["BQUI_IconRealPromotion_" .. i .. "_UnitList"]:SetOffsetY(BQUI_SpyPromotionIcons[BQUI_PromotionType].OffsetY);
+			for i,promo in ipairs(BQUI_PromotionList) do
+				local promoInfo:table = GameInfo.UnitPromotions[promo];
+				if isBES then
+					--local iconInfo:table = BQUI_SpyPromotionIcons[ promoInfo.UnitPromotionType ];
+					if i <= 3 then SetPromotionIconByName(unitEntry, i, promoInfo.UnitPromotionType, 16, 0); end
 				else
-					unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
-					unitEntry.BQUI_PromotionsCount_UnitList:SetText(#BQUI_PromotionList);
-					if i > 1 then
-						for j = 1, i - 1 do
-							unitEntry["BQUI_RealPromotion_" .. j .. "_UnitList"]:SetShow(false);
-						end
-					end
-					break;
+					local iconInfo:table = BQUI_SpyPromotionIcons[ promoInfo.UnitPromotionType ];
+					if iconInfo ~= nil and i <= 3 then SetPromotionIconByIcon(unitEntry, i, iconInfo); end
 				end
+				table.insert(tt, "[ICON_Bullet]"..Locale.Lookup(promoInfo.Description)); -- add to the tooltip
 			end
 
 		-- *** ROCK BAND ***
@@ -816,16 +823,10 @@ function AddUnitToUnitList(pUnit:table)
 			if #BQUI_PromotionList > 2 or ( #BQUI_PromotionList == 2 and BQUI_ExperiencePoints == BQUI_MaxExperience ) then
 				TruncateWidth = 135;
 			end
-			local function SetPromotionIcon(unitEntry:table, idx:number, iconInfo:table)
-				unitEntry["BQUI_RealPromotion_" .. idx .. "_UnitList"]:SetShow(true);
-				unitEntry["PromotionIcon"..idx]:SetSizeVal(iconInfo.Size, iconInfo.Size);
-				unitEntry["PromotionIcon"..idx]:SetIcon(iconInfo.Icon);
-				unitEntry["PromotionIcon"..idx]:SetOffsetY(iconInfo.OffsetY);
-			end
 			for i,promo in ipairs(BQUI_PromotionList) do
 				local promoInfo:table = GameInfo.UnitPromotions[promo];
 				local iconInfo:table = BQUI_RockBandPromotionIcons[ promoInfo.UnitPromotionType ];
-				if iconInfo ~= nil and i <= 3 then SetPromotionIcon(unitEntry, i, iconInfo); end
+				if iconInfo ~= nil and i <= 3 then SetPromotionIconByIcon(unitEntry, i, iconInfo); end
 				table.insert(tt, "[ICON_Bullet]"..Locale.Lookup(promoInfo.Description)); -- add to the tooltip
 			end
 				
