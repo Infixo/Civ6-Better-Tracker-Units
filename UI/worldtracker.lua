@@ -704,49 +704,22 @@ function AddUnitToUnitList(pUnit:table)
 		if BQUI_CombatStrength > 0 or BQUI_RangedCombatStrength > 0 then
 			unitEntry.PromotionsShield:SetShow(true);
 			unitEntry.CountLabel:SetText(#BQUI_PromotionList);
-
-			-- bolbas (Promotion tree added)
-			if BQUI_UnitType ~= "UNIT_LAHORE_NIHANG" and #BQUI_PromotionList < 7 then
-				for i = 1, #BQUI_PromotionList do
-					local b = GameInfo.UnitPromotions[BQUI_PromotionList[i]].Column;
-					if b > 0 then
-						local a = GameInfo.UnitPromotions[BQUI_PromotionList[i]].Level;
-						if BQUI_PromotionTreeCheck[a .. b] ~= nil then
-							unitEntry["TierPromotion"..a..b]:SetShow(true);
-						else
-							for number, value in pairs(BQUI_PromotionTreeCheck) do
-								unitEntry["TierPromotion"..number]:SetShow(false);
-							end
-							break;
-						end
-					else
-						break;
-					end
-				end
-			elseif BQUI_UnitType == "UNIT_LAHORE_NIHANG" and #BQUI_PromotionList < 5 then
-				for i = 1, #BQUI_PromotionList do
-					local b = GameInfo.UnitPromotions[BQUI_PromotionList[i]].Column;
-					if b > 0 then
-						local a = GameInfo.UnitPromotions[BQUI_PromotionList[i]].Level;
-						if a == 3 and b == 2 then
-							a = 4;
-						end
-						if BQUI_PromotionTreeCheck[a..b] ~= nil then
-							unitEntry["TierPromotion"..a..b]:SetShow(true);
-						else
-							for number, value in pairs(BQUI_PromotionTreeCheck) do
-								unitEntry["TierPromotion"..number]:SetShow(false);
-							end
-							break;
-						end
-					else
-						break;
-					end
-				end
+			-- Infixo: simplified code, just iterate promos and highlight the proper dot
+			-- There could be more dots added to support custom promotion schemes
+			for _,promo in ipairs(BQUI_PromotionList) do
+				local promoInfo:table = GameInfo.UnitPromotions[promo];
+				local col:number, row:number = promoInfo.Column, promoInfo.Level;
+				if BQUI_UnitType == "UNIT_GIANT_DEATH_ROBOT" then break; end -- don't show any dots, just level
+				if BQUI_UnitType == "UNIT_LAHORE_NIHANG" and row == 3 then row = 4; end -- move 1 level down, Nihang has only 3 levels
+				if col == 2 then col = 1; end -- middle column is moved to left
+				if col  > 3 then col = 3; end -- anything after 3rd column is moved to 3rd column
+				if row  > 3 then col = 2; end -- bottom dot is only one
+				unitEntry["TierPromotion"..row..col]:SetShow(true);
 			end
-				
+		end
+		
 		--- *** RELIGIOUS UNITS ***
-		elseif pUnit:GetReligiousStrength() > 0 then
+		if pUnit:GetReligiousStrength() > 0 then
 			for i,promo in ipairs(BQUI_PromotionList) do
 				local promoInfo:table = GameInfo.UnitPromotions[promo];
 				local iconInfo:table = BQUI_ApostlePromotionIcons[ promoInfo.UnitPromotionType ];
@@ -754,13 +727,10 @@ function AddUnitToUnitList(pUnit:table)
 				if iconInfo ~= nil and i <= 3 then SetPromotionIconByIcon(unitEntry, i, iconInfo); end
 				table.insert(tt, "[ICON_Promotion] "..Locale.Lookup(promoInfo.Name)); -- add to the tooltip
 			end
-
+		end
+		
 		-- *** SPY ***
-		elseif BQUI_UnitType == "UNIT_SPY" then
-			--local TruncateWidth = 185;
-			--if #BQUI_PromotionList > 2 or ( #BQUI_PromotionList == 2 and BQUI_ExperiencePoints == BQUI_MaxExperience ) then
-				--TruncateWidth = 135;
-			--end
+		if BQUI_UnitType == "UNIT_SPY" then
 			for i,promo in ipairs(BQUI_PromotionList) do
 				local promoInfo:table = GameInfo.UnitPromotions[promo];
 				if m_isBES then
@@ -771,13 +741,10 @@ function AddUnitToUnitList(pUnit:table)
 				end
 				table.insert(tt, "[ICON_Promotion] "..Locale.Lookup(promoInfo.Name)); -- add to the tooltip
 			end
-
+		end
+		
 		-- *** ROCK BAND ***
-		elseif BQUI_UnitType == "UNIT_ROCK_BAND" then
-			--local TruncateWidth = 185;
-			--if #BQUI_PromotionList > 2 or ( #BQUI_PromotionList == 2 and BQUI_ExperiencePoints == BQUI_MaxExperience ) then
-				--TruncateWidth = 135;
-			--end
+		if BQUI_UnitType == "UNIT_ROCK_BAND" then
 			for i,promo in ipairs(BQUI_PromotionList) do
 				local promoInfo:table = GameInfo.UnitPromotions[promo];
 				local iconInfo:table = BQUI_RockBandPromotionIcons[ promoInfo.UnitPromotionType ];
@@ -785,9 +752,10 @@ function AddUnitToUnitList(pUnit:table)
 				if iconInfo ~= nil and i <= 3 then SetPromotionIconByIcon(unitEntry, i, iconInfo); end
 				table.insert(tt, "[ICON_Promotion] "..Locale.Lookup(promoInfo.Name)); -- add to the tooltip
 			end
-				
+		end
+		
 		-- *** SOOTHSAYER ***
-		elseif pUnit:GetDisasterCharges() > 0 then
+		if pUnit:GetDisasterCharges() > 0 then
 			for i,promo in ipairs(BQUI_PromotionList) do
 				local promoInfo:table = GameInfo.UnitPromotions[promo];
 				local iconInfo:table = BQUI_SoothsayerPromotionIcons[ promoInfo.UnitPromotionType ];
@@ -866,9 +834,6 @@ function AddUnitToUnitList(pUnit:table)
 				local iLevyTurnCounter = pOriginalOwner:GetInfluence():GetLevyTurnCounter();
 				if (iLevyTurnCounter >= 0 and iOwner == pOriginalOwner:GetInfluence():GetSuzerain()) then
 					unitEntry.LeviedUnitIcon:SetShow(true);
-					--if #BQUI_PromotionList > 0 then
-						--unitEntry.CountLabel:SetHide(true);
-					--end
 				end
 			end
 		end
