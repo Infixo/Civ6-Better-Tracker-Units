@@ -530,6 +530,29 @@ local BQUI_PromotionTreeCheck:table = {
 	["42"] = true,
 };
 
+-- Infixo: will read dynamically abilities granting XP boost
+-- EffectType = EFFECT_ADJUST_UNIT_EXPERIENCE_MODIFIER
+m_xpAbilities = {};
+function InitializeUnitAbilities()
+	local results = DB.Query([[
+		select UnitAbilityType, Value
+		from UnitAbilityModifiers as uam, ModifierArguments as ma
+		where uam.ModifierId = ma.ModifierId and ma.Name = 'Amount' and
+		uam.ModifierId in (
+			select ModifierId
+			from Modifiers as m
+			where m.ModifierType in (
+				select dm.ModifierType
+				from DynamicModifiers as dm
+				where dm.EffectType = 'EFFECT_ADJUST_UNIT_EXPERIENCE_MODIFIER'))
+	]]);
+	if results then
+		for _,row in ipairs(results) do
+			m_xpAbilities[row.UnitAbilityType] = tonumber(row.Value);
+		end
+	end
+end
+
 local BQUI_UnitAbilitiesIcons:table = {
 	-- XP Abilities
 	-- +25% XP
@@ -672,11 +695,9 @@ function AddUnitToUnitList(pUnit:table)
 	unitEntry.RealPromotion1:SetShow(false);
 	unitEntry.RealPromotion2:SetShow(false);
 	unitEntry.RealPromotion3:SetShow(false);
-	unitEntry.BQUI_UNIT_ABILITIES_XP_UnitList:SetShow(false);
-	unitEntry.BQUI_UNIT_ABILITIES_STRENGTH_UnitList:SetShow(false);
-	unitEntry.BQUI_UNIT_ABILITIES_GP_UnitList:SetShow(false);
-	unitEntry.BQUI_UNIT_ABILITIES_COMANDANTE_UnitList:SetShow(false);
-	unitEntry.BQUI_UNIT_ABILITIES_DOUBLE_GP_UnitList:SetShow(false);
+	unitEntry.AbilityXPIcon:SetShow(false);
+	unitEntry.AbilityGPIcon:SetShow(false);
+	unitEntry.AbilityCmdIcon:SetShow(false);
 	unitEntry.TierPromotion11:SetShow(false);
 	unitEntry.TierPromotion21:SetShow(false);
 	unitEntry.TierPromotion31:SetShow(false);
@@ -686,7 +707,6 @@ function AddUnitToUnitList(pUnit:table)
 	unitEntry.TierPromotion42:SetShow(false);
 	
 	local function SetPromotionIconByName(unitEntry:table, idx:number, iconName:string, size:number, offsetY:number)
-		--print("FUN SetPromotionIconByName",idx,iconName,size,offsetY);
 		unitEntry["RealPromotion"..idx]:SetShow(true);
 		unitEntry["PromotionIcon"..idx]:SetIcon(iconName);
 		unitEntry["PromotionIcon"..idx]:SetSizeVal(size, size);
@@ -865,91 +885,38 @@ function AddUnitToUnitList(pUnit:table)
 
 	-- *** Unit Abilities ***
 	if BQUI_CombatStrength > 0 or BQUI_RangedCombatStrength > 0 then
-		local BQUI_AbilitiesXP:number = 0;
-		local BQUI_AbilitiesStrength:number = 0;
-		local BQUI_ShowAbilities_GP:boolean = false;
-		local BQUI_ShowAbilities_COMANDANTE:boolean = false;
-		local unitAbilitiesList = pUnit:GetAbility():GetAbilities();
-		if (unitAbilitiesList ~= nil and table.count(unitAbilitiesList) > 0) then
-			for i, ability in ipairs (unitAbilitiesList) do
-				local abilityDef = GameInfo.UnitAbilities[ability];
-				if (abilityDef ~= nil) then
-					if (abilityDef.Description ~= nil) then
-						local BQUI_AbilityType = abilityDef.UnitAbilityType;
-						if BQUI_UnitAbilitiesIcons[BQUI_AbilityType] ~= nil then
-							if BQUI_UnitAbilitiesIcons[BQUI_AbilityType] <= 18 then    -- bolbas: XP abilities
-								if #BQUI_PromotionList < 7 then
-									if BQUI_UnitAbilitiesIcons[BQUI_AbilityType] < 13 then
-										BQUI_AbilitiesXP = BQUI_AbilitiesXP + 1;    -- bolbas: +25% XP
-									elseif BQUI_UnitAbilitiesIcons[BQUI_AbilityType] < 15 then
-										BQUI_AbilitiesXP = BQUI_AbilitiesXP + 2;    -- bolbas: +50% XP
-									elseif BQUI_UnitAbilitiesIcons[BQUI_AbilityType] < 16 then
-										BQUI_AbilitiesXP = BQUI_AbilitiesXP + 3;    -- bolbas: +75% XP
-									elseif BQUI_UnitAbilitiesIcons[BQUI_AbilityType] < 18 then
-										BQUI_AbilitiesXP = BQUI_AbilitiesXP + 4;    -- bolbas: +100% XP
-									else
-										BQUI_AbilitiesXP = BQUI_AbilitiesXP + 5;    -- bolbas: > +100% XP
-									end
-								end
-							elseif BQUI_UnitAbilitiesIcons[BQUI_AbilityType] <= 24 then    -- bolbas: Strength abilities
-								BQUI_AbilitiesStrength = BQUI_AbilitiesStrength + 1;
-							elseif BQUI_UnitAbilitiesIcons[BQUI_AbilityType] <= 26 then    -- bolbas: GP abilities
-								BQUI_ShowAbilities_GP = true;
-							else    -- bolbas: Comandante abilities
-								BQUI_ShowAbilities_COMANDANTE = true;
-							end
-						end
-					end
-				end
+		local xpBoost:number = 0;
+		--local BQUI_AbilitiesStrength:number = 0;
+		local isBoostedGeneral:boolean = false;
+		local isBoostedComandante:boolean = false;
+		for _,ability in ipairs (pUnit:GetAbility():GetAbilities()) do
+			local abilityType = GameInfo.UnitAbilities[ability].UnitAbilityType;
+			if m_xpAbilities[abilityType] ~= nil then xpBoost = xpBoost + m_xpAbilities[abilityType]; end
+			if abilityType == "ABILITY_GREAT_GENERAL_STRENGTH"  then isBoostedGeneral    = true; end
+			if abilityType == "ABILITY_GREAT_ADMIRAL_STRENGTH"  then isBoostedGeneral    = true; end
+			if abilityType == "ABILITY_COMANDANTE_AOE_STRENGTH" then isBoostedComandante = true; end
+		end
+		if xpBoost > 0 then
+			unitEntry.AbilityXPIcon:SetShow(true);
+			if     xpBoost >= 100 then unitEntry.AbilityXPTierIcon:SetColor(UI.GetColorValue(0.6,   0, 1, 1)); -- magenta
+			elseif xpBoost >=  75 then unitEntry.AbilityXPTierIcon:SetColor(UI.GetColorValue(  0, 0.4, 1, 1)); -- light blue
+			elseif xpBoost >=  50 then unitEntry.AbilityXPTierIcon:SetColor(UI.GetColorValue(  0, 0.8, 1, 1)); -- green
+			elseif xpBoost >=  25 then unitEntry.AbilityXPTierIcon:SetColor(UI.GetColorValue(0.2,   1, 0, 1)); -- dark green
+			else 				       unitEntry.AbilityXPTierIcon:SetColor(UI.GetColorValue(  1,   1, 0, 1)); -- yellow
 			end
 		end
-
-		if BQUI_AbilitiesXP > 0 or BQUI_AbilitiesStrength > 0 or BQUI_ShowAbilities_GP or BQUI_ShowAbilities_COMANDANTE then
-			unitEntry.AbilitiesStack:SetShow(true);
-
-			if BQUI_AbilitiesXP > 0 then
-				unitEntry.BQUI_UNIT_ABILITIES_XP_UnitList:SetShow(true);
-				if BQUI_AbilitiesXP == 1 then
-					unitEntry.BQUI_UNIT_ABILITIES_XP_TIER_UnitList:SetColorByName("Culture");
-				elseif BQUI_AbilitiesXP == 2 then
-					unitEntry.BQUI_UNIT_ABILITIES_XP_TIER_UnitList:SetColorByName("PolicyEconomic");
-				elseif BQUI_AbilitiesXP == 3 then
-					unitEntry.BQUI_UNIT_ABILITIES_XP_TIER_UnitList:SetColorByName("StatGoodCS");
-				elseif BQUI_AbilitiesXP == 4 then
-					unitEntry.BQUI_UNIT_ABILITIES_XP_TIER_UnitList:SetColorByName("COLOR_FLOAT_SCIENCE");
-				else --if BQUI_AbilitiesXP >= 5 then
-					unitEntry.BQUI_UNIT_ABILITIES_XP_TIER_UnitList:SetColorByName("COLOR_MEDIUM_GREEN");
-				end
+		--[[ Infixo: strength needs more thorough analysis
+		if BQUI_AbilitiesStrength > 0 then
+			unitEntry.BQUI_UNIT_ABILITIES_STRENGTH_UnitList:SetShow(true);
+			if     BQUI_AbilitiesStrength == 1 then unitEntry.BQUI_UNIT_ABILITIES_STRENGTH_TIER_UnitList:SetColorByName("GrayMedium");
+			elseif BQUI_AbilitiesStrength == 2 then unitEntry.BQUI_UNIT_ABILITIES_STRENGTH_TIER_UnitList:SetColorByName("Gray");
+			elseif BQUI_AbilitiesStrength == 3 then unitEntry.BQUI_UNIT_ABILITIES_STRENGTH_TIER_UnitList:SetColorByName("AirportDark");
+			elseif BQUI_AbilitiesStrength == 4 then unitEntry.BQUI_UNIT_ABILITIES_STRENGTH_TIER_UnitList:SetColorByName("Airport");
+			else 				                    unitEntry.BQUI_UNIT_ABILITIES_STRENGTH_TIER_UnitList:SetColorByName("MilitaryDark");
 			end
-
-			if BQUI_AbilitiesStrength > 0 then
-				unitEntry.BQUI_UNIT_ABILITIES_STRENGTH_UnitList:SetShow(true);
-				if BQUI_AbilitiesStrength == 1 then
-					unitEntry.BQUI_UNIT_ABILITIES_STRENGTH_TIER_UnitList:SetColorByName("GrayMedium");
-				elseif BQUI_AbilitiesStrength == 2 then
-					unitEntry.BQUI_UNIT_ABILITIES_STRENGTH_TIER_UnitList:SetColorByName("Gray");
-				elseif BQUI_AbilitiesStrength == 3 then
-					unitEntry.BQUI_UNIT_ABILITIES_STRENGTH_TIER_UnitList:SetColorByName("AirportDark");
-				elseif BQUI_AbilitiesStrength == 4 then
-					unitEntry.BQUI_UNIT_ABILITIES_STRENGTH_TIER_UnitList:SetColorByName("Airport");
-				else --if BQUI_AbilitiesStrength >= 5 then
-					unitEntry.BQUI_UNIT_ABILITIES_STRENGTH_TIER_UnitList:SetColorByName("MilitaryDark");
-				end
-			end
-
-			if BQUI_ShowAbilities_GP == true then
-				if BQUI_ShowAbilities_COMANDANTE == false then
-					unitEntry.BQUI_UNIT_ABILITIES_GP_UnitList:SetShow(true);
-				else
-					unitEntry.BQUI_UNIT_ABILITIES_DOUBLE_GP_UnitList:SetShow(true);
-				end
-			elseif BQUI_ShowAbilities_COMANDANTE == true then
-				unitEntry.BQUI_UNIT_ABILITIES_COMANDANTE_UnitList:SetShow(true);
-			end
-				
-		else
-			unitEntry.AbilitiesStack:SetShow(false);
-		end
+		end --]]
+		unitEntry.AbilityGPIcon:SetShow(isBoostedGeneral);
+		unitEntry.AbilityCmdIcon:SetShow(isBoostedComandante);
 	end -- Unit Abilities
 
 	-- Infixo: highlight the currently selected unit or use default control
@@ -1782,6 +1749,8 @@ function Initialize()
 	Controls.WorldTrackerAlpha:RegisterEndCallback( OnWorldTrackerAnimationFinished );
 	m_unitListInstance.UnitsSearchBox:RegisterStringChangedCallback( OnUnitListSearch );
 	Controls.ChatPanelContainer:RegisterSizeChanged(OnChatPanelContainerSizeChanged);
+	
+	InitializeUnitAbilities();
 end
 Initialize();
 

@@ -66,27 +66,23 @@
 					<Image ID="PromotionIcon3" Anchor="C,C" />
 				</Container>
 			</Stack>
-			<Stack ID="AbilitiesStack" Anchor="L,B" Offset="20,-1" StackGrowth="Right" StackPadding="0">
-				<Image ID="BQUI_UNIT_ABILITIES_XP_UnitList" Icon="ICON_MAP_PIN_CIRCLE" Size="11,11" Color="Black" Hidden="1">
-					<Image ID="BQUI_UNIT_ABILITIES_XP_TIER_UnitList" Icon="ICON_MAP_PIN_CIRCLE" Size="7,7" Anchor="C,C" Color="White" Alpha="0.75"/>
-				</Image>
-				<Image ID="BQUI_UNIT_ABILITIES_STRENGTH_UnitList" Icon="ICON_MAP_PIN_CIRCLE" Size="11,11" Color="Black" Hidden="1">
-					<Image ID="BQUI_UNIT_ABILITIES_STRENGTH_TIER_UnitList" Icon="ICON_MAP_PIN_CIRCLE" Size="7,7" Anchor="C,C" Color="96,100,102"/>
-				</Image>
-				<Image ID="BQUI_UNIT_ABILITIES_GP_UnitList" Icon="ICON_MAP_PIN_CIRCLE" Size="11,11" Color="Black" Hidden="1">
-					<Image Icon="ICON_MAP_PIN_CIRCLE" Size="7,7" Anchor="C,C" Color="White"/>
-				</Image>
-				<Image ID="BQUI_UNIT_ABILITIES_COMANDANTE_UnitList" Icon="ICON_MAP_PIN_CIRCLE" Size="11,11" Color="Black" Hidden="1">
-					<Image Icon="ICON_MAP_PIN_CIRCLE" Size="7,7" Anchor="C,C" Color="White"/>
-				</Image>
-				<Image ID="BQUI_UNIT_ABILITIES_DOUBLE_GP_UnitList" Icon="ICON_MAP_PIN_CIRCLE" Size="12,12" Color="Black" Hidden="1">
-					<Image Icon="ICON_MAP_PIN_CIRCLE" Size="8,8" Anchor="C,C" Color="White"/>
-				</Image>
-			</Stack>
+			<Image ID="AbilityXPIcon" Anchor="L,B" Offset="20,-1" Icon="ICON_MAP_PIN_CIRCLE" Size="11,11" Color="Black" >
+				<Image ID="AbilityXPTierIcon" Icon="ICON_MAP_PIN_CIRCLE" Size="7,7" Anchor="C,C" Color="White" />
+			</Image>
+			<!--
+			<Image ID="BQUI_UNIT_ABILITIES_STRENGTH_UnitList" Icon="ICON_MAP_PIN_CIRCLE" Size="11,11" Color="Black" Hidden="1">
+				<Image ID="BQUI_UNIT_ABILITIES_STRENGTH_TIER_UnitList" Icon="ICON_MAP_PIN_CIRCLE" Size="7,7" Anchor="C,C" Color="96,100,102"/>
+			</Image>
+			-->
+			<Image ID="AbilityGPIcon" Anchor="L,B" Offset="26,-1" Icon="ICON_MAP_PIN_CIRCLE" Size="11,11" Color="Black" >
+				<Image Icon="ICON_MAP_PIN_CIRCLE" Size="7,7" Anchor="C,C" Color="White"/>
+			</Image>
+			<Image ID="AbilityCmdIcon" Anchor="L,B" Offset="32,-1" Icon="ICON_MAP_PIN_CIRCLE" Size="11,11" Color="Black" >
+				<Image Icon="ICON_MAP_PIN_CIRCLE" Size="7,7" Anchor="C,C" Color="Beige"/>
+			</Image>
 			<Bar ID="BQUI_HPBarBG" Anchor="R,B" Offset="2,5" Size="3,14" Direction="Down" FGColor="Black" Percent="1" Hidden="1" />
 			<Bar ID="BQUI_HPBar" Anchor="R,B" Offset="2,5" Size="3,14" Direction="Down" Hidden="1" />
 		</GridButton>
 	</Instance>
-
 
 </Root>
