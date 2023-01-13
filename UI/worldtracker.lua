@@ -1,4 +1,4 @@
-print("Loading WorldTracker.lua from Better World Tracker Units version 1.0");
+print("Loading WorldTracker.lua from Better World Tracker Units version 0.9");
 -- Copyright 2014-2019, Firaxis Games.
 
 --	Hotloading note: The World Tracker button check now positions based on how many hooks are showing.  
@@ -16,7 +16,7 @@ include("WorldTrackerItem_", true);
 g_ExtraIconData = {};
 include("CivicsTreeIconLoader_", true);
 
--- check extensions, modes and mods ;)
+-- Infixo: check extensions, modes and mods ;)
 local m_isHeroes:boolean     = GameCapabilities.HasCapability("CAPABILITY_HEROES"); -- Heroes & Legends Mode
 local m_isApocalypse:boolean = GameCapabilities.HasCapability("CAPABILITY_MEGADISASTERS"); -- Apocalypse Mode
 local m_isBES:boolean        = Modding.IsModActive("07D5DFAB-44CE-8F63-8344-93E427E9376E"); -- Better Espionage Screen for new spy icons
@@ -43,7 +43,6 @@ local WORLD_TRACKER_PANEL_WIDTH			:number = 300;
 local MINIMAP_PADDING					:number = 40;
 
 local UNITS_PANEL_MIN_HEIGHT			:number = 85;
---local UNITS_PANEL_PADDING				:number = 65;
 local TOPBAR_PADDING					:number = 100;
 
 local WORLD_TRACKER_TOP_PADDING			:number = 200;
@@ -63,7 +62,6 @@ local m_hideCivics				:boolean = false;
 local m_hideResearch			:boolean = false;
 local m_hideUnitList			:boolean = true;
 
---local m_dropdownExpanded		:boolean = false; -- Infixo: remove dropdown
 local m_unreadChatMsgs			:number  = 0;		-- number of chat messages unseen due to the chat panel being hidden.
 
 local m_researchInstance		:table	 = {};		-- Single instance wired up for the currently being researched tech
@@ -89,28 +87,8 @@ local m_remainingRoom			:number = 0;
 local m_isUnitListSizeDirty		:boolean = false;
 local m_isMinimapInitialized	:boolean = false;
 
---local m_uiCheckBoxes			:table = {Controls.ChatCheck, Controls.CivicsCheck, Controls.ResearchCheck, Controls.UnitCheck}; -- Infixo: not used
 local m_isUnitListMilitary		:boolean = false;
 local m_showTrader				:boolean = false;
-
-
--- debug routine - prints a table (no recursion)
-function dshowtable(tTable:table)
-	for k,v in pairs(tTable) do
-		print(k, type(v), tostring(v));
-	end
-end
-
--- debug routine - prints a table, and tables inside recursively (up to 5 levels)
-function dshowrectable(tTable:table, iLevel:number)
-	local level:number = 0;
-	if iLevel ~= nil then level = iLevel; end
-	for k,v in pairs(tTable) do
-		print(string.rep("---:",level), k, type(v), tostring(v));
-		if type(v) == "table" and level < 5 then dshowrectable(v, level+1); end
-	end
-end
-
 
 -- ===========================================================================
 --	FUNCTIONS
@@ -441,7 +419,6 @@ function UpdateWorldTrackerSize()
 end
 
 
-
 -- ===========================================================================
 -- INFIXO: BOLBAS' CODE, USED WITH PERMISSION
 -- Refactoring (new icons, simplifications) by Infixo
@@ -600,20 +577,15 @@ function BQUI_SetReligionIconUnitList(pUnit, unitEntry_ReligionIcon)
 		unitEntry_ReligionIcon:SetShow(true);
 		local religion:table = GameInfo.Religions[BQUI_religionID];
 		local ReligionType = religion.ReligionType;
-		--if BQUI_ReligionsStandard[ReligionType] == true then    -- bolbas (Fixed Standard Religions Icons when set their Size to 18)
-			--unitEntry_ReligionIcon:SetIcon("BQUI_BUL_ICON_" .. ReligionType);
-		--else
-			unitEntry_ReligionIcon:SetSizeVal(22,22);
-			unitEntry_ReligionIcon:SetIcon("ICON_" .. ReligionType);
-			unitEntry_ReligionIcon:SetSizeVal(18,18);
-		--end
+		unitEntry_ReligionIcon:SetSizeVal(22,22);
+		unitEntry_ReligionIcon:SetIcon("ICON_" .. ReligionType);
+		unitEntry_ReligionIcon:SetSizeVal(18,18);
 		if BQUI_UnitDifferentReligions ~= -1 then
 			if BQUI_UnitDifferentReligions == 0 then
 				BQUI_UnitDifferentReligions = BQUI_religionID;
 			elseif BQUI_UnitDifferentReligions ~= BQUI_religionID then
 				BQUI_UnitDifferentReligions = -1;
 			end
-			--table.insert(BQUI_ReligionIconEntry, unitEntry_ReligionIcon);    -- bolbas: A table to hide Religion Icons if all player unints believe in the same Religion
 		end
 	else
 		unitEntry_ReligionIcon:SetShow(false);
@@ -649,7 +621,6 @@ function BQUI_CalculateUnits(BQUI_UnitType, unitEntrySum)
 	end
 end
 
---function AddUnitToUnitList(pUnit:table, BQUI_localPlayerID:number, BQUI_IfUnitListFitsTheScreen:boolean)    -- bolbas (Scrollbar area is removed from the Unit List and appears only when scrollbar available)
 function AddUnitToUnitList(pUnit:table)
 	local BQUI_localPlayerID:number = Game.GetLocalPlayer();
 	local unitEntry:table = m_unitEntryIM:GetInstance();
@@ -776,11 +747,8 @@ function AddUnitToUnitList(pUnit:table)
 				
 		--- *** RELIGIOUS UNITS ***
 		elseif pUnit:GetReligiousStrength() > 0 then
-			--unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true); -- Infixo: this is later
-			--unitEntry.BQUI_PromotionsCount_UnitList:SetText(BQUI_SpreadCharges);
 			for i,promo in ipairs(BQUI_PromotionList) do
 				local promoInfo:table = GameInfo.UnitPromotions[promo];
-				--dshowtable(promoInfo);
 				local iconInfo:table = BQUI_ApostlePromotionIcons[ promoInfo.UnitPromotionType ];
 				if m_isCQUI then iconInfo = CQUI_ApostlePromotionIcons[ promoInfo.UnitPromotionType ]; end
 				if iconInfo ~= nil and i <= 3 then SetPromotionIconByIcon(unitEntry, i, iconInfo); end
@@ -796,7 +764,6 @@ function AddUnitToUnitList(pUnit:table)
 			for i,promo in ipairs(BQUI_PromotionList) do
 				local promoInfo:table = GameInfo.UnitPromotions[promo];
 				if m_isBES then
-					--local iconInfo:table = BQUI_SpyPromotionIcons[ promoInfo.UnitPromotionType ];
 					if i <= 3 then SetPromotionIconByName(unitEntry, i, promoInfo.UnitPromotionType, 16, 0); end
 				else
 					local iconInfo:table = BQUI_SpyPromotionIcons[ promoInfo.UnitPromotionType ];
@@ -821,8 +788,6 @@ function AddUnitToUnitList(pUnit:table)
 				
 		-- *** SOOTHSAYER ***
 		elseif pUnit:GetDisasterCharges() > 0 then
-			--unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true); -- later
-			--unitEntry.BQUI_PromotionsCount_UnitList:SetText(pUnit:GetDisasterCharges());
 			for i,promo in ipairs(BQUI_PromotionList) do
 				local promoInfo:table = GameInfo.UnitPromotions[promo];
 				local iconInfo:table = BQUI_SoothsayerPromotionIcons[ promoInfo.UnitPromotionType ];
@@ -830,41 +795,12 @@ function AddUnitToUnitList(pUnit:table)
 				table.insert(tt, "[ICON_Promotion] "..Locale.Lookup(promoInfo.Name)); -- add to the tooltip
 			end
 
-
-
-			--[[
-			for i = 1, #BQUI_PromotionList do
-				if i > 3 then
-					break;
-				end
-
-				local BQUI_PromotionType = GameInfo.UnitPromotions[ BQUI_PromotionList[i] ].UnitPromotionType;
-				if BQUI_SoothsayerPromotionIcons[BQUI_PromotionType] ~= nil then
-					unitEntry["BQUI_RealPromotion_" .. i .. "_UnitList"]:SetShow(true);
-					local PromotionIconSize = BQUI_SoothsayerPromotionIcons[BQUI_PromotionType].Size;
-					unitEntry["BQUI_IconRealPromotion_" .. i .. "_UnitList"]:SetSizeVal(PromotionIconSize, PromotionIconSize);
-					unitEntry["BQUI_IconRealPromotion_" .. i .. "_UnitList"]:SetIcon(BQUI_SoothsayerPromotionIcons[BQUI_PromotionType].Icon);
-					unitEntry["BQUI_IconRealPromotion_" .. i .. "_UnitList"]:SetOffsetY(BQUI_SoothsayerPromotionIcons[BQUI_PromotionType].OffsetY);
-				else
-					if i > 1 then
-						for j = 1, i - 1 do
-							unitEntry["BQUI_RealPromotion_" .. j .. "_UnitList"]:SetShow(false);
-						end
-					end
-					break;
-				end
-			end
-			--]]
 		end
 	end -- PROMOTIONS
 
 	-- *** PROMO AVAILABLE ***
 	if BQUI_ExperiencePoints == BQUI_MaxExperience then
 		unitEntry.BQUI_IconPromotionAvailable:SetShow(true);
-		--if BQUI_SpreadCharges > 0 then
-			--unitEntry.BQUI_PromotionIcons_UnitList:SetShow(true);
-			--unitEntry.BQUI_PromotionsCount_UnitList:SetText(BQUI_SpreadCharges);
-		--end
 	end
 	
 	-- *** BUILDER ***
@@ -893,8 +829,6 @@ function AddUnitToUnitList(pUnit:table)
 	
 	-- *** ARCHAEOLOGIST ***
 	if BQUI_UnitType == "UNIT_ARCHAEOLOGIST" then
-		--local localPlayer = Players[Game.GetLocalPlayer()];
-		--local idArchaeologyHomeCity = pUnit:GetArchaeologyHomeCity();
 		local pCity = Players[Game.GetLocalPlayer()]:GetCities():FindID( pUnit:GetArchaeologyHomeCity() );
 		local pCityBldgs:table = pCity:GetBuildings();
 		local ArchaeologicalMuseumIndex = GameInfo.Buildings["BUILDING_MUSEUM_ARTIFACT"].Index
@@ -1061,7 +995,6 @@ function AddUnitToUnitList(pUnit:table)
 			unitEntry.BQUI_AllAbilities_UnitList:SetShow(false);
 		end
 	end
-	--end
 
 	-- Infixo: highlight the currently selected unit or use default control
 	unitEntry.Button:SetTexture( UI.IsUnitSelected(pUnit) and "Controls_ButtonControl_Tan" or "Controls_ButtonControl");
@@ -1121,7 +1054,6 @@ function AddUnitToUnitList(pUnit:table)
 
 	-- Update entry color if unit cannot take any action
 	if pUnit:IsReadyToMove() then
-		--unitEntry.Button:GetTextControl():SetColorByName("UnitPanelTextCS");
 		unitEntry.UnitTypeIcon:SetColorByName("UnitPanelTextCS");
 		unitEntry.BQUI_UnitName:SetColorByName("UnitPanelTextCS");
 		unitEntry.BQUI_ReligionIcon:SetColorByName("UnitPanelTextCS");
@@ -1132,7 +1064,6 @@ function AddUnitToUnitList(pUnit:table)
 		unitEntry.PromotionIcon2:SetColorByName("UnitPanelTextCS");
 		unitEntry.PromotionIcon3:SetColorByName("UnitPanelTextCS");
 	else
-		--unitEntry.Button:GetTextControl():SetColorByName("UnitPanelTextDisabledCS");
 		unitEntry.UnitTypeIcon:SetColorByName("UnitPanelTextDisabledCS");
 		unitEntry.BQUI_UnitName:SetColorByName("UnitPanelTextDisabledCS");
 		unitEntry.BQUI_ReligionIcon:SetColorByName("UnitPanelTextDisabledCS");
@@ -1148,18 +1079,11 @@ function AddUnitToUnitList(pUnit:table)
 	unitEntry.Button:SetToolTipString(table.concat(tt, "[NEWLINE]"));
 end
 
--- Infixo: why is this function overwritten?
---function SetUnitEntryStatusIcon(unitEntry:table, icon:string)
-	--local textureOffsetX:number, textureOffsetY:number, textureSheet:string = IconManager:FindIconAtlas(icon,22);
-	--unitEntry.UnitStatusIcon:SetTexture( textureOffsetX, textureOffsetY, textureSheet );
-	--unitEntry.UnitStatusIcon:SetHide(false);
---end
-
 -- INFIXO: END OF BOLBAS' CODE
 -- ===========================================================================
 
 
---[[ Infixo: original code
+--[[ Infixo: original code left for reference
 -- ===========================================================================
 function AddUnitToUnitList(pUnit:table)
 	local uiUnitEntry : table = m_unitEntryIM:GetInstance();
@@ -1276,7 +1200,6 @@ end
 function UpdateChatPanel(hideChat:boolean)
 	m_hideChat = hideChat; 
 	Controls.ChatPanelContainer:SetHide(m_hideChat);
-	--Controls.ChatCheck:SetCheck(not m_hideChat);
 	RealizeEmptyMessage();
 	RealizeStack();
 	CheckUnreadChatMessageCount();
@@ -1561,7 +1484,6 @@ end
 -- ===========================================================================
 function Tutorial_ShowFullTracker()
 	Controls.ToggleAllButton:SetHide(true);
-	-- Controls.ToggleDropdownButton:SetHide(true); -- Infixio: dropdown removed
 	UpdateCivicsPanel(false);
 	UpdateResearchPanel(false);
 	ToggleAll(false);
@@ -1570,13 +1492,11 @@ end
 -- ===========================================================================
 function Tutorial_ShowTrackerOptions()
 	Controls.ToggleAllButton:SetHide(false);
-	--Controls.ToggleDropdownButton:SetHide(false); -- Infixo: dropdown removed
 end
 
 -- ===========================================================================
 function OnSetMinimapCollapsed(isMinimapCollapsed:boolean)
 	m_isMinimapCollapsed = isMinimapCollapsed;
-	--CheckEnoughRoom();
 	UpdateWorldTrackerSize();
 end
 
@@ -1903,7 +1823,6 @@ function Initialize()
 			--CheckEnoughRoom();
 		end);
 	Controls.ToggleAllButton:RegisterCheckHandler( function() ToggleAll(not Controls.ToggleAllButton:IsChecked()) end);
-	--Controls.ToggleDropdownButton:RegisterCallback(	Mouse.eLClick, ToggleDropdown); -- Infixo: dropdown removed
 	Controls.WorldTrackerAlpha:RegisterEndCallback( OnWorldTrackerAnimationFinished );
 	m_unitListInstance.UnitsSearchBox:RegisterStringChangedCallback( OnUnitListSearch );
 	Controls.ChatPanelContainer:RegisterSizeChanged(OnChatPanelContainerSizeChanged);

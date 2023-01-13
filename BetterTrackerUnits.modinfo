@@ -3,7 +3,7 @@
 	<Properties>
 		<Name>Better World Tracker Unit List (UI)</Name>
 		<Teaser>Improved World Tracker Unit List</Teaser>
-		<Description>Improved World Tracker Unit List. Adds more info about units and new features.[NEWLINE]Version 1.0.</Description>
+		<Description>Improved World Tracker Unit List. Adds more info about units and new features.[NEWLINE]Version 0.9.</Description>
 		<Authors>Infixo</Authors>
 		<SpecialThanks>bolbas</SpecialThanks>
 		<AffectsSavedGames>0</AffectsSavedGames>
@@ -21,16 +21,6 @@
 				<File>UI/btu_button_civ.dds</File>
 			</Items>
 		</ImportFiles>
-		<!-- CQUI replaces the original script, so we need to get it back and call CQUI's one in .lua -->
-		<!--
-        <ReplaceUIScript id="BTU_Replace_WorldTracker">
-            <Properties>
-                <LoadOrder>300</LoadOrder>
-                <LuaContext>WorldTracker</LuaContext>
-                <LuaReplace>UI/worldtracker.lua</LuaReplace>
-            </Properties>
-        </ReplaceUIScript>
-		-->
 	</InGameActions>
 	<Files>
 		<File>UI/worldtracker.lua</File>

@@ -4,59 +4,40 @@
 
 	<Instance Name="UnitListInstance">
 		<Grid ID="UnitListMainPanel" Size="296,parent" Texture="Controls_DrawerUp" SliceCorner="5,4" SliceSize="3,2" SliceTextureSize="14,8" Hidden="1">
-			<!--<Stack ID="MainStack" StackGrowth="Bottom" StackPadding="5">-->
-				<Grid Anchor="L,T" Offset="0,0" Size="parent,30" Texture="Controls_DrawerUp" SliceCorner="5,4" SliceSize="3,2" SliceTextureSize="14,8">
-					<!-- Infixo: checkbox for showing/hiding traders -->
-					<CheckBox ID="TraderCheck" Anchor="L,C" Offset="6,2" Style="WorldTrackerCheckBox" String="[ICON_TradeRouteLarge]" ToolTip="LOC_UNIT_TRADER_NAME" TextOffset="-2,2" />
-					<Label Style="PanelHeaderText" String="{LOC_WORLDTRACKER_UNIT_LIST:upper}" Anchor="L,C" Offset="60,4" />
-					<Grid Texture="Controls_Search2" SliceCorner="30,13" SliceTextureSize="41,26" Anchor="R,C" Size="100,26" Offset="25,2" ToolTip="LOC_WORLDTRACKER_UNITS_SEARCH_TT">
-						<EditBox ID="UnitsSearchBox" Style="EditTextArea" Size="parent-30,22" Anchor="L,C" Offset="24,0" EditMode="0" FocusStop="0" KeepFocus="1"/>
-					</Grid>
-				    <Button ID="CloseButton" Anchor="R,T" Offset="2,7" Texture="Controls_CloseButtonAltSmall" Size="21,21" StateOffsetIncrement="0,21" />
+			<Grid Anchor="L,T" Offset="0,0" Size="parent,30" Texture="Controls_DrawerUp" SliceCorner="5,4" SliceSize="3,2" SliceTextureSize="14,8">
+				<!-- Infixo: checkbox for showing/hiding traders -->
+				<CheckBox ID="TraderCheck" Anchor="L,C" Offset="6,2" Style="WorldTrackerCheckBox" String="[ICON_TradeRouteLarge]" ToolTip="LOC_UNIT_TRADER_NAME" TextOffset="-2,2" />
+				<Label Style="PanelHeaderText" String="{LOC_WORLDTRACKER_UNIT_LIST:upper}" Anchor="L,C" Offset="60,4" />
+				<!-- Infixo: search box moved to the top -->
+				<Grid Texture="Controls_Search2" SliceCorner="30,13" SliceTextureSize="41,26" Anchor="R,C" Size="100,26" Offset="25,2" ToolTip="LOC_WORLDTRACKER_UNITS_SEARCH_TT">
+					<EditBox ID="UnitsSearchBox" Style="EditTextArea" Size="parent-30,22" Anchor="L,C" Offset="24,0" EditMode="0" FocusStop="0" KeepFocus="1"/>
 				</Grid>
-				<!--<Container ID="UnitStackContainer" Anchor="C,T" Size="parent,auto">-->
-					<!--<Stack	ID="UnitStack" Anchor="C,T" StackGrowth="Bottom" />-->
-				<Container Anchor="C,T" Offset="0,30" Size="parent,30">
-					<Label ID="NoUnitsLabel" Style="PanelHeaderText" String="LOC_WORLDTRACKER_NO_UNITS" Anchor="C,C" FontSize="20" Offset="0,0"/>
-				</Container>
-				<ScrollPanel ID="UnitListScroll" Anchor="L,T" Offset="0,32" Vertical="1" Size="parent,parent-34" AutoScrollBar="1" >
-					<Stack	ID="UnitStack" Anchor="L,T" Offset="4,0" StackGrowth="Bottom" />
-					<ScrollBar  Style="Slider_Blue" Offset="0,0" Anchor="R,C"/>
-				</ScrollPanel>
-				<!--
-				<Grid Size="parent,30" Texture="Controls_DrawerUp" SliceCorner="5,4" SliceSize="3,2" SliceTextureSize="14,8">
-					<Grid Texture="Controls_Search2" SliceCorner="30,13" SliceTextureSize="41,26" Anchor="C,C" Size="parent-50,26" ToolTip="LOC_WORLDTRACKER_UNITS_SEARCH_TT">
-						<EditBox ID="UnitsSearchBox" Style="EditTextArea" Size="parent-30,22" Anchor="L,C" Offset="24,0" EditMode="0" FocusStop="0" KeepFocus="1"/>
-					</Grid>
-				</Grid>
-				-->
-			<!--</Stack>-->
+				<!-- Infixo: standard close button added -->
+				<Button ID="CloseButton" Anchor="R,T" Offset="2,7" Texture="Controls_CloseButtonAltSmall" Size="21,21" StateOffsetIncrement="0,21" />
+			</Grid>
+			<Container Anchor="C,T" Offset="0,30" Size="parent,30">
+				<Label ID="NoUnitsLabel" Style="PanelHeaderText" String="LOC_WORLDTRACKER_NO_UNITS" Anchor="C,C" FontSize="20" Offset="0,0"/>
+			</Container>
+			<ScrollPanel ID="UnitListScroll" Anchor="L,T" Offset="0,32" Vertical="1" Size="parent,parent-34" AutoScrollBar="1" >
+				<Stack	ID="UnitStack" Anchor="L,T" Offset="4,0" StackGrowth="Bottom" />
+				<ScrollBar  Style="Slider_Blue" Offset="0,0" Anchor="R,C"/>
+			</ScrollPanel>
 		</Grid>
 	</Instance>
 
-	<!-- Infixo: original code
-	<Instance Name="UnitListEntry">
-		<GridButton Anchor="L,T" ID="Button" Style="UnitPanelHeader" Size="parent-10,24" Texture="Controls_ButtonControl.dds" SliceCorner="10,10" SliceSize="1,1" SliceTextureSize="24,24" StateOffsetIncrement="0,24" TruncateWidth="150">
-			<Image ID="UnitTypeIcon" Anchor="L,C" Size="22,22" Offset="2,0" />
-			<Image ID="UnitStatusIcon" Anchor="R,C" Size="22,22" Offset="2,0" Texture="Stats22"/>
-		</GridButton>
-	</Instance>
-	-->
-
 	<!-- The below code is taken from bolbas' Better Unit List with persmission from the author; thx! -->
 	<Instance Name="UnitListEntry">
-		<GridButton ID="Button" Style="UnitPanelHeader" Size="parent-12,24" Offset="-3,0" Texture="Controls_ButtonControl" SliceCorner="10,10" SliceSize="1,1" SliceTextureSize="24,24" StateOffsetIncrement="0,24" TruncateWidth="160">    <!-- bolbas (Scrollbar area is removed from the Unit List and appears only when a scrollbar is available) -->
+		<GridButton ID="Button" Style="UnitPanelHeader" Size="parent-12,24" Offset="-3,0" Texture="Controls_ButtonControl" SliceCorner="10,10" SliceSize="1,1" SliceTextureSize="24,24" StateOffsetIncrement="0,24" TruncateWidth="160">
 			<Image ID="UnitTypeIcon" Anchor="L,C" Size="22,22" Offset="2,0" />
-			<Label ID="BQUI_UnitsSum" Anchor="L,T" Offset="27,5" Style="FontFlair14" Color0="214,214,214,255" Color1="0,0,0,55" FontStyle="Stroke" Hidden="1"/>    <!-- bolbas (Middle Click on Unit List entries added - shows total number of units of that type) -->
-			<Image ID="BQUI_IconUpgrade" Size="13,13" Anchor="L,C" Offset="33,0" Icon="ICON_UNITCOMMAND_UPGRADE" Hidden="1"/>    <!-- bolbas (Upgrade, promotion and charges icons and numbers added) -->
-			<Image ID="BQUI_ReligionIcon" Size="18,18" Anchor="L,C" Offset="30,0" StretchMode="Fill" />    <!-- bolbas (Religion icons added) -->
+			<Label ID="BQUI_UnitsSum" Anchor="L,T" Offset="27,5" Style="FontFlair14" Color0="214,214,214,255" Color1="0,0,0,55" FontStyle="Stroke" Hidden="1"/>
+			<Image ID="BQUI_IconUpgrade" Size="13,13" Anchor="L,C" Offset="33,0" Icon="ICON_UNITCOMMAND_UPGRADE" Hidden="1"/>
+			<Image ID="BQUI_ReligionIcon" Size="18,18" Anchor="L,C" Offset="30,0" StretchMode="Fill" />
 			<Image ID="UnitStatusIcon" Anchor="R,C" Size="16,16" Offset="2,0" Texture="Stats16"/>
-			<!-- bolbas (Upgrade, promotion and charges icons and numbers added) -->
 			<Stack Anchor="C,C" AnchorSide="I,I" StackGrowth="Right" Offset="3,0" StackPadding="3">
 				<Label ID="BQUI_UnitName" Anchor="C,C" Offset="0,0" Style="UnitPanelHeader" TruncateWidth="159"/>
-				<Label ID="BQUI_UnitNameSuffix" Anchor="L,C" Offset="0,0" Style="UnitPanelHeader">    <!-- bolbas (Corps/Army words removed from suffix, unitname and suffix separated) -->
+				<Label ID="BQUI_UnitNameSuffix" Anchor="L,C" Offset="0,0" Style="UnitPanelHeader">
 					<Stack ID="BQUI_IconsStack_UnitList" Anchor="R,C" AnchorSide="O,O" StackGrowth="Right" Offset="-2,0" StackPadding="1">
-						<Container ID="BQUI_PromotionIcons_UnitList" Size="18,18" Offset="0,2" Hidden="1">    <!-- bolbas (Promotion tree added) -->
+						<Container ID="BQUI_PromotionIcons_UnitList" Size="18,18" Offset="0,2" Hidden="1">
 							<Line Start="4,2" End="4,12" Width="2" Color="96,100,102,150"/>
 							<Line Start="3,12" End="10,16" Width="2" Color="96,100,102,150"/>
 							<Line Start="10,16" End="16,12" Width="2" Color="96,100,102,150"/>
@@ -70,7 +51,7 @@
 							<Line ID="BQUI_TierPromotion_42_UnitList" Start="8,15" End="11,15" Width="2" Color="200,200,200,200" Hidden="1"/>
 							<Label ID="BQUI_PromotionsCount_UnitList" Anchor="C,T" Offset="0,1" Style="FontFlair14" Color0="214,214,214,255" Color1="0,0,0,55" FontStyle="Stroke" />
 						</Container>
-						<Image ID="BQUI_LeviedUnits_UnitList" Size="17,17" Anchor="L,C" Offset="1,-1" Icon="Turn" Hidden="1"/>    <!-- bolbas (Icons for levied units added) -->
+						<Image ID="BQUI_LeviedUnits_UnitList" Size="17,17" Anchor="L,C" Offset="1,-1" Icon="Turn" Hidden="1"/>
 						<Stack Anchor="L,C" Offset="0,0" StackGrowth="Right" StackPadding="1" Hidden="0">
 							<Image ID="BQUI_IconPromotionAvailable" Size="18,18" Anchor="L,C" Offset="0,-1" Icon="ICON_CIVILOPEDIA_UNITPROMOTIONS" Hidden="1"/>
 						</Stack>
@@ -109,8 +90,8 @@
 					</Stack>
 				</Label>
 			</Stack>
-			<Bar ID="BQUI_HPBarBG" Anchor="R,B" Offset="2,5" Size="3,14" Direction="Down" FGColor="0,0,0,255" Percent="1" Hidden="1" />    <!-- bolbas (Middle Click on Unit List popup added - shows/hides HP bars for damaged units) -->
-			<Bar ID="BQUI_HPBar" Anchor="R,B" Offset="2,5" Size="3,14" Direction="Down" Hidden="1" />    <!-- bolbas (Middle Click on Unit List popup added - shows/hides HP bars for damaged units) -->
+			<Bar ID="BQUI_HPBarBG" Anchor="R,B" Offset="2,5" Size="3,14" Direction="Down" FGColor="0,0,0,255" Percent="1" Hidden="1" />
+			<Bar ID="BQUI_HPBar" Anchor="R,B" Offset="2,5" Size="3,14" Direction="Down" Hidden="1" />
 		</GridButton>
 	</Instance>
 
