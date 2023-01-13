@@ -1,4 +1,4 @@
-print("Loading WorldTracker.lua from Better World Tracker Units version 0.9");
+print("Loading WorldTracker.lua from Better World Tracker Units version 1.0");
 -- Copyright 2014-2019, Firaxis Games.
 
 --	Hotloading note: The World Tracker button check now positions based on how many hooks are showing.  
@@ -553,46 +553,6 @@ function InitializeUnitAbilities()
 	end
 end
 
-local BQUI_UnitAbilitiesIcons:table = {
-	-- XP Abilities
-	-- +25% XP
-	ABILITY_BARRACKS_TRAINED_UNIT_XP =		1,
-	ABILITY_STABLE_TRAINED_UNIT_XP =		2,
-	ABILITY_BASILIKOI_TRAINED_UNIT_XP =		3,
-	ABILITY_ORDU_TRAINED_UNIT_XP =			4,
-	ABILITY_LIGHTHOUSE_TRAINED_UNIT_XP =	5,
-	ABILITY_HANGAR_TRAINED_AIRCRAFT_XP =	6,
-	ABILITY_ARMORY_TRAINED_UNIT_XP =		7,
-	ABILITY_SHIPYARD_TRAINED_UNIT_XP =		8,
-	ABILITY_MILITARY_ACADEMY_TRAINED_UNIT_XP =		9,
-	ABILITY_SEAPORT_TRAINED_UNIT_XP =		10,
-	ABILITY_TOQUI_XP_FROM_GOVERNOR =		11,
-	ABILITY_TIMUR_BONUS_EXPERIENCE =		12,
-	-- +50% XP
-	ABILITY_AIRPORT_TRAINED_AIRCRAFT_XP =	13,
-	ABILITY_LASKARINA_BOUBOULINA_BONUS_EXPERIENCE =	14,
-	-- +75% XP
-	ABILITY_JOHN_MONASH_BONUS_EXPERIENCE =	15,
-	-- +100% XP
-	ABILITY_SERGEY_GORSHKOV_BONUS_EXPERIENCE =    16,
-	ABILITY_VIJAYA_WIMALARATNE_BONUS_EXPERIENCE = 17,
-	-- > +100% XP
-	ABILITY_CLANCY_FERNANDO_BONUS_EXPERIENCE = 18,
-	-- Strength Abilities
-	ABILITY_ALPINE_TRAINING =				 19,
-	ABILITY_SPEAR_OF_FIONN =				 20,
-	ABILITY_COMMANDANTE_CAVALRY_BUFF =		 21,
-	ABILITY_COMMANDANTE_MELEE_ANTICAV_BUFF = 22,
-	ABILITY_COMMANDANTE_UNIT_STRENGTH_BUFF = 23,
-	ABILITY_COMMANDANTE_UNIT_STR_VS_DISTRICTS =	24,
-	-- GP Abilities
-	ABILITY_GREAT_ADMIRAL_STRENGTH =	25,
-	ABILITY_GREAT_GENERAL_STRENGTH =	26,
-	-- Comandante Abilities
-	ABILITY_COMANDANTE_AOE_STRENGTH =	27,
-};
-
-
 -- bolbas (Religion icons added)
 function BQUI_SetReligionIconUnitList(pUnit, unitEntry_ReligionIcon)
 	local BQUI_religionID = pUnit:GetReligionType();
@@ -1004,74 +964,6 @@ end
 
 -- INFIXO: END OF BOLBAS' CODE
 -- ===========================================================================
-
-
---[[ Infixo: original code left for reference
--- ===========================================================================
-function AddUnitToUnitList(pUnit:table)
-	local uiUnitEntry : table = m_unitEntryIM:GetInstance();
-
-	local formation : number = pUnit:GetMilitaryFormation();
-	local suffix : string = "";
-	local unitType = pUnit:GetUnitType();
-	local unitInfo : table = GameInfo.Units[unitType];
-	if (unitInfo.Domain == "DOMAIN_SEA") then
-		if (formation == MilitaryFormationTypes.CORPS_FORMATION) then
-			suffix = " " .. Locale.Lookup("LOC_HUD_UNIT_PANEL_FLEET_SUFFIX");
-		elseif (formation == MilitaryFormationTypes.ARMY_FORMATION) then
-			suffix = " " .. Locale.Lookup("LOC_HUD_UNIT_PANEL_ARMADA_SUFFIX");
-		end
-	else
-		if (formation == MilitaryFormationTypes.CORPS_FORMATION) then
-			suffix = " " .. Locale.Lookup("LOC_HUD_UNIT_PANEL_CORPS_SUFFIX");
-		elseif (formation == MilitaryFormationTypes.ARMY_FORMATION) then
-			suffix = " " .. Locale.Lookup("LOC_HUD_UNIT_PANEL_ARMY_SUFFIX");
-		end
-	end
-
-	local name : string = pUnit:GetName();
-	local uniqueName : string = Locale.Lookup( name ) .. suffix;
-
-	local tooltip : string = "";
-	local pUnitDef = GameInfo.Units[unitType];
-	if pUnitDef then
-		local unitTypeName:string = pUnitDef.Name;
-		if name ~= unitTypeName then
-			tooltip = uniqueName .. " " .. Locale.Lookup("LOC_UNIT_UNIT_TYPE_NAME_SUFFIX", unitTypeName);
-		end
-	end
-	uiUnitEntry.Button:SetToolTipString(tooltip);
-
-	uiUnitEntry.Button:SetText( Locale.ToUpper(uniqueName) );
-	uiUnitEntry.Button:RegisterCallback(Mouse.eLClick, function() OnUnitEntryClicked(pUnit:GetID())  end);
-
-	UpdateUnitIcon(pUnit, uiUnitEntry);
-
-	-- Update status icon
-	local activityType:number = UnitManager.GetActivityType(pUnit);
-	if activityType == ActivityTypes.ACTIVITY_SLEEP then
-		SetUnitEntryStatusIcon(uiUnitEntry, "ICON_STATS_SLEEP");
-		uiUnitEntry.UnitStatusIcon:SetHide(false);
-	elseif activityType == ActivityTypes.ACTIVITY_HOLD then
-		SetUnitEntryStatusIcon(uiUnitEntry, "ICON_STATS_SKIP");
-		uiUnitEntry.UnitStatusIcon:SetHide(false);
-	elseif activityType ~= ActivityTypes.ACTIVITY_AWAKE and pUnit:GetFortifyTurns() > 0 then
-		SetUnitEntryStatusIcon(uiUnitEntry, "ICON_DEFENSE");
-		uiUnitEntry.UnitStatusIcon:SetHide(false);
-	else
-		uiUnitEntry.UnitStatusIcon:SetHide(true);
-	end
-
-	-- Update entry color if unit cannot take any action
-	if pUnit:GetMovementMovesRemaining() > 0 then
-		uiUnitEntry.Button:GetTextControl():SetColorByName("UnitPanelTextCS");
-		uiUnitEntry.UnitTypeIcon:SetColorByName("UnitPanelTextCS");
-	else
-		uiUnitEntry.Button:GetTextControl():SetColorByName("UnitPanelTextDisabledCS");
-		uiUnitEntry.UnitTypeIcon:SetColorByName("UnitPanelTextDisabledCS");
-	end
-end
---]]
 
 
 -- ===========================================================================
@@ -1698,19 +1590,26 @@ function Initialize()
 	LuaEvents.GameDebug_Return.Add(OnGameDebugReturn);
 	
 	Controls.ToggleAllButton:SetCheck(true);
+	Controls.ToggleAllButton:RegisterCheckHandler( function() ToggleAll(not Controls.ToggleAllButton:IsChecked()) end);
 
-	Controls.ChatButton:RegisterCallback( Mouse.eLClick, function() UpdateChatPanel(not m_hideChat);
-																			   StartUnitListSizeUpdate();
-																			   --CheckEnoughRoom();
-																			   end);
-	Controls.CivicsButton:RegisterCallback(	Mouse.eLClick, function() UpdateCivicsPanel(not m_hideCivics);
-																			   StartUnitListSizeUpdate();
-																			   --CheckEnoughRoom();
-																			   end);
-	Controls.ResearchButton:RegisterCallback( Mouse.eLClick, function() UpdateResearchPanel(not m_hideResearch);
-																			   StartUnitListSizeUpdate();
-																			   --CheckEnoughRoom();
-																			   end);
+	Controls.ChatButton:RegisterCallback( Mouse.eLClick,
+		function()
+			UpdateChatPanel(not m_hideChat);
+			StartUnitListSizeUpdate();
+		end);
+		
+	Controls.CivicsButton:RegisterCallback(	Mouse.eLClick,
+		function()
+			UpdateCivicsPanel(not m_hideCivics);
+			StartUnitListSizeUpdate();
+		end);
+		
+	Controls.ResearchButton:RegisterCallback( Mouse.eLClick,
+		function()
+			UpdateResearchPanel(not m_hideResearch);
+			StartUnitListSizeUpdate();
+	   end);
+	   
 	Controls.CivilianListButton:RegisterCallback( Mouse.eLClick,
 		function()
 			if not m_hideUnitList and m_isUnitListMilitary then m_hideUnitList = true; end -- showing military units -> change to civilian -> simulate "hidden"
@@ -1718,8 +1617,8 @@ function Initialize()
 			m_unitListInstance.TraderCheck:SetHide(false);
 			UpdateUnitListPanel(not m_hideUnitList); 
 			StartUnitListSizeUpdate();
-			--CheckEnoughRoom();
 		end);
+		
 	Controls.MilitaryListButton:RegisterCallback( Mouse.eLClick,
 		function()
 			if not m_hideUnitList and not m_isUnitListMilitary then m_hideUnitList = true; end -- showing civilian units -> change to military -> simulate "hidden"
@@ -1727,15 +1626,15 @@ function Initialize()
 			m_unitListInstance.TraderCheck:SetHide(true);
 			UpdateUnitListPanel(not m_hideUnitList);
 			StartUnitListSizeUpdate();
-			--CheckEnoughRoom();
 		end);
+		
 	m_unitListInstance.CloseButton:RegisterCallback( Mouse.eLClick,
 		function()
 			m_hideUnitList = true;
 			UpdateUnitListPanel(m_hideUnitList);
 			StartUnitListSizeUpdate();
-			--CheckEnoughRoom();
 		end);
+		
 	m_unitListInstance.TraderCheck:SetCheck(m_showTrader);
 	m_unitListInstance.TraderCheck:RegisterCheckHandler(
 		function()
@@ -1743,9 +1642,8 @@ function Initialize()
 			m_unitListInstance.TraderCheck:SetCheck(m_showTrader);
 			UpdateUnitListPanel(m_hideUnitList);
 			StartUnitListSizeUpdate();
-			--CheckEnoughRoom();
 		end);
-	Controls.ToggleAllButton:RegisterCheckHandler( function() ToggleAll(not Controls.ToggleAllButton:IsChecked()) end);
+		
 	Controls.WorldTrackerAlpha:RegisterEndCallback( OnWorldTrackerAnimationFinished );
 	m_unitListInstance.UnitsSearchBox:RegisterStringChangedCallback( OnUnitListSearch );
 	Controls.ChatPanelContainer:RegisterSizeChanged(OnChatPanelContainerSizeChanged);
