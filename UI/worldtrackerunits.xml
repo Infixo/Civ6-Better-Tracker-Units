@@ -30,67 +30,60 @@
 		<GridButton ID="Button" Style="UnitPanelHeader" Size="parent-12,24" Offset="-3,0" Texture="Controls_ButtonControl" SliceCorner="10,10" SliceSize="1,1" SliceTextureSize="24,24" StateOffsetIncrement="0,24" TruncateWidth="160">
 			<Image ID="UnitTypeIcon" Anchor="L,C" Size="22,22" Offset="2,0" />
 			<Label ID="BQUI_UnitsSum" Anchor="L,T" Offset="27,5" Style="FontFlair14" Color0="214,214,214,255" Color1="0,0,0,55" FontStyle="Stroke" Hidden="1"/>
-			<Image ID="BQUI_IconUpgrade" Size="13,13" Anchor="L,C" Offset="33,0" Icon="ICON_UNITCOMMAND_UPGRADE" Hidden="1"/>
-			<Image ID="BQUI_ReligionIcon" Size="18,18" Anchor="L,C" Offset="30,0" StretchMode="Fill" />
+			<Image ID="UpgradeIcon" Size="13,13" Anchor="L,C" Offset="33,0" Icon="ICON_UNITCOMMAND_UPGRADE" />
+			<Image ID="ReligionIcon" Size="18,18" Anchor="L,C" Offset="30,0" StretchMode="Fill" />
 			<Image ID="UnitStatusIcon" Anchor="R,C" Size="16,16" Offset="2,0" Texture="Stats16"/>
-			<Stack Anchor="C,C" AnchorSide="I,I" StackGrowth="Right" Offset="3,0" StackPadding="3">
-				<Label ID="BQUI_UnitName" Anchor="C,C" Offset="0,0" Style="UnitPanelHeader" TruncateWidth="159"/>
-				<Label ID="BQUI_UnitNameSuffix" Anchor="L,C" Offset="0,0" Style="UnitPanelHeader">
-					<Stack ID="BQUI_IconsStack_UnitList" Anchor="R,C" AnchorSide="O,O" StackGrowth="Right" Offset="-2,0" StackPadding="1">
-						<Container ID="BQUI_PromotionIcons_UnitList" Size="18,18" Offset="0,2" Hidden="1">
-							<Line Start="4,2" End="4,12" Width="2" Color="96,100,102,150"/>
-							<Line Start="3,12" End="10,16" Width="2" Color="96,100,102,150"/>
-							<Line Start="10,16" End="16,12" Width="2" Color="96,100,102,150"/>
-							<Line Start="15,12" End="15,2" Width="2" Color="96,100,102,150"/>
-							<Line ID="BQUI_TierPromotion_11_UnitList" Start="2,2" End="5,2" Width="2" Color="200,200,200,200" Hidden="1"/>
-							<Line ID="BQUI_TierPromotion_21_UnitList" Start="2,7" End="5,7" Width="2" Color="200,200,200,200" Hidden="1"/>
-							<Line ID="BQUI_TierPromotion_31_UnitList" Start="2,12" End="5,12" Width="2" Color="200,200,200,200" Hidden="1"/>
-							<Line ID="BQUI_TierPromotion_13_UnitList" Start="14,2" End="17,2" Width="2" Color="200,200,200,200" Hidden="1"/>
-							<Line ID="BQUI_TierPromotion_23_UnitList" Start="14,7" End="17,7" Width="2" Color="200,200,200,200" Hidden="1"/>
-							<Line ID="BQUI_TierPromotion_33_UnitList" Start="14,12" End="17,12" Width="2" Color="200,200,200,200" Hidden="1"/>
-							<Line ID="BQUI_TierPromotion_42_UnitList" Start="8,15" End="11,15" Width="2" Color="200,200,200,200" Hidden="1"/>
-							<Label ID="BQUI_PromotionsCount_UnitList" Anchor="C,T" Offset="0,1" Style="FontFlair14" Color0="214,214,214,255" Color1="0,0,0,55" FontStyle="Stroke" />
-						</Container>
-						<Image ID="BQUI_LeviedUnits_UnitList" Size="17,17" Anchor="L,C" Offset="1,-1" Icon="Turn" Hidden="1"/>
-						<Stack Anchor="L,C" Offset="0,0" StackGrowth="Right" StackPadding="1" Hidden="0">
-							<Image ID="BQUI_IconPromotionAvailable" Size="18,18" Anchor="L,C" Offset="0,-1" Icon="ICON_CIVILOPEDIA_UNITPROMOTIONS" Hidden="1"/>
-						</Stack>
-						<Container ID="BQUI_AllAbilities_UnitList" Anchor="L,C" Size="21,1" Offset="-1,8" Hidden="1">
-							<Stack Anchor="C,C" StackGrowth="Right" StackPadding="-5">
-								<Image ID="BQUI_UNIT_ABILITIES_XP_UnitList" Icon="ICON_MAP_PIN_CIRCLE" Size="11,11" Anchor="R,C" Color="0,0,0,255" Hidden="1">
-									<Image ID="BQUI_UNIT_ABILITIES_XP_TIER_UnitList" Icon="ICON_MAP_PIN_CIRCLE" Size="7,7" Anchor="C,C" Color="255,100,255,255" Alpha="0.75"/>
-								</Image>
-								<Image ID="BQUI_UNIT_ABILITIES_STRENGTH_UnitList" Icon="ICON_MAP_PIN_CIRCLE" Size="11,11" Anchor="R,C" Color="0,0,0,255" Hidden="1">
-									<Image ID="BQUI_UNIT_ABILITIES_STRENGTH_TIER_UnitList" Icon="ICON_MAP_PIN_CIRCLE" Size="7,7" Anchor="C,C" Color="96,100,102"/>
-								</Image>
-								<Image ID="BQUI_UNIT_ABILITIES_GP_UnitList" Icon="ICON_MAP_PIN_CIRCLE" Size="11,11" Anchor="R,C" Color="0,0,0,255" Hidden="1">
-									<Image Icon="ICON_MAP_PIN_CIRCLE" Size="7,7" Anchor="C,C" Color="255,255,255,255"/>
-								</Image>
-								<Image ID="BQUI_UNIT_ABILITIES_COMANDANTE_UnitList" Icon="ICON_MAP_PIN_CIRCLE" Size="11,11" Anchor="R,C" Color="0,0,0,255" Hidden="1">
-									<Image Icon="ICON_MAP_PIN_CIRCLE" Size="7,7" Anchor="C,C" Color="255,255,255,255"/>
-								</Image>
-								<Image ID="BQUI_UNIT_ABILITIES_DOUBLE_GP_UnitList" Icon="ICON_MAP_PIN_CIRCLE" Size="12,12" Anchor="R,C" Color="0,0,0,255" Hidden="1">
-									<Image Icon="ICON_MAP_PIN_CIRCLE" Size="8,8" Anchor="C,C" Color="255,255,255,255"/>
-								</Image>
-							</Stack>
-						</Container>
-						<!-- Infixo: RealPromotions made a bit less complex -->
-						<Container ID="BQUI_RealPromotion_1_UnitList" Size="16,16" Anchor="L,C" Hidden="1">
-							<Image ID="BQUI_IconRealPromotion_1_UnitList" Anchor="C,C" Hidden="1" />
-							<Image ID="PromotionIcon1" Anchor="C,C" />
-						</Container>
-						<Container ID="BQUI_RealPromotion_2_UnitList" Size="16,16" Anchor="L,C" Hidden="1">
-							<Image ID="BQUI_IconRealPromotion_2_UnitList" Anchor="C,C" Hidden="1" />
-							<Image ID="PromotionIcon2" Anchor="C,C" />
-						</Container>
-						<Container ID="BQUI_RealPromotion_3_UnitList" Size="16,16" Anchor="L,C" Hidden="1">
-							<Image ID="BQUI_IconRealPromotion_3_UnitList" Anchor="C,C" Hidden="1" />
-							<Image ID="PromotionIcon3" Anchor="C,C" />
-						</Container>
-					</Stack>
-				</Label>
+			<Stack Anchor="C,C" Offset="0,0" StackGrowth="Right" StackPadding="1">
+				<Label ID="UnitName" Anchor="L,C" Style="UnitPanelHeader" TruncateWidth="165"/>
+				<Label ID="UnitNameSuffix" Anchor="L,C" Offset="2,1" Style="UnitPanelHeader" />
+					<!--<Stack Anchor="R,C" AnchorSide="O,O" StackGrowth="Right" Offset="-2,0" StackPadding="1">-->
+				<Container ID="PromotionsShield" Anchor="L,C" Size="18,18" Offset="1,1" >
+					<Label ID="CountLabel" Anchor="C,T" Offset="0,1" Style="FontFlair14" Color0="214,214,214,255" Color1="0,0,0,55" FontStyle="Stroke" />
+					<Line Start="4,2"   End="4,12"  Width="2" Color="96,100,102,160"/>
+					<Line Start="3,12"  End="10,16" Width="2" Color="96,100,102,160"/>
+					<Line Start="10,16" End="16,12" Width="2" Color="96,100,102,160"/>
+					<Line Start="15,12" End="15,2"  Width="2" Color="96,100,102,160"/>
+					<Container ID="TierPromotionDots">
+						<Line ID="TierPromotion11" Start="2,2"   End="5,2"   Width="2" Color="Beige" />
+						<Line ID="TierPromotion21" Start="2,7"   End="5,7"   Width="2" Color="Beige" />
+						<Line ID="TierPromotion31" Start="2,12"  End="5,12"  Width="2" Color="Beige" />
+						<Line ID="TierPromotion13" Start="14,2"  End="17,2"  Width="2" Color="Beige" />
+						<Line ID="TierPromotion23" Start="14,7"  End="17,7"  Width="2" Color="Beige" />
+						<Line ID="TierPromotion33" Start="14,12" End="17,12" Width="2" Color="Beige" />
+						<Line ID="TierPromotion42" Start="8,15"  End="11,15" Width="2" Color="Beige" />
+					</Container>
+				</Container>
+				<Image ID="LeviedUnitIcon" Size="17,17" Offset="0,-1" Icon="Turn" Hidden="1"/>
+				<Image ID="PromotionAvailableIcon" Size="18,18" Offset="0,-1" Icon="ICON_CIVILOPEDIA_UNITPROMOTIONS" />
+				<!-- Infixo: RealPromotions made a bit less complex -->
+				<Container ID="RealPromotion1" Size="16,16" Anchor="L,C">
+					<Image ID="PromotionIcon1" Anchor="C,C" />
+				</Container>
+				<Container ID="RealPromotion2" Size="16,16" Anchor="L,C">
+					<Image ID="PromotionIcon2" Anchor="C,C" />
+				</Container>
+				<Container ID="RealPromotion3" Size="16,16" Anchor="L,C">
+					<Image ID="PromotionIcon3" Anchor="C,C" />
+				</Container>
 			</Stack>
-			<Bar ID="BQUI_HPBarBG" Anchor="R,B" Offset="2,5" Size="3,14" Direction="Down" FGColor="0,0,0,255" Percent="1" Hidden="1" />
+			<Stack ID="AbilitiesStack" Anchor="L,B" Offset="20,-1" StackGrowth="Right" StackPadding="0">
+				<Image ID="BQUI_UNIT_ABILITIES_XP_UnitList" Icon="ICON_MAP_PIN_CIRCLE" Size="11,11" Color="Black" Hidden="1">
+					<Image ID="BQUI_UNIT_ABILITIES_XP_TIER_UnitList" Icon="ICON_MAP_PIN_CIRCLE" Size="7,7" Anchor="C,C" Color="White" Alpha="0.75"/>
+				</Image>
+				<Image ID="BQUI_UNIT_ABILITIES_STRENGTH_UnitList" Icon="ICON_MAP_PIN_CIRCLE" Size="11,11" Color="Black" Hidden="1">
+					<Image ID="BQUI_UNIT_ABILITIES_STRENGTH_TIER_UnitList" Icon="ICON_MAP_PIN_CIRCLE" Size="7,7" Anchor="C,C" Color="96,100,102"/>
+				</Image>
+				<Image ID="BQUI_UNIT_ABILITIES_GP_UnitList" Icon="ICON_MAP_PIN_CIRCLE" Size="11,11" Color="Black" Hidden="1">
+					<Image Icon="ICON_MAP_PIN_CIRCLE" Size="7,7" Anchor="C,C" Color="White"/>
+				</Image>
+				<Image ID="BQUI_UNIT_ABILITIES_COMANDANTE_UnitList" Icon="ICON_MAP_PIN_CIRCLE" Size="11,11" Color="Black" Hidden="1">
+					<Image Icon="ICON_MAP_PIN_CIRCLE" Size="7,7" Anchor="C,C" Color="White"/>
+				</Image>
+				<Image ID="BQUI_UNIT_ABILITIES_DOUBLE_GP_UnitList" Icon="ICON_MAP_PIN_CIRCLE" Size="12,12" Color="Black" Hidden="1">
+					<Image Icon="ICON_MAP_PIN_CIRCLE" Size="8,8" Anchor="C,C" Color="White"/>
+				</Image>
+			</Stack>
+			<Bar ID="BQUI_HPBarBG" Anchor="R,B" Offset="2,5" Size="3,14" Direction="Down" FGColor="Black" Percent="1" Hidden="1" />
 			<Bar ID="BQUI_HPBar" Anchor="R,B" Offset="2,5" Size="3,14" Direction="Down" Hidden="1" />
 		</GridButton>
 	</Instance>
