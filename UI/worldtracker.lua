@@ -944,20 +944,24 @@ function AddUnitToUnitList(pUnit:table)
 
 			if BQUI_AbilitiesXP > 0 then
 				unitEntry.BQUI_UNIT_ABILITIES_XP_UnitList:SetShow(true);
-				if BQUI_AbilitiesXP <= 2 then
+				if BQUI_AbilitiesXP == 1 then
+					unitEntry.BQUI_UNIT_ABILITIES_XP_TIER_UnitList:SetColorByName("Culture");
+				elseif BQUI_AbilitiesXP == 2 then
 					unitEntry.BQUI_UNIT_ABILITIES_XP_TIER_UnitList:SetColorByName("PolicyEconomic");
 				elseif BQUI_AbilitiesXP == 3 then
 					unitEntry.BQUI_UNIT_ABILITIES_XP_TIER_UnitList:SetColorByName("StatGoodCS");
 				elseif BQUI_AbilitiesXP == 4 then
 					unitEntry.BQUI_UNIT_ABILITIES_XP_TIER_UnitList:SetColorByName("COLOR_FLOAT_SCIENCE");
 				else --if BQUI_AbilitiesXP >= 5 then
-					unitEntry.BQUI_UNIT_ABILITIES_XP_TIER_UnitList:SetColor( BQUI_Color_Tier_5 );
+					unitEntry.BQUI_UNIT_ABILITIES_XP_TIER_UnitList:SetColorByName("COLOR_MEDIUM_GREEN");
 				end
 			end
 
 			if BQUI_AbilitiesStrength > 0 then
 				unitEntry.BQUI_UNIT_ABILITIES_STRENGTH_UnitList:SetShow(true);
-				if BQUI_AbilitiesStrength <= 2 then
+				if BQUI_AbilitiesStrength == 1 then
+					unitEntry.BQUI_UNIT_ABILITIES_STRENGTH_TIER_UnitList:SetColorByName("GrayMedium");
+				elseif BQUI_AbilitiesStrength == 2 then
 					unitEntry.BQUI_UNIT_ABILITIES_STRENGTH_TIER_UnitList:SetColorByName("Gray");
 				elseif BQUI_AbilitiesStrength == 3 then
 					unitEntry.BQUI_UNIT_ABILITIES_STRENGTH_TIER_UnitList:SetColorByName("AirportDark");
